@@ -19,10 +19,6 @@ public abstract class WorldgenStructure {
 	public int maxY;
 	public int maxZ;
 	
-	//public int prefX; //preferred size
-	//public int prefY;
-	//public int prefZ;
-	
 	public int sizeX;
 	public int sizeY;
 	public int sizeZ;
@@ -35,7 +31,7 @@ public abstract class WorldgenStructure {
 	public boolean removeJunkOnWorldspawn=false;
 		
 	public static BiomeDictionary.Type[] coldTypes = {BiomeDictionary.Type.COLD, BiomeDictionary.Type.SNOWY};
-	public static BiomeDictionary.Type[] sandTypes = {BiomeDictionary.Type.SANDY, BiomeDictionary.Type.SAVANNA.BEACH, BiomeDictionary.Type.MESA};
+	public static BiomeDictionary.Type[] sandTypes = {BiomeDictionary.Type.SANDY, BiomeDictionary.Type.BEACH, BiomeDictionary.Type.MESA};
 	public static BiomeDictionary.Type[] netherTypes = {BiomeDictionary.Type.NETHER};
 	
 	public EnumLootType lootTier=EnumLootType.TIER0;
@@ -149,15 +145,9 @@ public abstract class WorldgenStructure {
 		
 		int x=minX+chunkX*16;//-cXr;
 		int z=minZ+chunkZ*16;//-cZr;
-				
-	
-		int offsetX=this.getRotationShiftX(direction);
-		int offsetZ=this.getRotationShiftZ(direction);
-		
-		int y =BlockUtils.getValidSpawnYArea(world, x+offsetX, z+offsetZ, sizeXr, sizeZr,this.heightdiffLimit,getStep());
-		
-		//System.out.println("Chosen SpawnHeight:"+y);
-		
+
+		int y =BlockUtils.getValidSpawnYArea(world, x, z, sizeXr, sizeZr,this.heightdiffLimit,getStep());
+
 		if (y<0){
 			return;
 		}
@@ -172,10 +162,6 @@ public abstract class WorldgenStructure {
 	public void spawnStructureCaveWorldgen(World world, int chunkX, int chunkZ, int sizeX, int sizeY, int sizeZ, Random rnd, Biome biome){
 		int direction = rnd.nextInt(4);
 
-		
-		int sizeXr = direction==0||direction==2 ? sizeX : sizeZ;
-		int sizeZr = direction==0||direction==2 ? sizeZ : sizeX;
-		
 		int centerX = (int) (sizeX/2.0f);
 		int centerZ = (int) (sizeZ/2.0f);
 		
@@ -192,26 +178,13 @@ public abstract class WorldgenStructure {
 		
 		int x=minX+chunkX*16;//-cXr;
 		int z=minZ+chunkZ*16;//-cZr;
-				
-	
-		int offsetX=this.getRotationShiftX(direction);
-		int offsetZ=this.getRotationShiftZ(direction);
 		
-		
-		//int y =BlockUtils.getValidSpawnYArea(world, x+offsetX, z+offsetZ, sizeXr, sizeZr,this.heightdiffLimit,getStep());
 		int y = BlockUtils.getCaveHeight(world, chunkX, chunkZ, 10, WorldGenTGStructureSpawn.NETHER_STRUCT_MIN_Y, WorldGenTGStructureSpawn.NETHER_STRUCT_MAX_y);
-		
-		
-		//System.out.println("Chosen SpawnHeight:"+y);
-		
+
 		if (y<0){
 			return;
 		}
-		
-		/*if(removeJunkOnWorldspawn){
-			BlockUtils.removeJunkInArea(world, x-1, z-1, sizeXr+2, sizeZr+2);
-		}*/
-		
+
 		this.setBlocks(world, x, y-1, z, sizeX, sizeY, sizeZ, direction, getBiomeColorTypeFromBiome(biome), rnd);
 	}
 	
@@ -228,21 +201,14 @@ public abstract class WorldgenStructure {
 	}
 	
 	private static boolean isInBiomeList(BiomeDictionary.Type[] list, Biome biome){
-		for (int i =0; i<list.length; i++){
-			if (BiomeDictionary.hasType(biome, list[i])){
-				return true;
-			}
-		}
+        for (BiomeDictionary.Type type : list) {
+            if (BiomeDictionary.hasType(biome, type)) {
+                return true;
+            }
+        }
 		return false;
 	}
-	
-	protected int getRotationShiftX(int direction){
-		return 0;
-	}
-	protected int getRotationShiftZ(int direction){
-		return 0;
-	}
-	
+
 	//W-N-E-S
 	public static EnumFacing directionToFacing(int direction) {
 		switch(direction) {
@@ -258,8 +224,8 @@ public abstract class WorldgenStructure {
 	}
 	
 	public enum BiomeColorType {
-		WOODLAND, SNOW, DESERT, NETHER;
-	}
+		WOODLAND, SNOW, DESERT, NETHER
+    }
 	
 	protected static int rollBlockIndex(Random rnd, int totalWeight, int[] weights){
 		int roll = rnd.nextInt(totalWeight+1);

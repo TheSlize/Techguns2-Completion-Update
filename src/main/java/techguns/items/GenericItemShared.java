@@ -1,6 +1,7 @@
 package techguns.items;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
@@ -12,27 +13,27 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.InventoryHelper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.NonNullList;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.*;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.client.model.ModelLoader;
+import org.jetbrains.annotations.NotNull;
 import techguns.TGItems;
+import techguns.TGSounds;
 import techguns.Techguns;
+import techguns.api.capabilities.ITGExtendedPlayer;
 import techguns.api.render.IItemTGRenderer;
 import techguns.api.tginventory.ITGSpecialSlot;
 import techguns.api.tginventory.TGSlotType;
+import techguns.capabilities.TGExtendedPlayerCapProvider;
 import techguns.items.armors.TGArmorBonus;
-import techguns.items.guns.ammo.AmmoType;
 import techguns.tileentities.operation.UpgradeBenchRecipes;
 import techguns.tileentities.operation.UpgradeBenchRecipes.UpgradeBenchRecipe;
 import techguns.util.InventoryUtil;
 import techguns.util.TextUtil;
 
-public class GenericItemShared extends GenericItem implements IItemTGRenderer, ITGSpecialSlot{
+public class GenericItemShared extends GenericItem implements IItemTGRenderer, ITGSpecialSlot {
 	protected ArrayList<SharedItemEntry> sharedItems = new ArrayList<>();
 	
 	public GenericItemShared() {
@@ -103,15 +104,7 @@ public class GenericItemShared extends GenericItem implements IItemTGRenderer, I
 			return name;
 		}
 
-		public TGSlotType getSlottype() {
-			return slottype;
-		}
-
-		public short getMaxStackSize() {
-			return maxStackSize;
-		}
-
-		public int getMeta() {
+        public int getMeta() {
 			return meta;
 		}
 
@@ -122,6 +115,8 @@ public class GenericItemShared extends GenericItem implements IItemTGRenderer, I
 		public SharedItemAmmoEntry getAmmoEntry() {
 			return ammoEntry;
 		}
+
+		public boolean usesRenderHack() { return useRenderHack; }
 	
 		public void setAmmoType(ItemStack bullet, ItemStack magazine,  int amountBullet) {
 			this.ammoEntry = new SharedItemAmmoEntry(bullet, magazine, amountBullet);
@@ -147,12 +142,17 @@ public class GenericItemShared extends GenericItem implements IItemTGRenderer, I
 		}
 		
 	}
-	
+
 	@Override
 	public void initModel() {
-		for (int i=0; i<this.sharedItems.size();i++){
-			ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation(new ResourceLocation(Techguns.MODID,this.sharedItems.get(i).name), "inventory"));
-		}
+        for (int i = 0; i < this.sharedItems.size(); i++) {
+            ResourceLocation rl = new ResourceLocation(Techguns.MODID, this.sharedItems.get(i).name);
+
+            if (i == TGItems.PLATE_COPPER.getItemDamage()) rl = new ResourceLocation(Techguns.MODID, "platecopper");
+            if (i == TGItems.PLATE_STEEL.getItemDamage())  rl = new ResourceLocation(Techguns.MODID, "platesteel");
+
+            ModelLoader.setCustomModelResourceLocation(this, i, new ModelResourceLocation(rl, "inventory"));
+        }
 	}
 
 	public ArrayList<SharedItemEntry> getSharedItems() {
@@ -165,7 +165,7 @@ public class GenericItemShared extends GenericItem implements IItemTGRenderer, I
 	}
 
 	@Override
-	public void getSubItems(CreativeTabs tab, NonNullList<ItemStack> items) {
+	public void getSubItems(@NotNull CreativeTabs tab, @NotNull NonNullList<ItemStack> items) {
 		if(this.isInCreativeTab(tab)){
 			for (int i=0;i<this.sharedItems.size();i++){
 				if ( this.sharedItems.get(i).isEnabled()) {
@@ -176,7 +176,7 @@ public class GenericItemShared extends GenericItem implements IItemTGRenderer, I
 	}
 
 	@Override
-	public String getUnlocalizedName(ItemStack stack) {
+	public @NotNull String getTranslationKey(ItemStack stack) {
 		return "item."+Techguns.MODID+"."+getSharedItems().get(stack.getItemDamage()).name;
 	}
 
@@ -205,11 +205,11 @@ public class GenericItemShared extends GenericItem implements IItemTGRenderer, I
 	
 	@Override
 	public float getBonus(TGArmorBonus type, ItemStack stack, boolean consume, EntityPlayer player) {
-		if(stack.getItemDamage()==TGItems.OXYGEN_MASK.getItemDamage()) {
+		if(stack.getItemDamage() == TGItems.OXYGEN_MASK.getItemDamage()) {
 			if(type == TGArmorBonus.OXYGEN_GEAR){
 				return 1.0f;
 			}
-		} else if (stack.getItemDamage() ==TGItems.WORKING_GLOVES.getItemDamage()) {
+		} else if (stack.getItemDamage() == TGItems.WORKING_GLOVES.getItemDamage()) {
 			if(type==TGArmorBonus.BREAKSPEED) {
 				return 0.10f;
 			}
@@ -222,69 +222,68 @@ public class GenericItemShared extends GenericItem implements IItemTGRenderer, I
 	}
 	
 	@Override
-	public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+	public void addInformation(@NotNull ItemStack stack, World worldIn, @NotNull List<String> tooltip, @NotNull ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
-		if(this.getSlot(stack)!=TGSlotType.NORMAL) {
-			tooltip.add(ChatFormatting.GRAY+TextUtil.trans(Techguns.MODID+".tooltip.slot")+": "+this.getSlot(stack));
-			if(this.getSlot(stack)==TGSlotType.AMMOSLOT) {
-				tooltip.add(ChatFormatting.GRAY+TextUtil.trans(Techguns.MODID+".tooltip.rightclickammoslot"));
+        if (stack.getItemDamage() == TGItems.BLUEPRINTS.getItemDamage()) {
+            tooltip.addAll(Arrays.asList(TextUtil.resolveKeyArray("techguns.tooltip.blueprints")));
+        }
+		if(this.getSlot(stack) != TGSlotType.NORMAL) {
+			tooltip.add(ChatFormatting.GRAY+TextUtil.transTG("tooltip.slot")+": "+this.getSlot(stack));
+			if(this.getSlot(stack) == TGSlotType.AMMOSLOT) {
+				tooltip.add(ChatFormatting.GRAY+TextUtil.transTG("tooltip.rightclickammoslot"));
 				
 				if(this.getSharedEntry(stack).ammoEntry!=null){
-					tooltip.add(ChatFormatting.GRAY+TextUtil.trans(Techguns.MODID+".tooltip.sneakrightclickunload"));
+					tooltip.add(ChatFormatting.GRAY+TextUtil.transTG("tooltip.sneakrightclickunload"));
 				}
-			} else if (this.getSlot(stack)==TGSlotType.ARMOR_UPGRADE) {
-				this.addArmorEnchantTooltip(stack, worldIn, tooltip, flagIn);
+			} else if (this.getSlot(stack) == TGSlotType.ARMOR_UPGRADE) {
+				this.addArmorEnchantTooltip(stack, tooltip, flagIn);
 			}
 		}
 		if(this.getBonus(TGArmorBonus.EXTRA_HEART, stack)>0.0f){
-			tooltip.add(trans("armorTooltip.healthbonus")+": +"+(int)this.getBonus(TGArmorBonus.EXTRA_HEART, stack)+" "+trans("armorTooltip.hearts"));
-		} else if (this.getBonus(TGArmorBonus.SPEED, stack)>0.0f){
-			tooltip.add(trans("armorTooltip.movespeed")+": +"+this.getBonus(TGArmorBonus.SPEED, stack)*100.0f+"%");
+			tooltip.add(TextUtil.transTG("armorTooltip.healthbonus")+": +"+(int)this.getBonus(TGArmorBonus.EXTRA_HEART, stack)+" "+TextUtil.transTG("armorTooltip.hearts"));
+		} else if (this.getBonus(TGArmorBonus.SPEED, stack) != 0.0f){
+			tooltip.add(TextUtil.transTG("armorTooltip.movespeed")+": +"+this.getBonus(TGArmorBonus.SPEED, stack)*100.0f+"%");
 		} else if(this.getBonus(TGArmorBonus.JUMP, stack)>0.0f){
-			tooltip.add(trans("armorTooltip.jumpheight")+": +"+this.getBonus(TGArmorBonus.JUMP, stack));
+			tooltip.add(TextUtil.transTG("armorTooltip.jumpheight")+": +"+this.getBonus(TGArmorBonus.JUMP, stack));
 		} if(this.getBonus(TGArmorBonus.FALLDMG, stack)>0.0f){
-			tooltip.add(trans("armorTooltip.falldamage")+": -"+this.getBonus(TGArmorBonus.FALLDMG, stack)*100.0f+"%");
+			tooltip.add(TextUtil.transTG("armorTooltip.falldamage")+": -"+this.getBonus(TGArmorBonus.FALLDMG, stack)*100.0f+"%");
 		} if(this.getBonus(TGArmorBonus.FREEHEIGHT, stack)>0.0f){
-			tooltip.add(trans("armorTooltip.fallheight")+": -"+this.getBonus(TGArmorBonus.FREEHEIGHT, stack));
+			tooltip.add(TextUtil.transTG("armorTooltip.fallheight")+": -"+this.getBonus(TGArmorBonus.FREEHEIGHT, stack));
 		} if(this.getBonus(TGArmorBonus.BREAKSPEED, stack)>0.0f){
-			tooltip.add(trans("armorTooltip.miningspeed")+": +"+this.getBonus(TGArmorBonus.BREAKSPEED, stack)*100.0f+"%");
+			tooltip.add(TextUtil.transTG("armorTooltip.miningspeed")+": +"+this.getBonus(TGArmorBonus.BREAKSPEED, stack)*100.0f+"%");
 		} if(this.getBonus(TGArmorBonus.BREAKSPEED_WATER, stack)>0.0f){
-			tooltip.add(trans("armorTooltip.underwatermining")+": +"+this.getBonus(TGArmorBonus.BREAKSPEED_WATER, stack)*100.0f+"%");
+			tooltip.add(TextUtil.transTG("armorTooltip.underwatermining")+": +"+this.getBonus(TGArmorBonus.BREAKSPEED_WATER, stack)*100.0f+"%");
 		} if(this.getBonus(TGArmorBonus.KNOCKBACK_RESISTANCE, stack)>0.0f){
-			tooltip.add(trans("armorTooltip.knockbackresistance")+": +"+this.getBonus(TGArmorBonus.KNOCKBACK_RESISTANCE, stack)*100.0f+"%");
+			tooltip.add(TextUtil.transTG("armorTooltip.knockbackresistance")+": +"+this.getBonus(TGArmorBonus.KNOCKBACK_RESISTANCE, stack)*100.0f+"%");
 		} if(this.getBonus(TGArmorBonus.NIGHTVISION, stack)>0.0f){
-			tooltip.add(trans("armorTooltip.nightvision"));
+			tooltip.add(TextUtil.transTG("armorTooltip.nightvision"));
 		} if(this.getBonus(TGArmorBonus.STEPASSIST, stack)>0.0f){
-			tooltip.add(trans("armorTooltip.stepassist"));
+			tooltip.add(TextUtil.transTG("armorTooltip.stepassist"));
 		} if(this.getBonus(TGArmorBonus.OXYGEN_GEAR, stack)>0.0f){
-			tooltip.add(trans("armorTooltip.oxygengear"));
+			tooltip.add(TextUtil.transTG("armorTooltip.oxygengear"));
 		} if(this.getBonus(TGArmorBonus.COOLING_SYSTEM, stack)>0.0f){
-			tooltip.add(trans("armorTooltip.coolingsystem"));
+			tooltip.add(TextUtil.transTG("armorTooltip.coolingsystem"));
 		} 
-		if(stack.getItemDamage()==TGItems.OREDRILLHEAD_STEEL.getItemDamage() || stack.getItemDamage() == TGItems.OREDRILLHEAD_MEDIUM_STEEL.getItemDamage() || stack.getItemDamage() == TGItems.OREDRILLHEAD_LARGE_STEEL.getItemDamage()) {
-			tooltip.add(trans("oredrill.mininglevel")+" +1");
-		} else if (stack.getItemDamage()==TGItems.OREDRILLHEAD_OBSIDIANSTEEL.getItemDamage() || stack.getItemDamage() == TGItems.OREDRILLHEAD_MEDIUM_OBSIDIANSTEEL.getItemDamage() || stack.getItemDamage() == TGItems.OREDRILLHEAD_LARGE_OBSIDIANSTEEL.getItemDamage()) {
-			tooltip.add(trans("oredrill.mininglevel")+ " +2");
-		} else if (stack.getItemDamage()==TGItems.OREDRILLHEAD_CARBON.getItemDamage() || stack.getItemDamage() == TGItems.OREDRILLHEAD_MEDIUM_CARBON.getItemDamage() || stack.getItemDamage() == TGItems.OREDRILLHEAD_LARGE_CARBON.getItemDamage()) {
-			tooltip.add(trans("oredrill.mininglevel")+ " +3");
+		if(stack.getItemDamage() == TGItems.OREDRILLHEAD_STEEL.getItemDamage() || stack.getItemDamage() == TGItems.OREDRILLHEAD_MEDIUM_STEEL.getItemDamage() || stack.getItemDamage() == TGItems.OREDRILLHEAD_LARGE_STEEL.getItemDamage()) {
+			tooltip.add(TextUtil.transTG("oredrill.mininglevel")+" +1");
+		} else if (stack.getItemDamage() == TGItems.OREDRILLHEAD_OBSIDIANSTEEL.getItemDamage() || stack.getItemDamage() == TGItems.OREDRILLHEAD_MEDIUM_OBSIDIANSTEEL.getItemDamage() || stack.getItemDamage() == TGItems.OREDRILLHEAD_LARGE_OBSIDIANSTEEL.getItemDamage()) {
+			tooltip.add(TextUtil.transTG("oredrill.mininglevel")+ " +2");
+		} else if (stack.getItemDamage() == TGItems.OREDRILLHEAD_CARBON.getItemDamage() || stack.getItemDamage() == TGItems.OREDRILLHEAD_MEDIUM_CARBON.getItemDamage() || stack.getItemDamage() == TGItems.OREDRILLHEAD_LARGE_CARBON.getItemDamage()) {
+			tooltip.add(TextUtil.transTG("oredrill.mininglevel")+ " +3");
 		}
 	}
 	
-	protected void addArmorEnchantTooltip(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
+	protected void addArmorEnchantTooltip(ItemStack stack, List<String> tooltip, ITooltipFlag flagIn) {
 		UpgradeBenchRecipe rec = UpgradeBenchRecipes.getUpgradeRecipeForUpgradeItem(stack);
-		if(rec!=null) {
-			
+		if(rec != null) {
+
 			Enchantment ench = rec.getEnch();
-			tooltip.add(TextFormatting.AQUA+ench.getTranslatedName(rec.getLevel()));
+			tooltip.add(TextFormatting.AQUA + ench.getTranslatedName(rec.getLevel()));
 			
-			if(flagIn.isAdvanced() && ench.type!=null) {
-				tooltip.add(" "+ench.type.toString());
+			if(flagIn.isAdvanced() && ench.type != null) {
+				tooltip.add(" " + ench.type);
 			}
 		}
-	}
-	
-	private String trans(String text){
-		return TextUtil.trans(Techguns.MODID+"."+text);
 	}
 
 	
@@ -300,10 +299,23 @@ public class GenericItemShared extends GenericItem implements IItemTGRenderer, I
 	}
 	
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+	public @NotNull ActionResult<ItemStack> onItemRightClick(@NotNull World world, EntityPlayer player, @NotNull EnumHand hand) {
 		
 		ItemStack stack = player.getHeldItem(hand);
-		
+
+        if (stack.getItemDamage() == TGItems.BLUEPRINTS.getItemDamage()) {
+            ITGExtendedPlayer ext = player.getCapability(TGExtendedPlayerCapProvider.TG_EXTENDED_PLAYER, null);
+            if (ext != null) {
+                boolean newlyUnlocked = ext.unlockFabricatorRecipe(TGItems.CYBERNETIC_PARTS);
+                if (newlyUnlocked) {
+                    if(!world.isRemote) stack.shrink(1);
+                    else player.sendMessage(new TextComponentTranslation("techguns.message.bpunlock"));
+                    player.playSound(TGSounds.BLUEPRINT_UNLOCK, 1.0f, 1.0f);
+                }
+            }
+            return new ActionResult<>(EnumActionResult.SUCCESS, stack);
+        }
+
 		if (player.isSneaking()){
 			SharedItemEntry entry = this.getSharedEntry(stack);
 			if(entry!=null) {
@@ -320,20 +332,20 @@ public class GenericItemShared extends GenericItem implements IItemTGRenderer, I
 					
 					stack.shrink(1);
 					
-					return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+					return new ActionResult<>(EnumActionResult.SUCCESS, stack);
 				}
 				
 			}
 			
-		} else if(this.getSlot(stack)==TGSlotType.AMMOSLOT) {
+		} else if(this.getSlot(stack) == TGSlotType.AMMOSLOT) {
 			
 			ItemStack newStack = stack.copy();
 			int amount = InventoryUtil.addAmmoToAmmoInventory(player, newStack);
 			
-			System.out.println("amount not merged:"+amount);
+			Techguns.logger.warn("amount not merged:"+amount);
 			
 			stack.setCount(amount);
-			return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, stack);
+			return new ActionResult<>(EnumActionResult.SUCCESS, stack);
 		}
 		
 		return super.onItemRightClick(world, player, hand);

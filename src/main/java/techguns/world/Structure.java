@@ -15,14 +15,14 @@ import techguns.util.BlockUtils;
 import techguns.util.MBlock;
 import techguns.world.dungeon.presets.specialblocks.SpecialBlockHandler;
 
-public class Structure implements Serializable{
+public class Structure implements Serializable {
 	
 	private static final long serialVersionUID = 1L+1;
 	
 	int sizeX;
 	int sizeY;
 	int sizeZ;
-	List<MBlock> blocks = new ArrayList<MBlock>();
+	List<MBlock> blocks = new ArrayList<>();
 	HashMap<Integer, List<BlockEntry>> blockEntries = new HashMap<>();
 	
 	public void applySpecialMBlocks(ResourceLocation loottable) {
@@ -35,11 +35,7 @@ public class Structure implements Serializable{
 		this.sizeZ = sizeZ;
 	}
 
-	public static Structure scanBlocks(World world, BlockPos xyz, int sizeX, int sizeY, int sizeZ) {
-		return scanBlocks(world, xyz.getX(), xyz.getY(), xyz.getZ(), sizeX, sizeY, sizeZ);
-	}
-	
-	public static Structure scanBlocks(World world, int x, int y, int z, int sizeX, int sizeY, int sizeZ) {
+    public static Structure scanBlocks(World world, int x, int y, int z, int sizeX, int sizeY, int sizeZ) {
 		Structure structure = new Structure(sizeX, sizeY, sizeZ);
 		
 		for (int i = 0; i < sizeX; i++) {
@@ -54,9 +50,9 @@ public class Structure implements Serializable{
 						index = structure.blocks.indexOf(mblock);
 					}
 					if (!structure.blockEntries.containsKey(layer)) {						
-						structure.blockEntries.put(layer, new ArrayList<BlockEntry>());
+						structure.blockEntries.put(layer, new ArrayList<>());
 					}
-					structure.blockEntries.get(layer).add(structure.new BlockEntry(i,j,k,index));
+					structure.blockEntries.get(layer).add(new BlockEntry(i, j, k, index));
 				}
 			}
 		}
@@ -100,7 +96,7 @@ public class Structure implements Serializable{
 	}
 	
 
-	class BlockEntry implements Serializable {
+	static class BlockEntry implements Serializable {
 		
 		private static final long serialVersionUID = 1L;
 		

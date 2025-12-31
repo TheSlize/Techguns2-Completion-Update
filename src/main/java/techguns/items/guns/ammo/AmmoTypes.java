@@ -1,9 +1,12 @@
 package techguns.items.guns.ammo;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 import techguns.TGItems;
 import techguns.init.ITGInitializer;
 
@@ -82,8 +85,8 @@ public class AmmoTypes implements ITGInitializer{
 		
 		ROCKETS_NO_NUKES = new AmmoType(TGItems.ROCKET);
 		ROCKETS_NO_NUKES.addVariant(TYPE_HV, TGItems.ROCKET_HIGH_VELOCITY);
-		
-		NETHER_CHARGE = new AmmoType(TGItems.NETHER_CHARGE);
+
+		NETHER_CHARGE = new AmmoType(TGItems.NETHER_CHARGE, TGItems.NETHERCHARGE_EMPTY, ItemStack.EMPTY, 0);
 		GRENADES_40MM = new AmmoType(TGItems.GRENADE_40MM);
 		NUCLEAR_POWER_CELL = new AmmoType(TGItems.NUCLEAR_POWERCELL, TGItems.NUCLEAR_POWERCELL_EMPTY, ItemStack.EMPTY,0);
 		
@@ -92,7 +95,7 @@ public class AmmoTypes implements ITGInitializer{
 
 	@Override
 	public void init(FMLInitializationEvent event) {
-		
+
 	}
 
 	@Override

@@ -32,7 +32,6 @@ import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.BiomeDictionary.Type;
-import techguns.TGBlocks;
 import techguns.items.guns.GenericGunMeleeCharge;
 import techguns.world.EnumLootType;
 import techguns.world.structures.WorldgenStructure;
@@ -41,14 +40,8 @@ import techguns.world.structures.WorldgenStructure.BiomeColorType;
 public class BlockUtils {
 	
 	private static final String FILEPATH="/assets/techguns/structures/";
-	
-	public static final float[][] FILTER_GAUSSIAN_3x3 = new float[][] {
-		{1/16f, 1/8f, 1/16f}, 
-	    {1/8f, 1/4f, 1/8f},
-	    {1/16f, 1/8f, 1/16f}
-	};
-	
-	public static final float[][] FILTER_GAUSSIAN_5x5 = new float[][] {
+
+    public static final float[][] FILTER_GAUSSIAN_5x5 = new float[][] {
 		{.00325f, .01375f, .0235f, .01375f, .00325f},
         {.01375f, .059f, .097f, .059f, .01375f},
         {.0235f, .097f, .159f, .097f, .0235f},
@@ -63,7 +56,7 @@ public class BlockUtils {
 			if (p_apply_1_ == null) {
 				return "<NULL>";
 			} else {
-				IProperty<?> iproperty = (IProperty) p_apply_1_.getKey();
+				IProperty<?> iproperty = p_apply_1_.getKey();
 				return iproperty.getName() + "=" + this.getPropertyName(iproperty, p_apply_1_.getValue());
 			}
 		}
@@ -78,24 +71,8 @@ public class BlockUtils {
 		COMMA_JOINER.appendTo(sb, Iterables.transform(state.getProperties().entrySet(), MAP_ENTRY_TO_STRING));
 		return sb.toString();
 	}
-	
-	public static BlockPos rotateAroundY(BlockPos pos, BlockPos axis, int steps) {
-		int offsetX = pos.getX()-axis.getX();
-		int offsetZ = pos.getZ()-axis.getZ();
-		
-		int newOffsetX=offsetX;
-		int newOffsetZ=offsetZ;
-		
-		for(int i=steps; i>0; i--) {
-			int tmp = newOffsetX;
-			
-			newOffsetX=newOffsetZ;
-			newOffsetZ=-tmp;
-		}
-		return new BlockPos(axis.getX()+newOffsetX, pos.getY(), axis.getZ()+newOffsetZ);
-	}
-	
-	public static BlockPos rotateAroundY(MutableBlockPos pos, BlockPos axis, int steps) {
+
+    public static BlockPos rotateAroundY(MutableBlockPos pos, BlockPos axis, int steps) {
 		int offsetX = pos.getX()-axis.getX();
 		int offsetZ = pos.getZ()-axis.getZ();
 		
@@ -111,27 +88,8 @@ public class BlockUtils {
 		pos.setPos(axis.getX()+newOffsetX, pos.getY(), axis.getZ()+newOffsetZ);
 		return pos;
 	}
-	
-	public static BlockPos rotateAroundY(BlockPos pos, Vec3d axis, int steps) {
-		
-		Vec3d v_pos = new Vec3d(pos.getX()+0.5d, 0d, pos.getZ()+0.5d);
-		
-		double offsetX = v_pos.x-axis.x;
-		double offsetZ = v_pos.z-axis.z;
-		
-		double newOffsetX=offsetX;
-		double newOffsetZ=offsetZ;
-		
-		for(int i=steps; i>0; i--) {
-			double tmp = newOffsetX;
-			
-			newOffsetX=newOffsetZ;
-			newOffsetZ=-tmp;
-		}
-		return new BlockPos(axis.x+newOffsetX, pos.getY(), axis.z+newOffsetZ);
-	}
-	
-	public static MutableBlockPos rotateAroundY(MutableBlockPos pos, Vec3d axis, int steps) {
+
+    public static MutableBlockPos rotateAroundY(MutableBlockPos pos, Vec3d axis, int steps) {
 		
 		Vec3d v_pos = new Vec3d(pos.getX()+0.5d, 0d, pos.getZ()+0.5d);
 		
@@ -166,7 +124,7 @@ public class BlockUtils {
 	}
 	
 	public static List<BlockPos> getBlockPlaneAroundAxisForMining(World world, EntityPlayer ply, BlockPos center, EnumFacing.Axis axis, int radius, boolean includeCenter, @Nullable GenericGunMeleeCharge miningtool, ItemStack stack){
-		List<BlockPos> entries = new ArrayList<BlockPos>();
+		List<BlockPos> entries = new ArrayList<>();
 		
 		Iterable<BlockPos> blocks;
 		switch(axis) {
@@ -203,9 +161,7 @@ public class BlockUtils {
  	 */
  	public static int getHeightValueLiquid(World w, int wx, int wz){
 
- 		Chunk chunk = w.getChunkFromChunkCoords(wx>>4, wz>>4);
-        int x = wx;
-        int z = wz;
+ 		Chunk chunk = w.getChunk(wx>>4, wz>>4);
         int k = chunk.getTopFilledSegment() + 15;
         wx &= 15;
 
@@ -361,23 +317,15 @@ public class BlockUtils {
  	public static int getHeightValueUnderwater(World w, int x, int z){
  		MutableBlockPos p = new MutableBlockPos();
  		int y = w.getTopSolidOrLiquidBlock(p.setPos(x,0,z)).getY();
- 		//w.getTopBlock(x, z);
- 		
+
  		IBlockState bs = w.getBlockState(p.setPos(x, y, z));
  		Block b = bs.getBlock();
  		
- 		while (y>0 && (b.isLeaves(bs, w, p) /*|| b.isWood(w, x, y, z)*/ || b.isFoliage(w, p) || bs.getMaterial().isLiquid())){
+ 		while (y>0 && (b.isLeaves(bs, w, p) || b.isFoliage(w, p) || bs.getMaterial().isLiquid())){
  			y--;
  			bs = w.getBlockState(p.setPos(x, y, z));
  			b=bs.getBlock();
  		}
- 		
- 		
- 		/*for(int i=0; i<20; i++){
- 			w.setBlock(x, y+i, z, Blocks.diamond_block);
- 		}*/
- 		
- 		
  		return y;
  	}
  	
@@ -406,9 +354,7 @@ public class BlockUtils {
  	 */
  	public static int getHeightValueTopBlockAll(World w, int xCoord, int zCoord)
     {
-        Chunk chunk = w.getChunkFromChunkCoords(xCoord>>4, zCoord>>4);
-        int x = xCoord;
-        int z = zCoord;
+        Chunk chunk = w.getChunk(xCoord>>4, zCoord>>4);
         int k = chunk.getTopFilledSegment() + 15;
         xCoord &= 15;
 
@@ -431,7 +377,7 @@ public class BlockUtils {
      */
     private static int getTopSolidOrLiquidBlock(World w, int posx, int posz)
     {
-        Chunk chunk = w.getChunkFromChunkCoords(posx>>4, posz>>4);
+        Chunk chunk = w.getChunk(posx>>4, posz>>4);
         int x = posx;
         int z = posz;
         int k = chunk.getTopFilledSegment() + 15;
@@ -541,19 +487,15 @@ public class BlockUtils {
 
  	
  	public static void flattenArea(World world, int posX, int posZ, int sizeX, int sizeZ, int maxHeightDiff) {
-		int posY;
-		int heightSum = 0;
-		int count = (sizeX*sizeZ);
-		int min = -1;
+        int min = -1;
 		int max = 0;
-		ArrayList<Integer> heights = new ArrayList<Integer>();
+		ArrayList<Integer> heights = new ArrayList<>();
 		for (int x = 0; x < sizeX; x++) {
 			for (int z = 0; z <sizeZ; z++) {
 				int y = getHeightValueNoTrees(world,posX+x, posZ+z)-1;
 				
-				heights.add(new Integer(y));
-				heightSum+=y;
-				if (y > max) max = y;
+				heights.add(y);
+                if (y > max) max = y;
 				if (y < min || min == -1) min = y;
 			}
 		}
@@ -564,7 +506,7 @@ public class BlockUtils {
 		Collections.sort(heights);
 		if (heights.size()>2){
 			if (heights.size() % 2 ==0){
-				median = (heights.get(((int)Math.floor(heights.size()/2))-1) + heights.get(((int)Math.ceil(heights.size()/2))-1)) /2;
+				median = (float) (heights.get(((int) (double) (heights.size() / 2)) - 1) + heights.get(((int) (double) (heights.size() / 2)) - 1)) /2;
 			} else {
 				median = heights.get((heights.size()/2)-1);
 			}
@@ -647,29 +589,29 @@ public class BlockUtils {
 		}
 	}
 	
-	public static void cleanUpwards(World world, short[][]blocks, ArrayList<MBlock> blockList, int posX, int posY, int posZ, int centerX, int centerZ, int rotation, int pass, int range) {
+	public static void cleanUpwards(World world, short[][]blocks, int posX, int posY, int posZ, int centerX, int centerZ, int rotation, int range) {
 		//System.out.println("Blocks.length = "+blocks.length + "Blocks[0].length = "+blocks[0].length);
 		
 		MutableBlockPos p = new MutableBlockPos();
 		BlockPos axis = new BlockPos(posX+centerX, 1, posZ+centerZ);
-		for (int i = 0; i < blocks.length; i++) {
-			int x = blocks[i][0];
-			int y = blocks[i][1];
-			int z = blocks[i][2];
-			//System.out.println("blocklist:"+blockList.size());
-			if (y==0){
-				MBlock block = new MBlock(Blocks.AIR.getDefaultState());
-					
-				for (int o=1; o<=range; o++){
+        for (short[] shorts : blocks) {
+            int x = shorts[0];
+            int y = shorts[1];
+            int z = shorts[2];
+            //System.out.println("blocklist:"+blockList.size());
+            if (y == 0) {
+                MBlock block = new MBlock(Blocks.AIR.getDefaultState());
 
-					//BlockUtils.setBlockRotated(world, block, posX, posY+o, posZ, x, z, centerX, centerZ, rotation,0);
-					BlockUtils.setMBlockRotated(world, block, p.setPos(posX+x, posY+y+o, posZ+z), axis, rotation, null, BiomeColorType.WOODLAND);
-					
-					//setBlockRotatedReplaceAirOnly(world, block, posX, posY-o, posZ, x, z, centerX, centerZ, rotation);
-					//world.setBlock(posX+x, posY-o, posZ+z, Blocks.diamond_block);
-				}
-			}
-		}
+                for (int o = 1; o <= range; o++) {
+
+                    //BlockUtils.setBlockRotated(world, block, posX, posY+o, posZ, x, z, centerX, centerZ, rotation,0);
+                    BlockUtils.setMBlockRotated(world, block, p.setPos(posX + x, posY + y + o, posZ + z), axis, rotation, null, BiomeColorType.WOODLAND);
+
+                    //setBlockRotatedReplaceAirOnly(world, block, posX, posY-o, posZ, x, z, centerX, centerZ, rotation);
+                    //world.setBlock(posX+x, posY-o, posZ+z, Blocks.diamond_block);
+                }
+            }
+        }
 	}
 	
 	public static void placeScannedStructure(World world, short[][]blocks, ArrayList<MBlock> blockList, int posX, int posY, int posZ, int centerX, int centerZ, int rotation, int pass, EnumLootType loottype, BiomeColorType biome) {
@@ -680,55 +622,45 @@ public class BlockUtils {
 		//System.out.println("Blocks.length = "+blocks.length + "Blocks[0].length = "+blocks[0].length);
 		MutableBlockPos p = new MutableBlockPos();
 		BlockPos axis = new BlockPos(posX+centerX, 1, posZ+centerZ);
-		for (int i = 0; i < blocks.length; i++) {
-			int x = blocks[i][0];
-			int y = blocks[i][1];
-			int z = blocks[i][2];
-			//System.out.println("blocklist:"+blockList.size());
-			
+        for (short[] shorts : blocks) {
+            int x = shorts[0];
+            int y = shorts[1];
+            int z = shorts[2];
+            //System.out.println("blocklist:"+blockList.size());
+
 			/*if(i==0){
 				System.out.println("place with Center:"+centerX+","+centerZ);
 			}*/
-			
-			MBlock block = blockList.get(blocks[i][3]);
-						
-			if (block.getPass() == pass) {
-				if(block instanceof MultiMMBlockIndexRoll) {
-					BlockUtils.setMBlockRotatedIndexRoll(world, (MultiMMBlockIndexRoll)block, p.setPos(posX+x, posY+y, posZ+z), axis, rotation, loottype, biome, indexRoll, rnd);
-				} else {
-					BlockUtils.setMBlockRotated(world, block, p.setPos(posX+x, posY+y, posZ+z), axis, rotation, loottype, biome);
-				}
-				//BlockUtils.setBlockRotated(world, block, posX, posY+y, posZ, x, z, centerX, centerZ, rotation, lootTier);
-			}
-		}
+
+            MBlock block = blockList.get(shorts[3]);
+
+            if (block.getPass() == pass) {
+                if (block instanceof MultiMMBlockIndexRoll) {
+                    BlockUtils.setMBlockRotatedIndexRoll(world, (MultiMMBlockIndexRoll) block, p.setPos(posX + x, posY + y, posZ + z), axis, rotation, loottype, biome, indexRoll, rnd);
+                } else {
+                    BlockUtils.setMBlockRotated(world, block, p.setPos(posX + x, posY + y, posZ + z), axis, rotation, loottype, biome);
+                }
+            }
+        }
 	}
 	
 	public static void placeFoundation(World world, short[][]blocks, ArrayList<MBlock> blockList, int posX, int posY, int posZ, int centerX, int centerZ, int rotation, int pass, int range) {
-		//System.out.println("Blocks.length = "+blocks.length + "Blocks[0].length = "+blocks[0].length);
 		MutableBlockPos p = new MutableBlockPos();
 		BlockPos axis = new BlockPos(posX+centerX, 1, posZ+centerZ);
-		for (int i = 0; i < blocks.length; i++) {
-			int x = blocks[i][0];
-			int y = blocks[i][1];
-			int z = blocks[i][2];
-			//System.out.println("blocklist:"+blockList.size());
-			if (y==0){
-				MBlock block = blockList.get(blocks[i][3]);
-				if (block.getPass() == pass) {
-					
-					for (int o=1; o<=range; o++){
-						
-						/*if(world.isAirBlock(posX+x, posY-o, posZ+z)) {
-							BlockUtils.setBlockRotated(world, block, posX, posY-o, posZ, x, z, centerX, centerZ, rotation);
-						}*/
-						//setBlockRotatedReplaceAirOnly(world, block, posX, posY-o, posZ, x, z, centerX, centerZ, rotation);
-						
-						setMBlockRotatedReplaceableOnly(world, block, p.setPos(posX+x, posY+y-o, posZ+z), axis, rotation, null);
-						//world.setBlock(posX+x, posY-o, posZ+z, Blocks.diamond_block);
-					}
-				}
-			}
-		}
+        for (short[] shorts : blocks) {
+            int x = shorts[0];
+            int y = shorts[1];
+            int z = shorts[2];
+            if (y == 0) {
+                MBlock block = blockList.get(shorts[3]);
+                if (block.getPass() == pass) {
+
+                    for (int o = 1; o <= range; o++) {
+                        setMBlockRotatedReplaceableOnly(world, block, p.setPos(posX + x, posY + y - o, posZ + z), axis, rotation, null);
+                    }
+                }
+            }
+        }
 	}
 	
 	/**
@@ -738,40 +670,32 @@ public class BlockUtils {
 		//System.out.println("Blocks.length = "+blocks.length + "Blocks[0].length = "+blocks[0].length);
 		MutableBlockPos p = new MutableBlockPos();
 		BlockPos axis = new BlockPos(posX+centerX, 1, posZ+centerZ);
-		for (int i = 0; i < blocks.length; i++) {
-			int x = blocks[i][0];
-			int y = blocks[i][1];
-			int z = blocks[i][2];
-			//System.out.println("blocklist:"+blockList.size());
-			if (y==0){
-				MBlock block = blockList.get(blocks[i][3]);
-				if (block.getPass() == pass) {
-	
-					int solidcount=0;
-					for (int o=1; o<=range; o++){
-							
-						/*if(world.isAirBlock(posX+x, posY-o, posZ+z)) {
-							BlockUtils.setBlockRotated(world, block, posX, posY-o, posZ, x, z, centerX, centerZ, rotation);
-						}*/
-						//setBlockRotatedReplaceAirOnly(world, block, posX, posY-o, posZ, x, z, centerX, centerZ, rotation);
-						
-						p.setPos(posX+x, posY+y-o, posZ+z);
-						if (getIsBlockReplaceable(world, new MutableBlockPos(p), axis, rotation)) {
-							setMBlockRotatedReplaceableOnly(world, block, p.setPos(posX+x, posY+y-o, posZ+z), axis, rotation, null);
-							solidcount=0;
-						} else {
-							solidcount++;
-							if(solidcount>=2) {
-								break;
-							}
-						}
-						
-						
-						//world.setBlock(posX+x, posY-o, posZ+z, Blocks.diamond_block);
-					}
-				}
-			}
-		}
+        for (short[] shorts : blocks) {
+            int x = shorts[0];
+            int y = shorts[1];
+            int z = shorts[2];
+            //System.out.println("blocklist:"+blockList.size());
+            if (y == 0) {
+                MBlock block = blockList.get(shorts[3]);
+                if (block.getPass() == pass) {
+
+                    int solidcount = 0;
+                    for (int o = 1; o <= range; o++) {
+
+                        p.setPos(posX + x, posY + y - o, posZ + z);
+                        if (getIsBlockReplaceable(world, new MutableBlockPos(p), axis, rotation)) {
+                            setMBlockRotatedReplaceableOnly(world, block, p.setPos(posX + x, posY + y - o, posZ + z), axis, rotation, null);
+                            solidcount = 0;
+                        } else {
+                            solidcount++;
+                            if (solidcount >= 2) {
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 	}
 	
 	
@@ -833,9 +757,8 @@ public class BlockUtils {
 		Vec3d v1 = new Vec3d(x1, y1, z1);
 		Vec3d v2 = new Vec3d(x2, y2, z2);
 		Vec3d v2v1 = v1.subtract(v2);
-		double l = v2v1.lengthVector();
-		//Vec3 dir = v2v1.normalize();
-		int tmp = 0;
+		double l = v2v1.length();
+		int tmp;
 		if (x1 > x2) { tmp = x2; x2 = x1; x1 = tmp;}
 		if (y1 > y2) {tmp = y2; y2 = y1; y1 = tmp;}
 		if (z1 > z2) {tmp = z2; z2 = z1; z1 = tmp;}
@@ -850,7 +773,7 @@ public class BlockUtils {
 					Vec3d v0 = new Vec3d(x, y, z);
 					Vec3d v1v0 = v1.subtract(v0);
 					Vec3d v_ = v2v1.crossProduct(v1v0);
-					double distance = v_.lengthVector()/l;
+					double distance = v_.length()/l;
 					
 					if (distance < radius-1.0f) {
 						block1.setBlock(world, p.setPos(x, y, z), 0);
@@ -916,12 +839,6 @@ public class BlockUtils {
                 if (y == y2) {
                     return;
                 }
-                
-//	                //Keep 4-way neighborhood when going up/down
-//	                if (deltax >= 0 && deltaz >= 0) {
-//	                	block.setBlock(world, x+signx, y, z+signz, 0);
-//	                }
-
                 if (deltax >= 0) {
                 	block.setBlock(world, p.setPos(x+signx, y, z), 0);
                     x += signx;
@@ -938,7 +855,7 @@ public class BlockUtils {
                 deltax += ax;
                 deltaz += az;
             }
-        } else if (az >= Math.max(ax, ay)) /* z dominant */ {
+        } else {
             deltax = ax - (az >> 1);
             deltay = ay - (az >> 1);
             while (true) {
@@ -1047,27 +964,8 @@ public class BlockUtils {
 			}
 		}
 	}
-	
-  /**
-   * convert from old rotation int to EnumFacing
-   * 0=WEST(-x), 1=NORTH(-z), 2=EAST(+x); 3=SOUTH(+z)
-   * @param rot
-   * @return
-   */
-	public static EnumFacing rotationToFacing(int rot) {
-		switch(rot) {
-		case 0:
-			return EnumFacing.WEST;
-		case 1:
-			return EnumFacing.SOUTH;
-		case 2: 
-			return EnumFacing.EAST;
-		default:
-			return EnumFacing.NORTH;
-		}
-	}
-	
-	/**
+
+    /**
 	 * convert from EnumFacing to old rotation
 	 * @param facing
 	 * @return

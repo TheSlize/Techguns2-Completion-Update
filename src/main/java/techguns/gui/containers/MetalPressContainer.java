@@ -45,21 +45,19 @@ public class MetalPressContainer extends BasicMachineContainer {
 			this.addSlotToContainer(new SlotItemHandlerOutput(inventory, MetalPressTileEnt.SLOT_OUTPUT, SLOT_OUTPUT_X, SLOT_OUTPUTS_Y));
 			this.addSlotToContainer(new SlotMachineUpgrade(handler, MetalPressTileEnt.SLOT_UPGRADE, SLOT_UPGRADE_X, SLOT_OUTPUTS_Y));
 		}
-		
-		this.addPlayerInventorySlots(player);
+
+		this.playerInv(player, 8, 116);
 		
 	}
 	
 	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
-		for (int j = 0; j < this.listeners.size(); ++j) {
-			IContainerListener listener = this.listeners.get(j);
-			
-			if (this.lastAutoSwitch!=this.tile.getAutoSplitMode()) {
+		for (IContainerListener listener : this.listeners) {
+			if (this.lastAutoSwitch != this.tile.getAutoSplitMode()) {
 				listener.sendWindowProperty(this, FIELD_SYNC_ID_SWITCH, this.tile.getAutoSplitMode());
 			}
-			
+
 		}
 		this.lastAutoSwitch=this.tile.getAutoSplitMode();
 	}
@@ -72,38 +70,38 @@ public class MetalPressContainer extends BasicMachineContainer {
 			super.updateProgressBar(id, data);
 		}
 	}
-	
+
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer ply, int id) {
 		ItemStack stack = ItemStack.EMPTY;
-		Slot slot = (Slot) this.inventorySlots.get(id);
+		Slot slot = this.inventorySlots.get(id);
 
 			if(slot.getHasStack()){
 				ItemStack stack1 = slot.getStack();
 				stack=stack1.copy();
 				if (!stack.isEmpty()){
-					
-					if (id >=MetalPressTileEnt.SLOT_INPUT1 && id<4){
+
+					if (id < 4){
 						//PRESSED IN MACHINE GUI
 						if (!this.mergeItemStack(stack1, 4, 40, false)) {
 							return ItemStack.EMPTY;
 						}
 						slot.onSlotChange(stack1, stack);
-					} else if (id >=4 && id <40){
-						
+					} else if (id < 40){
+
 						int validslot = tile.getValidSlotForItemInMachine(stack1);
 						//System.out.println("put it in slot"+validslot);
 						if (validslot >=0){
-							
+
 							if(!this.mergeItemStack(stack1, validslot, validslot+1, false)){
 								return ItemStack.EMPTY;
 							}
 							slot.onSlotChange(stack1, stack);
-							
+
 						} else {
 							return ItemStack.EMPTY;
-						}			
-						
+						}
+
 					}
 
 					if (stack1.getCount() == 0) {
@@ -119,7 +117,7 @@ public class MetalPressContainer extends BasicMachineContainer {
 					slot.onTake(ply, stack1);
 				}
 			}
-		
+
 			return stack;
 
 	}

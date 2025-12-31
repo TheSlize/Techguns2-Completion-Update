@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+import net.minecraft.client.resources.I18n;
 import org.lwjgl.input.Keyboard;
 
 import com.google.common.collect.Multimap;
@@ -46,7 +47,6 @@ import techguns.gui.player.TGPlayerInventory;
 import techguns.util.TextUtil;
 
 public class GenericArmor extends ItemArmor implements ISpecialArmor , IItemTGRenderer{
-	//private static ArrayList<Item> techgunArmors = new ArrayList<Item>();
     
     protected static final UUID[] RAD_RESIST_MODIFIER = {
     		UUID.fromString("47E9813E-3FB7-415C-A6CD-F9A4A3C55F82"),
@@ -65,14 +65,8 @@ public class GenericArmor extends ItemArmor implements ISpecialArmor , IItemTGRe
 	protected int repairMatCount=0;
 	
 	String textureName;
-	
-	//ModelBiped model;	
-	//int modelIndex=-1;
 	protected ResourceLocation armorModel=null; //default vanilla model
 	protected boolean doubleTex=true;
-	
-	/*public static double ARMOR_CAP = 24.0D/25.0D;
-	public static float MAX_ARMOR = 24.0f;*/
 	
 	//item boni
 	protected float SpeedBonus=0.0f;
@@ -121,32 +115,16 @@ public class GenericArmor extends ItemArmor implements ISpecialArmor , IItemTGRe
 	    this.textureName = textureName; //Armor Texture
 		setCreativeTab(Techguns.tabTechgun);
 		this.modid=modid;
-	    this.setUnlocalizedName(unlocalizedName);
+	    this.setTranslationKey(unlocalizedName);
 	    ResourceLocation reg = new ResourceLocation(modid, unlocalizedName);
 	    this.setRegistryName(reg);
 	    this.modelLoc = reg;
-	   // this.setTextureName(Techguns.MODID + ":" + unlocalizedName); //Item Texture
-	    //for tooltip
 	    this.armorValue=Math.round(material.getArmorValueSlot(type, DamageType.PHYSICAL));
 	    
 	    this.setMaxDamage(this.material.getDurability(type));
 	    
 	    TGArmors.armors.add(this);
-	   // this.repairItem= repairMaterial;
-	    //techgunArmors.add(this);
 	}
-	
-	/**
-	 * SteamArmor (0,1)
-	 * PowerArmor (2,3)
-	 * ExoSuit (4,5,6)
-	 * Beret (7)
-	 */
-	/*public GenericArmor setArmorModel(int index, boolean doubleTex) {
-		this.modelIndex = index;
-		this.doubleTex=doubleTex;
-		return this;
-	}*/
 	public GenericArmor setArmorModel(ResourceLocation key, boolean doubleTex, ResourceLocation backupTex) {
 		this.armorModel=key;
 		this.doubleTex=doubleTex;
@@ -160,8 +138,6 @@ public class GenericArmor extends ItemArmor implements ISpecialArmor , IItemTGRe
 		return this;
 	}
 
-	
-	
 	public static boolean isTechgunArmor(ItemStack i) {
 		if (i==null){
 			return false;
@@ -281,11 +257,6 @@ public class GenericArmor extends ItemArmor implements ISpecialArmor , IItemTGRe
 		return 0.0f;
 	}
 	
-	public GenericArmor addEnchantment(){
-		
-		return this;
-	}
-	
 	public static float getArmorBonusForPlayer(EntityPlayer ply, TGArmorBonus type, boolean consumePower){
 		float bonus = 0.0f;
 		TGExtendedPlayer props = TGExtendedPlayer.get(ply);
@@ -346,13 +317,6 @@ public class GenericArmor extends ItemArmor implements ISpecialArmor , IItemTGRe
 		return bonus;
 	}
 	
-	private String getSingleTexture(){
-		return this.modid + ":textures/armor/" + this.textureName + ".png";
-	}
-	private String getDoubleTexture(){
-		return this.modid + ":textures/armor/" + this.textureName + "_" + (this.armorType == EntityEquipmentSlot.LEGS ? "2" : "1") + ".png";
-	}
-	
 	protected boolean hasDoubleTexture(){
 		return this.doubleTex;
 	}
@@ -363,7 +327,6 @@ public class GenericArmor extends ItemArmor implements ISpecialArmor , IItemTGRe
 	
 	@Override
 	public ModelBiped getArmorModel(EntityLivingBase entityLiving, ItemStack itemStack, EntityEquipmentSlot armorSlot, ModelBiped _default) {
-		//if(modelIndex >=0 ){
 		if(this.armorModel!=null) {
 
 			ModelBiped model = ClientProxy.get().getArmorModel(this.armorModel);// ClientProxy.armorModels[this.modelIndex];
@@ -392,29 +355,21 @@ public class GenericArmor extends ItemArmor implements ISpecialArmor , IItemTGRe
 	}
 
 	public static String formatAV(float armorValue, DamageType damageType){
-		//float percent = (float) ((armorValue/GenericArmor.MAX_ARMOR)*GenericArmor.getArmorCap(damageType));
-		return formatArmor.format(armorValue); //+ " ("+ formatArmor.format(percent*100)+"%)";
+		return formatArmor.format(armorValue);
 	}
 	
 	protected void addArmorvaluesInformation(ItemStack item, List list){
 		
 		EntityEquipmentSlot slot = this.armorType;
 		
-		//if (this.getPenetrationResistance()>0.0f){
-		//	list.add(" "+ChatFormatting.GRAY+trans("armorTooltip.penetrationResistance")+": "+formatArmor.format(this.getPenetrationResistance()));
-		//}
-		
-		list.add(ChatFormatting.DARK_GRAY+" AR: "+formatAV(this.material.getArmorValueSlot(slot, DamageType.PHYSICAL),DamageType.PHYSICAL));
-		list.add(ChatFormatting.GRAY+" PR: "+formatAV(this.material.getArmorValueSlot(slot, DamageType.PROJECTILE),DamageType.PROJECTILE));
-		list.add(ChatFormatting.DARK_RED+" EX: "+formatAV(this.material.getArmorValueSlot(slot, DamageType.EXPLOSION),DamageType.EXPLOSION));
-		list.add(ChatFormatting.DARK_AQUA+" E: "+formatAV(this.material.getArmorValueSlot(slot, DamageType.ENERGY),DamageType.ENERGY));
-				
-		list.add(ChatFormatting.RED+" F: "+formatAV(this.material.getArmorValueSlot(slot, DamageType.FIRE),DamageType.FIRE));
-		list.add(ChatFormatting.AQUA+" I: "+formatAV(this.material.getArmorValueSlot(slot, DamageType.ICE),DamageType.ICE));
-		list.add(ChatFormatting.YELLOW+" L: "+formatAV(this.material.getArmorValueSlot(slot, DamageType.LIGHTNING),DamageType.LIGHTNING));
-		list.add(ChatFormatting.DARK_GREEN+" P: "+formatAV(this.material.getArmorValueSlot(slot, DamageType.POISON),DamageType.POISON));
-		list.add(ChatFormatting.DARK_GRAY+" D: "+formatAV(this.material.getArmorValueSlot(slot, DamageType.DARK),DamageType.DARK));
-		list.add(ChatFormatting.GREEN+" RAD: "+formatAV(this.material.getArmorValueSlot(slot, DamageType.RADIATION),DamageType.RADIATION));		
+		list.add(ChatFormatting.DARK_GRAY+I18n.format("techguns.armorTooltip.damageType.AR")+" "+formatAV(this.material.getArmorValueSlot(slot, DamageType.PHYSICAL),DamageType.PHYSICAL));
+		list.add(ChatFormatting.GRAY+I18n.format("techguns.armorTooltip.damageType.PR")+" "+formatAV(this.material.getArmorValueSlot(slot, DamageType.PROJECTILE),DamageType.PROJECTILE));
+		list.add(ChatFormatting.DARK_RED+I18n.format("techguns.armorTooltip.damageType.EX")+" "+formatAV(this.material.getArmorValueSlot(slot, DamageType.EXPLOSION),DamageType.EXPLOSION));
+		list.add(ChatFormatting.DARK_AQUA+I18n.format("techguns.armorTooltip.damageType.E")+" "+formatAV(this.material.getArmorValueSlot(slot, DamageType.ENERGY),DamageType.ENERGY));
+		list.add(ChatFormatting.RED+I18n.format("techguns.armorTooltip.damageType.F")+" "+formatAV(this.material.getArmorValueSlot(slot, DamageType.FIRE),DamageType.FIRE));
+		list.add(ChatFormatting.YELLOW+I18n.format("techguns.armorTooltip.damageType.L")+" "+formatAV(this.material.getArmorValueSlot(slot, DamageType.LIGHTNING),DamageType.LIGHTNING));
+		list.add(ChatFormatting.DARK_GREEN+I18n.format("techguns.armorTooltip.damageType.P")+" "+formatAV(this.material.getArmorValueSlot(slot, DamageType.POISON),DamageType.POISON));
+		list.add(ChatFormatting.GREEN+I18n.format("techguns.armorTooltip.damageType.RAD")+" "+formatAV(this.material.getArmorValueSlot(slot, DamageType.RADIATION),DamageType.RADIATION));
 	}
 
 	@Override
@@ -424,19 +379,17 @@ public class GenericArmor extends ItemArmor implements ISpecialArmor , IItemTGRe
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)){
 			
 			list.add(trans("armorTooltip.durability")+": "+(item.getMaxDamage()-item.getItemDamage())+"/"+(item.getMaxDamage()));
-			//list.add(trans("armorTooltip.armorvalue")+": " +this.armorValue);
 			
 			if(this.toughness>0) {
 				list.add(ChatFormatting.GRAY+trans("armorTooltip.toughness")+": " + this.toughness);
 			}
 			
 			list.add(ChatFormatting.BLUE+trans("armorTooltip.resistances")+":");
-			//list.add(EnumChatFormatting.DARK_GRAY+" AR:"+this.material.getArmorValueSlot(this.armorType, DamageType.PHYSICAL));
 			this.addArmorvaluesInformation(item, list);
 			
 			if(this.getBonus(TGArmorBonus.EXTRA_HEART)>0.0f){
 				list.add(trans("armorTooltip.healthbonus")+": +"+(int)this.getBonus(TGArmorBonus.EXTRA_HEART)+" "+trans("armorTooltip.hearts"));
-			} else if (this.getBonus(TGArmorBonus.SPEED)>0.0f){
+			} else if (this.getBonus(TGArmorBonus.SPEED) != 0.0f){
 				list.add(trans("armorTooltip.movespeed")+": +"+this.getBonus(TGArmorBonus.SPEED)*100.0f+"%");
 			} else if(this.getBonus(TGArmorBonus.JUMP)>0.0f){
 				list.add(trans("armorTooltip.jumpheight")+": +"+this.getBonus(TGArmorBonus.JUMP));
@@ -499,8 +452,7 @@ public class GenericArmor extends ItemArmor implements ISpecialArmor , IItemTGRe
 	@Override
 	public void damageArmor(EntityLivingBase entity, ItemStack stack,
 			DamageSource source, int damage, int slot) {
-		
-		//System.out.println("Damage Armour!");
+
 		if (!(entity instanceof EntityPlayerMP) || !((EntityPlayer)entity).capabilities.isCreativeMode)
         {
             if (stack.isItemStackDamageable())
@@ -508,10 +460,8 @@ public class GenericArmor extends ItemArmor implements ISpecialArmor , IItemTGRe
             	
             	//Keep Armours at 1 durability.
             	int maxDmg = stack.getMaxDamage()-1-stack.getItemDamage();
-            	//System.out.println("MAxDmg:"+maxDmg);
             	if (damage>maxDmg){
             		damage=maxDmg;
-            		//System.out.println("Damage Reduced from "+damage+" to "+maxDmg);
             	}
             	            	
             	
@@ -604,29 +554,15 @@ public class GenericArmor extends ItemArmor implements ISpecialArmor , IItemTGRe
 	}
 
 	@Override
-	public String getUnlocalizedName(ItemStack s) {
-		return this.modid+"."+super.getUnlocalizedName(s);
+	public String getTranslationKey(ItemStack s) {
+		return this.modid+"."+super.getTranslationKey(s);
 	}
 
 	@Override
 	public ArmorProperties getProperties(EntityLivingBase player, ItemStack armor, DamageSource source, double damage, int slot) {
 		TGDamageSource src = TGDamageSource.getFromGenericDamageSource(source);
-
-	//	int absorbMax = armor.getMaxDamage()-1-armor.getItemDamage();
-		
-	//	ArmorProperties props = new ArmorProperties(0, 0, absorbMax);
-		
-	//	props.Armor = this.getArmorValue(armor, src.damageType);
-	//	props.Toughness = Math.max(this.material.toughness - src.armorPenetration,0);
-		
-		
 		
 		ArmorProperties props = new ArmorProperties(0, 1-DamageSystem.getDamageAfterAbsorb_TGFormula(1.0f, this.getArmorValue(armor, src.damageType), this.material.toughness, src.armorPenetration), Integer.MAX_VALUE);
-		
-	//	System.out.println("Armor:"+this.getArmorValue(armor, src.damageType));
-	//	System.out.println("Toughness:"+this.material.toughness);
-	//	System.out.println("Pen:"+src.armorPenetration);
-	//	System.out.println("Absorb:"+props.AbsorbRatio);
 		
 		return props;
 	}
@@ -655,6 +591,8 @@ public class GenericArmor extends ItemArmor implements ISpecialArmor , IItemTGRe
 	public boolean shouldUseRenderHack(ItemStack stack) {
 		return this.use3dRenderHack;
 	}
+
+	public boolean usesRenderHack() { return use3dRenderHack; }
 	
 	public boolean setArmorStat(EnumArmorStat stat, float value) {
 		switch(stat) {
@@ -720,6 +658,10 @@ public class GenericArmor extends ItemArmor implements ISpecialArmor , IItemTGRe
 			multimap.put(TGRadiation.RADIATION_RESISTANCE.getName(), new AttributeModifier(RAD_RESIST_MODIFIER[slot.getIndex()],"techguns.radresistance."+slot.toString(), this.radresistance, 0));
 		}
 		return multimap;
+	}
+
+	public ResourceLocation getModelLocation() {
+		return this.modelLoc;
 	}
 	
 	

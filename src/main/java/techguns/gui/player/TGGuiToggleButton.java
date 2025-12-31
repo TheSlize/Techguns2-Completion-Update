@@ -37,23 +37,23 @@ public class TGGuiToggleButton extends GuiButton {
 		        		props.showTGHudElements=!props.showTGHudElements;
 		        	}
 					break;*/
-					TGPackets.network.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_HUD));
+					TGPackets.wrapper.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_HUD));
 					break;
 				case 1:
-					TGPackets.network.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_NIGHTVISION));
+					TGPackets.wrapper.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_NIGHTVISION));
 					break;
 				case 2:
-					TGPackets.network.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_SAFEMODE));
+					TGPackets.wrapper.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_SAFEMODE));
 					break;
 				case 3:
 					/*props = TechgunsExtendedPlayerProperties.get(Minecraft.getMinecraft().thePlayer);
 		        	if (props!=null){
 		        		props.enableStepAssist=!props.enableStepAssist;
 		        	}*/
-					TGPackets.network.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_STEP_ASSIST));
+					TGPackets.wrapper.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_STEP_ASSIST));
 		        	break;
 				case 4:
-					TGPackets.network.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_JETPACK));
+					TGPackets.wrapper.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_JETPACK));
 					break;
 			}
 			return true;

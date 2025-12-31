@@ -196,7 +196,7 @@ public class DungeonScannerGui extends OwnedTileEntGui {
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		if(textInput.length()>0 && (guibutton.id== DungeonScannerTileEnt.BUTTON_ID_SCAN || guibutton.id == DungeonScannerTileEnt.BUTTON_ID_PLACE)) {
-			TGPackets.network.sendToServer(new PacketGuiButtonClick(this.ownedTile,guibutton.id,textInput));
+			TGPackets.wrapper.sendToServer(new PacketGuiButtonClick(this.ownedTile,guibutton.id,textInput));
 			
 		} else {
 		

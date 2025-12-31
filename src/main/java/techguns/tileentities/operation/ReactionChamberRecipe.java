@@ -1,9 +1,6 @@
 package techguns.tileentities.operation;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
 
@@ -11,7 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import techguns.util.ItemStackOreDict;
-import techguns.util.ItemUtil;
 import techguns.util.TextUtil;
 
 public class ReactionChamberRecipe implements IMachineRecipe {
@@ -40,11 +36,10 @@ public class ReactionChamberRecipe implements IMachineRecipe {
 	public int RFTick;
 	
 	public static ReactionChamberRecipe getByKey(String key){
-		ReactionChamberRecipe rec = recipes.get(key);
-		return rec;
+        return recipes.get(key);
 	}
 	
-	private static HashMap<String,ReactionChamberRecipe> recipes = new HashMap();
+	private static final HashMap<String,ReactionChamberRecipe> recipes = new HashMap<>();
 	
 	public static HashMap<String,ReactionChamberRecipe> getRecipes(){
 		return recipes;
@@ -78,7 +73,7 @@ public class ReactionChamberRecipe implements IMachineRecipe {
 		this.input=input;
 		this.beamFocus=ReactionBeamFocus.getBeamFocus(beamFocus);
 		this.liquidIn=liquidIn;
-		this.outputs = new ArrayList<ItemStack>();
+		this.outputs = new ArrayList<>();
 		this.outputs.add(output);
 		this.ticks = (byte) ticks;
 		this.requiredCompletion = (byte) requiredCompletion;
@@ -101,10 +96,8 @@ public class ReactionChamberRecipe implements IMachineRecipe {
 		this.input=input;
 		this.beamFocus=ReactionBeamFocus.getBeamFocus(beamFocus);
 		this.liquidIn=liquidIn;
-		this.outputs = new ArrayList<ItemStack>();
-		for (ItemStack item : outputs) {
-			this.outputs.add(item);
-		}
+		this.outputs = new ArrayList<>();
+        this.outputs.addAll(Arrays.asList(outputs));
 		this.ticks = (byte) ticks;
 		this.requiredCompletion = (byte) requiredCompletion;
 		this.preferredIntensity = (byte) preferredIntensity;
@@ -119,26 +112,23 @@ public class ReactionChamberRecipe implements IMachineRecipe {
 	}
 	
 	
-	public static ReactionChamberRecipe getMatchingRecipe(ItemStack input, ItemStack focus, FluidStack tank, byte liquidLevel, byte intensity){
-		Iterator<String> it = recipes.keySet().iterator();
-		while(it.hasNext()) {
-			ReactionChamberRecipe rec = recipes.get(it.next());
-			if(rec.matches(input, focus, tank, liquidLevel, intensity)) {
-				return rec;
-			}
-		}
+	public static ReactionChamberRecipe getMatchingRecipe(ItemStack input, ItemStack focus, FluidStack tank, byte intensity){
+        for (String s : recipes.keySet()) {
+            ReactionChamberRecipe rec = recipes.get(s);
+            if (rec.matches(input, focus, tank, intensity)) {
+                return rec;
+            }
+        }
 		return null;
 	}
 	
-	public boolean matches(ItemStack input, ItemStack focus, FluidStack tank, byte liquidLevel, byte intensity){
+	public boolean matches(ItemStack input, ItemStack focus, FluidStack tank, byte intensity){
 		
 		if (!input.isEmpty() && this.input.isEqualWithOreDict(input)){
 			ReactionBeamFocus f = ReactionBeamFocus.getBeamFocus(focus);
 			if (f!=null && f == this.beamFocus){
-				if (tank!=null && tank.getFluid()==this.liquidIn && liquidLevel == this.liquidLevel && tank.amount == (this.liquidLevel*Fluid.BUCKET_VOLUME)) {
-					if (intensity == this.preferredIntensity) {
-						return true;
-					}
+				if (tank!=null && tank.getFluid()==this.liquidIn && tank.amount >= (this.liquidLevel*Fluid.BUCKET_VOLUME)) {
+                    return intensity == this.preferredIntensity;
 				}
 			}
 		}
@@ -149,29 +139,7 @@ public class ReactionChamberRecipe implements IMachineRecipe {
 		return ID;
 	}
 
-	public void addOutput(ItemStack output){
-		outputs.add(output);
-	}
-	
-	/**
-	 * Returns if this method has the passed itemstack as result, needed for NEI handler
-	 * @param result
-	 * @return
-	 */
-	public boolean hasResult(ItemStack result){
-		for(int i=0; i<this.outputs.size(); i++){
-			if (ItemUtil.isItemEqual(result, this.outputs.get(i))){
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public boolean usesItem(ItemStack itm){
-		return this.input.isEqualWithOreDict(itm);
-	}
-	
-	public enum RiskType {
+    public enum RiskType {
 		NONE, BREAK_ITEM, RAD_LOW, RAD_MEDIUM, RAD_HIGH, EXPLOSION_LOW, EXPLOSION_MEDIUM, EXPLOSION_HIGH, UNFORSEEN_CONSEQUENCES;
 		
 		@Override
@@ -203,7 +171,7 @@ public class ReactionChamberRecipe implements IMachineRecipe {
 	}
 
 	public boolean isStable() {
-		return this.instability==0.0f || this.intensityMargin==0;
+		return this.instability != 0.0f && this.intensityMargin != 0;
 	}
 	
 	@Override

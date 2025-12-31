@@ -12,6 +12,7 @@ import net.minecraft.entity.ai.EntityAIOpenDoor;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.pathfinding.PathPoint;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -19,6 +20,7 @@ import net.minecraft.util.math.MathHelper;
 import techguns.TGBlocks;
 import techguns.blocks.BlockTGDoor2x1;
 import techguns.blocks.BlockTGDoor3x3;
+import techguns.tileentities.Door3x3TileEntity;
 
 import static net.minecraft.block.BlockDoor.OPEN;
 
@@ -200,11 +202,14 @@ public class EntityAIRangedAttack extends EntityAIBase
         private boolean hasStoppedDoorInteraction;
         private float entityPositionX;
         private float entityPositionZ;
+        private static final int DOOR_COOLDOWN_TICKS = 20;
+        private int doorCooldownTicks;
 
         public EntityAIOpenTGDoor(EntityLiving entityIn, boolean shouldClose)
         {
             this.entity = entityIn;
             this.setMutexBits(3);
+            this.doorCooldownTicks = 0;
         }
 
         @Override
@@ -251,6 +256,7 @@ public class EntityAIRangedAttack extends EntityAIBase
         public void startExecuting()
         {
             this.hasStoppedDoorInteraction = false;
+            this.doorCooldownTicks = 0;
             this.entityPositionX = (float)((double)this.doorPosition.getX() + 0.5D - this.entity.posX);
             this.entityPositionZ = (float)((double)this.doorPosition.getZ() + 0.5D - this.entity.posZ);
         }
@@ -266,6 +272,11 @@ public class EntityAIRangedAttack extends EntityAIBase
         {
             if (this.doorPosition != null)
             {
+                if (this.doorCooldownTicks > 0)
+                {
+                    --this.doorCooldownTicks;
+                }
+
                 double distanceSq = this.entity.getDistanceSq(
                         this.doorPosition.getX() + 0.5D,
                         this.doorPosition.getY() + 0.5D,
@@ -274,9 +285,15 @@ public class EntityAIRangedAttack extends EntityAIBase
 
                 boolean nearDoor = distanceSq < 2.25D;
 
-                if (nearDoor)
+                if (nearDoor && this.doorCooldownTicks == 0)
                 {
-                    this.interactWithDoor(this.doorPosition, true);
+                    boolean openedDoor = this.interactWithDoor(this.doorPosition, true);
+
+                    if (openedDoor)
+                    {
+                        this.doorCooldownTicks = DOOR_COOLDOWN_TICKS;
+                        this.hasStoppedDoorInteraction = true;
+                    }
                 }
 
                 float f = (float)((double)this.doorPosition.getX() + 0.5D - this.entity.posX);
@@ -299,7 +316,7 @@ public class EntityAIRangedAttack extends EntityAIBase
             IBlockState iblockstate = this.entity.world.getBlockState(pos);
             Block block = iblockstate.getBlock();
 
-            if (block instanceof BlockDoor && iblockstate.getMaterial() == Material.WOOD)
+            if (block instanceof BlockTGDoor3x3)
             {
                 return pos;
             }
@@ -307,32 +324,93 @@ public class EntityAIRangedAttack extends EntityAIBase
             {
                 return pos;
             }
+            else if (block instanceof BlockDoor && iblockstate.getMaterial() == Material.WOOD)
+            {
+                return pos;
+            }
 
             return null;
         }
 
-        private void interactWithDoor(BlockPos pos, boolean open) {
+        private boolean interactWithDoor(BlockPos pos, boolean open)
+        {
             IBlockState state = this.entity.world.getBlockState(pos);
             Block block = state.getBlock();
-            if (block instanceof BlockTGDoor2x1) {
-                if (!((Boolean) state.getValue(OPEN)).booleanValue()) {
-                    EnumFacing facing = EnumFacing.fromAngle(this.entity.rotationYaw);
-                    float hitX = 0.5f;
-                    float hitY = 0.5f;
-                    float hitZ = 0.5f;
 
-                    block.onBlockActivated(this.entity.world, pos, state, null, EnumHand.MAIN_HAND, facing, hitX, hitY, hitZ);
+            if (block instanceof BlockTGDoor3x3)
+            {
+                return this.openTechgunsDoor3x3((BlockTGDoor3x3<?>)block, pos, state);
+            }
+
+            if (block instanceof BlockTGDoor2x1 || block instanceof BlockDoor)
+            {
+                if (((Boolean)state.getValue(OPEN)).booleanValue())
+                {
+                    return false;
                 }
-            } else if (block instanceof BlockDoor) {
-                if (!((Boolean) state.getValue(OPEN)).booleanValue()) {
-                    EnumFacing facing = EnumFacing.fromAngle(this.entity.rotationYaw);
-                    float hitX = 0.5f;
-                    float hitY = 0.5f;
-                    float hitZ = 0.5f;
 
-                    block.onBlockActivated(this.entity.world, pos, state, null, EnumHand.MAIN_HAND, facing, hitX, hitY, hitZ);
+                EnumFacing facing = EnumFacing.fromAngle(this.entity.rotationYaw);
+                block.onBlockActivated(this.entity.world, pos, state, null, EnumHand.MAIN_HAND, facing, 0.5f, 0.5f, 0.5f);
+                return true;
+            }
+
+            return false;
+        }
+
+        private boolean openTechgunsDoor3x3(BlockTGDoor3x3<?> door, BlockPos pos, IBlockState state)
+        {
+            BlockPos masterPos = state.getValue(BlockTGDoor3x3.MASTER) ? pos : this.findDoor3x3Master(door, pos);
+
+            if (masterPos == null)
+            {
+                return false;
+            }
+
+            IBlockState masterState = this.entity.world.getBlockState(masterPos);
+
+            if (door.isStateOpen(masterState))
+            {
+                return false;
+            }
+
+            door.toggleState(this.entity.world, masterPos);
+            return true;
+        }
+
+        private BlockPos findDoor3x3Master(BlockTGDoor3x3<?> door, BlockPos pos)
+        {
+            TileEntity tile = this.entity.world.getTileEntity(pos);
+
+            if (tile instanceof Door3x3TileEntity)
+            {
+                return pos;
+            }
+
+            BlockPos.MutableBlockPos mutable = new BlockPos.MutableBlockPos();
+
+            for (int dx = -1; dx <= 1; ++dx)
+            {
+                for (int dy = -1; dy <= 1; ++dy)
+                {
+                    for (int dz = -1; dz <= 1; ++dz)
+                    {
+                        mutable.setPos(pos.getX() + dx, pos.getY() + dy, pos.getZ() + dz);
+                        TileEntity neighborTile = this.entity.world.getTileEntity(mutable);
+
+                        if (neighborTile instanceof Door3x3TileEntity)
+                        {
+                            IBlockState neighborState = this.entity.world.getBlockState(mutable);
+
+                            if (neighborState.getBlock() == door && neighborState.getValue(BlockTGDoor3x3.MASTER))
+                            {
+                                return mutable.toImmutable();
+                            }
+                        }
+                    }
                 }
             }
+
+            return null;
         }
     }
 }

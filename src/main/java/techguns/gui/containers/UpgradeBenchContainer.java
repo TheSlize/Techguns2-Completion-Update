@@ -7,22 +7,16 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.init.SoundEvents;
-import net.minecraft.inventory.ContainerRepair;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryBasic;
 import net.minecraft.inventory.InventoryCraftResult;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
-import net.minecraftforge.items.CapabilityItemHandler;
-import net.minecraftforge.items.IItemHandler;
-import net.minecraftforge.items.SlotItemHandler;
 import techguns.TGConfig;
 import techguns.gui.widgets.SlotArmor;
 import techguns.items.armors.GenericArmor;
 import techguns.tileentities.UpgradeBenchTileEnt;
-import techguns.tileentities.BasicOwnedTileEnt;
 import techguns.tileentities.operation.UpgradeBenchRecipes;
 import techguns.tileentities.operation.UpgradeBenchRecipes.UpgradeBenchRecipe;
 import techguns.util.EntityUtil;
@@ -108,7 +102,7 @@ public class UpgradeBenchContainer extends OwnedTileContainer {
         });
 		
 		
-		this.addPlayerInventorySlots(player);
+		this.addDefaultPlayerInventorySlots(player);
 		
 		for (i = 0; i < 4; ++i) {
 			this.addSlotToContainer(new SlotArmor(player, 39-i, 17+(i*18), 18,i,player.player));

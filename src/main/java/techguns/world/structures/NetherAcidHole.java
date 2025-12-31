@@ -6,18 +6,14 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
-import techguns.TGBlocks;
 import techguns.TGFluids;
-import techguns.blocks.EnumMonsterSpawnerType;
-import techguns.entities.npcs.CyberDemon;
 import techguns.util.BlockUtils;
 import techguns.util.MBlock;
 import techguns.util.MultiMBlock;
-import techguns.world.dungeon.presets.specialblocks.MBlockTGSpawner;
 
 public class NetherAcidHole extends WorldgenStructure {
 
-	static ArrayList<MBlock> blockList = new ArrayList<MBlock>();
+	static ArrayList<MBlock> blockList = new ArrayList<>();
 	static short[][] blocks;
 	static {
 		blockList.add(MBlockRegister.NETHERRACK_ROCKY);

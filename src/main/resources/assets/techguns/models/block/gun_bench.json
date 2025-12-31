@@ -1,0 +1,12 @@
+{
+	"parent": "block/cube",
+	"textures": {
+		"particle": "techguns:blocks/gun_bench_side",
+		"north": "techguns:blocks/gun_bench_front",
+		"south": "techguns:blocks/gun_bench_side",
+		"east": "techguns:blocks/gun_bench_side",
+		"west": "techguns:blocks/gun_bench_side",
+		"up": "techguns:blocks/gun_bench_top",
+		"down": "techguns:blocks/paintmachine_side"
+	}
+}

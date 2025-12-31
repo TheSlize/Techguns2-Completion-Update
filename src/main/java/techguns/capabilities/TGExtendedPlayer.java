@@ -1,11 +1,8 @@
 package techguns.capabilities;
 
 import java.util.BitSet;
-import java.util.LinkedList;
-import java.util.List;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -14,15 +11,11 @@ import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.EnumHand;
-import net.minecraftforge.server.permission.PermissionAPI;
-import techguns.TGConfig;
-import techguns.TGPermissions;
+import techguns.TGItems;
 import techguns.TGRadiationSystem;
 import techguns.Techguns;
 import techguns.api.capabilities.AttackTime;
 import techguns.api.capabilities.ITGExtendedPlayer;
-import techguns.client.particle.ITGParticle;
-import techguns.client.particle.TGParticleSystemItemAttached;
 import techguns.gui.player.TGPlayerInventory;
 import techguns.util.DataUtil;
 
@@ -30,11 +23,11 @@ public class TGExtendedPlayer implements ITGExtendedPlayer {
 
 	public static final int MAX_RADIATION=1000;
 	
-	public static final DataParameter<ItemStack> DATA_FACE_SLOT = EntityDataManager.<ItemStack>createKey(EntityPlayer.class, DataSerializers.ITEM_STACK);
-	public static final DataParameter<ItemStack> DATA_BACK_SLOT = EntityDataManager.<ItemStack>createKey(EntityPlayer.class, DataSerializers.ITEM_STACK);
-	public static final DataParameter<ItemStack> DATA_HAND_SLOT = EntityDataManager.<ItemStack>createKey(EntityPlayer.class, DataSerializers.ITEM_STACK);
+	public static final DataParameter<ItemStack> DATA_FACE_SLOT = EntityDataManager.createKey(EntityPlayer.class, DataSerializers.ITEM_STACK);
+	public static final DataParameter<ItemStack> DATA_BACK_SLOT = EntityDataManager.createKey(EntityPlayer.class, DataSerializers.ITEM_STACK);
+	public static final DataParameter<ItemStack> DATA_HAND_SLOT = EntityDataManager.createKey(EntityPlayer.class, DataSerializers.ITEM_STACK);
 	
-	public static final DataParameter<Boolean> DATA_FLAG_CHARGING_WEAPON = EntityDataManager.<Boolean>createKey(EntityPlayer.class, DataSerializers.BOOLEAN);
+	public static final DataParameter<Boolean> DATA_FLAG_CHARGING_WEAPON = EntityDataManager.createKey(EntityPlayer.class, DataSerializers.BOOLEAN);
 	
 	public int fireDelayMainhand=0;
 	public int fireDelayOffhand=0;
@@ -77,10 +70,12 @@ public class TGExtendedPlayer implements ITGExtendedPlayer {
 	 */
 	public TGPlayerInventory tg_inventory;
 	
-	public boolean enableJetpack=true;
-	public boolean enableStepAssist=true;
-	public boolean enableNightVision=false;
-	public boolean enableSafemode=true;
+	public boolean enableJetpack = true;
+	public boolean enableStepAssist = true;
+	public boolean enableNightVision = false;
+	public boolean enableSafemode = true;
+
+    public static final DataParameter<Boolean> DATA_UNLOCK_CYBERNETIC_PARTS = EntityDataManager.createKey(EntityPlayer.class, DataSerializers.BOOLEAN);
 	
 	/**
 	 * for jetpack
@@ -105,6 +100,7 @@ public class TGExtendedPlayer implements ITGExtendedPlayer {
 		entity.getDataManager().register(DATA_HAND_SLOT, ItemStack.EMPTY);
 		
 		entity.getDataManager().register(DATA_FLAG_CHARGING_WEAPON, false);
+        entity.getDataManager().register(DATA_UNLOCK_CYBERNETIC_PARTS, false);
 	}
 	
 	@Override
@@ -156,6 +152,12 @@ public class TGExtendedPlayer implements ITGExtendedPlayer {
 	public static TGExtendedPlayer get(EntityPlayer ply){
 		return (TGExtendedPlayer) ply.getCapability(TGExtendedPlayerCapProvider.TG_EXTENDED_PLAYER, null);
 	}
+
+    public static boolean isCyberneticPartsOutput(ItemStack stack) {
+        return !stack.isEmpty()
+                && ItemStack.areItemsEqual(stack, TGItems.CYBERNETIC_PARTS)
+                && ItemStack.areItemStackTagsEqual(stack, TGItems.CYBERNETIC_PARTS);
+    }
 
 	@Override
 	public AttackTime getAttackTime(boolean offHand) {
@@ -215,6 +217,26 @@ public class TGExtendedPlayer implements ITGExtendedPlayer {
 	public boolean isReloading(boolean offHand) {
 		return getAttackTime(offHand).isReloading();
 	}
+
+    @Override
+    public boolean hasFabricatorRecipeUnlocked(ItemStack output) {
+        if (isCyberneticPartsOutput(output)) {
+            return this.entity != null && this.entity.getDataManager().get(DATA_UNLOCK_CYBERNETIC_PARTS);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean unlockFabricatorRecipe(ItemStack output) {
+        if (!isCyberneticPartsOutput(output) || this.entity == null) return false;
+
+        boolean had = this.entity.getDataManager().get(DATA_UNLOCK_CYBERNETIC_PARTS);
+        if (!had) {
+            this.entity.getDataManager().set(DATA_UNLOCK_CYBERNETIC_PARTS, true);
+            return true;
+        }
+        return false;
+    }
 	
 	public void swapAttackTimes() {
 		AttackTime a = this.attackTimes[0];
@@ -240,6 +262,8 @@ public class TGExtendedPlayer implements ITGExtendedPlayer {
 		tags.setShort("foodLeft", this.foodleft);
 		tags.setFloat("lastSaturation", this.lastSaturation);
 		tags.setInteger("radlevel", this.radlevel);
+
+        tags.setBoolean("unlockCyberParts", this.entity != null && this.entity.getDataManager().get(DATA_UNLOCK_CYBERNETIC_PARTS));
 	}
 
 	@Override
@@ -251,7 +275,7 @@ public class TGExtendedPlayer implements ITGExtendedPlayer {
 		this.enableNightVision=states.get(1);
 		this.enableSafemode=states.get(2);
 		
-		if (entity!=null && !Techguns.instance.permissions.canUseUnsafeMode(entity)) {
+		if (entity!=null && Techguns.instance.permissions.canUseUnsafeMode(entity)) {
 			this.enableSafemode=true;
 		}
 		
@@ -262,6 +286,10 @@ public class TGExtendedPlayer implements ITGExtendedPlayer {
 		this.foodleft = tags.getShort("foodLeft");
 		this.lastSaturation = tags.getFloat("lastSaturation");
 		this.radlevel = tags.getInteger("radlevel");
+
+        if (this.entity != null) {
+            this.entity.getDataManager().set(DATA_UNLOCK_CYBERNETIC_PARTS, tags.getBoolean("unlockCyberParts"));
+        }
 	}	
 	
 	public boolean isJumpkeyPressed() {
@@ -269,27 +297,6 @@ public class TGExtendedPlayer implements ITGExtendedPlayer {
 	}
 
 	public void setJumpkeyPressed(boolean isJumpkeyPressed) {
-		
-		/*if(this.entity.world.isRemote){
-			if(isJumpkeyPressed==true && jetPackLoop==null){
-				jetPackLoop = new TGSound(TGSounds.JETPACK_LOOP, this.entity, 1.0f, 1.0f, true, true, false, TGSoundCategory.PLAYER_EFFECT);
-				SoundUtil.playSoundAtEntityPos(this.entity.world, this.entity, TGSounds.JETPACK_START, 1.0f, 1.0f, false, TGSoundCategory.PLAYER_EFFECT);
-				Minecraft.getMinecraft().getSoundHandler().playSound(jetPackLoop);
-			}
-			
-			if(isJumpkeyPressed && !this.isJumpkeyPressed){
-				//Minecraft.getMinecraft().getSoundHandler().playSound(jetPackLoop);
-			} else if ( !isJumpkeyPressed && this.isJumpkeyPressed){
-				if(jetPackLoop!=null){
-					jetPackLoop.setDonePlaying();
-					jetPackLoop=null;
-					SoundUtil.playSoundAtEntityPos(this.entity.world, this.entity, TGSounds.JETPACK_END, 1.0f, 1.0f, false, TGSoundCategory.PLAYER_EFFECT);
-				}
-			}
-			
-			
-		}*/
-		
 		this.isJumpkeyPressed = isJumpkeyPressed;
 	}
 	
@@ -300,7 +307,6 @@ public class TGExtendedPlayer implements ITGExtendedPlayer {
 		if(!player.world.isRemote){
 			if (!player.world.getGameRules().getBoolean("keepInventory"))
 	        {
-	            //this.inventory.dropAllItems();
 	            int i;
 	        
 	            player.captureDrops=true;
@@ -308,38 +314,11 @@ public class TGExtendedPlayer implements ITGExtendedPlayer {
 	            {
 	                if (!this.tg_inventory.inventory.get(i).isEmpty())
 	                {
-	                	//System.out.println("Dropping "+TG_inventory.inventory[i].getDisplayName()+" x"+TG_inventory.inventory[i].stackSize);
 	                    player.dropItem(this.tg_inventory.inventory.get(i), true, false);
 	                    this.tg_inventory.inventory.set(i, ItemStack.EMPTY);
 	                }
 	            }
 	            player.captureDrops=false;
-	         
-	        }
-		}
-	}
-	
-	public void addDropsToList(EntityPlayer player, List<EntityItem> list ){
-		if(!player.world.isRemote){
-			if (!player.world.getGameRules().getBoolean("keepInventory"))
-	        {
-	            //this.inventory.dropAllItems();
-	            int i;
-	        
-	            //player.captureDrops=true;
-	            for (i = 0; i < this.tg_inventory.inventory.size(); ++i)
-	            {
-	                if (!this.tg_inventory.inventory.get(i).isEmpty())
-	                {
-	                	//System.out.println("Dropping "+TG_inventory.inventory[i].getDisplayName()+" x"+TG_inventory.inventory[i].stackSize);
-	                    EntityItem item = player.dropItem(this.tg_inventory.inventory.get(i), true, false);
-	                    if(item!=null) {
-	                    	list.add(item);
-	                    }
-	                    this.tg_inventory.inventory.set(i, ItemStack.EMPTY);
-	                }
-	            }
-	            //player.captureDrops=false;
 	         
 	        }
 		}

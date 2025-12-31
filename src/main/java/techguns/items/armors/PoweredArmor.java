@@ -33,7 +33,6 @@ public class PoweredArmor extends GenericArmorMultiCamo {
 	protected float FallFreeHeightUnpowered=0.0f;
 	protected float MiningSpeedBonusUnpowered=0.0f;
 	protected float WaterMiningBonusUnpowered=0.0f;
-	protected int armorValueUnpowered=0;
 	protected float GunAccuracyUnpowered=0.0f;
 	protected float extraHeartsUnpowered=0.0f;
 	protected float nightvisionUnpowered=0.0f;
@@ -69,19 +68,8 @@ public class PoweredArmor extends GenericArmorMultiCamo {
 		return this;
 	}
 
-	/*public static void consumePower(ItemStack armor, int amount) {
-		armor.setItemDamage(armor.getItemDamage() + amount);
-		if (armor.getItemDamage() > armor.getMaxDamage()) {
-			armor.setItemDamage(armor.getMaxDamage());
-		}
-	}*/
-
 	public ItemStack getBattery() {
 		return battery;
-	}
-
-	public ItemStack getBattery_empty() {
-		return battery_empty;
 	}
 
 	public float getBonusUnpowered(TGArmorBonus type) {
@@ -206,32 +194,14 @@ public class PoweredArmor extends GenericArmorMultiCamo {
 		}
 		tags.setInteger("power", power);
 	}
-	
-	/*public static int setPowered(ItemStack armor, int max) {
-		int dmg = armor.getItemDamage();
-		if (dmg > max) {
-			armor.setItemDamage(armor.getItemDamage() - max);
-			return max;
-		} else {
-			armor.setItemDamage(0);
-			return dmg;
-		}
-	}*/
 
 	public int setPowered(ItemStack armor, int max) {
 		NBTTagCompound tags = armor.getTagCompound();
 		if(tags==null){
 			tags=new NBTTagCompound();
 			armor.setTagCompound(tags);
-			//tags.setInteger("maxpower", ((PoweredArmor)armor.getItem()).maxpower);
 		}
 		int power=tags.getInteger("power");
-		/*int maxpower=tags.getInteger("maxpower");
-		
-		if (maxpower==0){
-			maxpower= ((PoweredArmor)armor.getItem()).maxpower;
-			tags.setInteger("maxpower", maxpower);
-		}*/
 		
 		int missing = maxpower-power;
 		
@@ -251,11 +221,6 @@ public class PoweredArmor extends GenericArmorMultiCamo {
 			armor.setTagCompound(tags);
 			tags.setInteger("maxpower", ((PoweredArmor)armor.getItem()).maxpower);
 		}
-		/*int maxpower = tags.getInteger("maxpower");
-		if(maxpower==0){
-			maxpower=((PoweredArmor)armor.getItem()).maxpower;
-			tags.setInteger("maxpower", maxpower);
-		}*/
 		tags.setInteger("power", maxpower);
 	}
 	
@@ -275,21 +240,16 @@ public class PoweredArmor extends GenericArmorMultiCamo {
 	protected static void powerSlots(EntityPlayer player, ArmorPowerType power, ItemStack chest, boolean consumeTick){
 		for (int i = 0; i < 4; i++) {
 			ItemStack armor = player.inventory.armorInventory.get(i);
-			// System.out.println("Slot"+i+":"+armor.getDisplayName());
-			if (armor != null && armor.getItem() instanceof PoweredArmor) {
+			if (!armor.isEmpty() && armor.getItem() instanceof PoweredArmor) {
 				if (i != 2) {
-					
-	
-						if (((PoweredArmor) armor.getItem()).powerType == power) {
-							int max = getPower(chest);
-							int dmg = ((PoweredArmor)armor.getItem()).setPowered(armor, max);
-							consumePower(chest, dmg);
-						}
-						if (consumeTick){
-							consumePower(armor,1);
-						}
-					
-	
+					if (((PoweredArmor) armor.getItem()).powerType == power) {
+						int max = getPower(chest);
+						int dmg = ((PoweredArmor)armor.getItem()).setPowered(armor, max);
+						consumePower(chest, dmg);
+					}
+					if (consumeTick){
+						consumePower(armor,1);
+					}
 				} else if(consumeTick) {
 					consumePower(armor,1);
 				}
@@ -303,17 +263,12 @@ public class PoweredArmor extends GenericArmorMultiCamo {
 			if (this.armorType==EntityEquipmentSlot.LEGS){ //Legs
 				if (!player.world.isRemote)
 		        {
-    				//player.world.playSoundAtEntity(player, "techguns:effects.steamarmorJump", 0.66F, 1.0F );
 					player.world.playSound(null, player.posX, player.posY, player.posZ, TGSounds.STEAM_JUMP, SoundCategory.PLAYERS, 1f, 1f);
 		        }
 				return 5;				
 			}
 		} else if (type ==TGArmorBonus.FALLDMG){
 			if (this.armorType==EntityEquipmentSlot.FEET){
-				/*if (!player.worldObj.isRemote)
-		        {
-    				player.worldObj.playSoundAtEntity(player, "random.door_close", 1.0F, 1.0F );
-		        }*/
 				return 5;
 			}
 		} else if (type ==TGArmorBonus.COOLING_SYSTEM){
@@ -331,9 +286,7 @@ public class PoweredArmor extends GenericArmorMultiCamo {
 	 * Called from tick handler to reduce durability
 	 */
 	public static void calculateConsumptionTick(EntityPlayer player) {
-		//ArrayList<Integer> powerArmors = new ArrayList<Integer>();
 		boolean moving = false;
-		//System.out.println("Player motion:"+player.motionX+", "+player.motionY+", "+player.motionZ);
 		float f=0.001f;
 		if (player.motionX > f || player.motionZ > f || player.motionX < -f || player.motionZ< -f) {
 			moving = true;
@@ -354,8 +307,6 @@ public class PoweredArmor extends GenericArmorMultiCamo {
 			PoweredArmor powerChest = (PoweredArmor) chest.getItem();
 			if (!hasPower(chest)){
 				
-				//System.out.println("Reloading the chest!!!");
-				
 				//chest is empty, try reload;
 				if (InventoryUtil.consumeAmmoPlayer(player,powerChest.battery)) {
 	    			
@@ -364,27 +315,20 @@ public class PoweredArmor extends GenericArmorMultiCamo {
     					if(amount >0 && !player.world.isRemote){
     						player.world.spawnEntity(new EntityItem(player.world, player.posX, player.posY, player.posZ, TGItems.newStack(powerChest.battery_empty, amount)));
     					}
-    					
-    					//player.inventory.addItemStackToInventory(new ItemStack(powerChest.battery_empty.getItem(),1,powerChest.battery_empty.getItemDamage()));
     				}
     				
-    				powerChest.setFullyPowered(chest); //chest.setItemDamage(0);
+    				powerChest.setFullyPowered(chest);
     				
     				powerSlots(player,power,chest,false);
     				
     				
 				} else {
-					
 					//can't reload
 				}
 			}
 		}
-		//
-
 	}
 
-	
-	
 	@Override
 	public void addInformation(ItemStack item, World worldIn, List<String> list, ITooltipFlag flagIn) {
 		
@@ -393,14 +337,12 @@ public class PoweredArmor extends GenericArmorMultiCamo {
 			tags=new NBTTagCompound();
 			item.setTagCompound(tags);
 			tags.setInteger("power", 0);
-			//tags.setInteger("maxpower", ((PoweredArmor)item.getItem()).maxpower);
 		}
 		int power=tags.getInteger("power");
-		//int maxpower=tags.getInteger("maxpower");
 		list.add(ChatFormatting.AQUA+TextUtil.transTG("tooltip.power")+": "+power+"/"+maxpower);
 		
 		if (this.armorType==EntityEquipmentSlot.CHEST){
-			list.add(ChatFormatting.AQUA+TextUtil.transTG("tooltip.powerType")+": "+this.powerType.toString()+ " ("+TextUtil.trans(this.battery.getUnlocalizedName()+".name")+")");
+			list.add(ChatFormatting.AQUA+TextUtil.transTG("tooltip.powerType")+": "+this.powerType.toString()+ " ("+TextUtil.trans(this.battery.getTranslationKey()+".name")+")");
 		} else {
 			list.add(ChatFormatting.AQUA+TextUtil.transTG("tooltip.powerType")+": "+this.powerType.toString());
 		}
@@ -417,7 +359,6 @@ public class PoweredArmor extends GenericArmorMultiCamo {
 			stack.setTagCompound(tags);
 		}
 		tags.setInteger("power", 0);
-		//tags.setInteger("maxpower", this.maxpower);
 	}
 	
 	public boolean setArmorStat(EnumArmorStat stat, float powered, float unpowered) {

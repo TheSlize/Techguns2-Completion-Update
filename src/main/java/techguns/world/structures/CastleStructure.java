@@ -4,9 +4,7 @@ import java.util.Random;
 
 import net.minecraft.world.World;
 import techguns.world.dungeon.Dungeon;
-import techguns.world.dungeon.DungeonTemplate;
 import techguns.world.dungeon.presets.IDungeonPreset;
-import techguns.world.dungeon.presets.PresetTemplateTest;
 
 public class CastleStructure extends WorldgenStructure{
 

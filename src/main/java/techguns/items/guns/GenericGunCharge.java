@@ -103,7 +103,7 @@ public class GenericGunCharge extends GenericGun {
 						float x;
 						if (player.getPrimaryHand() == EnumHandSide.RIGHT) x = this.chargeFXoffsetX;
 						else x = -this.chargeFXoffsetX;
-						TGPackets.network.sendToAllAround(new PacketSpawnParticleOnEntity(this.chargeFX, player, x, this.chargeFXoffsetY, this.chargeFXoffsetZ, true, EntityCondition.CHARGING_WEAPON), TGPackets.targetPointAroundEnt(player, 25.0f));						
+						TGPackets.wrapper.sendToAllAround(new PacketSpawnParticleOnEntity(this.chargeFX, player, x, this.chargeFXoffsetY, this.chargeFXoffsetZ, true, EntityCondition.CHARGING_WEAPON), TGPackets.targetPointAroundEnt(player, 25.0f));
 					}
 				}
 

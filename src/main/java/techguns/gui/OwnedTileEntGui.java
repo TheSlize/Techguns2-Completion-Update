@@ -20,10 +20,10 @@ import techguns.tileentities.BasicOwnedTileEnt;
 import techguns.util.TextUtil;
 
 public abstract class OwnedTileEntGui extends TGBaseGui {
-
 	protected BasicOwnedTileEnt ownedTile;
 	
 	protected int heightSecurityButton=40;
+	protected EnumAppearanceType appearanceType = EnumAppearanceType.BRONZISH;
 	
 	public static final ResourceLocation security_texture = new ResourceLocation(Techguns.MODID,"textures/gui/ammo_press_gui.png");
 	
@@ -77,7 +77,7 @@ public abstract class OwnedTileEntGui extends TGBaseGui {
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
-		TGPackets.network.sendToServer(new PacketGuiButtonClick(this.ownedTile,guibutton.id));
+		TGPackets.wrapper.sendToServer(new PacketGuiButtonClick(this.ownedTile,guibutton.id));
 	}
 	
 	@Override
@@ -88,13 +88,28 @@ public abstract class OwnedTileEntGui extends TGBaseGui {
         
         this.mc.getTextureManager().bindTexture(security_texture);
 
-        //draw security button background
-        this.drawTexturedModalRect(k-22-5, l+heightSecurityButton-5, 195, 0, 22+5, 30);
+		switch(appearanceType){
+			case BRONZISH:
+				this.drawTexturedModalRect(k-22-5, l+heightSecurityButton-5, 195, 0, 22+5, 30);
+				break;
+			case ADVANCED:
+				this.drawTexturedModalRect(k-22-5, l+heightSecurityButton-5, 195, 30, 22+5, 30);
+				break;
+			case REGULAR:
+				this.drawTexturedModalRect(k-22-5, l+heightSecurityButton-5, 195, 60, 22+5, 30);
+				break;
+		}
 	}
 
 	@Override
 	public void initGui() {
 		super.initGui();
 		this.buttonList.add(new GuiButtonSecurity(BUTTON_ID_SECURITY, this.guiLeft-22, this.guiTop+heightSecurityButton, 20, 20, "", ownedTile));
+	}
+
+	protected enum EnumAppearanceType {
+		REGULAR,
+		BRONZISH,
+		ADVANCED
 	}
 }

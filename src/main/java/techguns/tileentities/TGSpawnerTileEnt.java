@@ -1,15 +1,11 @@
 package techguns.tileentities;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Random;
+import java.util.*;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.IEntityLivingData;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -50,7 +46,7 @@ public class TGSpawnerTileEnt extends BasicTGTileEntity implements ITickable {
 	
 	public <T extends EntityLiving & ITGSpawnerNPC> void addMobType(Class<T> clazz, int weight) {
 		NBTTagCompound nbt = new NBTTagCompound();
-		nbt.setString("id", EntityRegistry.getEntry(clazz).getRegistryName().toString());
+		nbt.setString("id", Objects.requireNonNull(Objects.requireNonNull(EntityRegistry.getEntry(clazz)).getRegistryName()).toString());
 		
 		WeightedSpawnerEntity ent = new WeightedSpawnerEntity(weight, nbt);
 		this.mobtypes.add(ent);
@@ -91,9 +87,8 @@ public class TGSpawnerTileEnt extends BasicTGTileEntity implements ITickable {
 		this.spawnrange=spawnrange;
 	}
 	
-	public TGSpawnerTileEnt setWeaponOverride(ItemStack weapon) {
+	public void setWeaponOverride(ItemStack weapon) {
 		this.weaponOverride = weapon;
-		return this;
 	}
 	
 	public void setSpawnHeightOffset(int offset) {
@@ -137,7 +132,6 @@ public class TGSpawnerTileEnt extends BasicTGTileEntity implements ITickable {
 		}
 		this.spawnrange=compound.getByte("spawnRange");
 		this.spawnHeightOffset = compound.getShort("spawnHeightOffset");
-		
 		if (compound.hasKey("mobtypes", 9))
         {
             NBTTagList nbttaglist = compound.getTagList("mobtypes", 10);
@@ -175,28 +169,27 @@ public class TGSpawnerTileEnt extends BasicTGTileEntity implements ITickable {
 	public void update() {
 		if (this.world.isRemote) return;
 		this.delay--;
-		
 		if(this.delay<=0 && activeMobs.size() < Math.min(maxActive, mobsLeft) && this.hasMobTypes()) { 
 			
 			if (this.world.getDifficulty() != EnumDifficulty.PEACEFUL) {
 				
-				WeightedSpawnerEntity entdata = WeightedRandom.<WeightedSpawnerEntity>getRandomItem(this.rand, this.mobtypes);
+				WeightedSpawnerEntity entdata = WeightedRandom.getRandomItem(this.rand, this.mobtypes);
 				
 				BlockPos blockpos = this.getPos();
 				
 	            double d0 = (double)blockpos.getX() + (rand.nextDouble() - rand.nextDouble()) * this.spawnrange + 0.5D;
-	            double d1 = (double)(blockpos.getY() + 1+ this.spawnHeightOffset);
+	            double d1 = blockpos.getY() + 1 + this.spawnHeightOffset;
 	            double d2 = (double)blockpos.getZ() + (rand.nextDouble() - rand.nextDouble()) * this.spawnrange + 0.5D;
 	            Entity entity = AnvilChunkLoader.readWorldEntityPos(entdata.getNbt(), world, d0, d1, d2, false);
 	            
-	            if (entity !=null && entity instanceof ITGSpawnerNPC && entity instanceof EntityLiving) {
+	            if (entity instanceof ITGSpawnerNPC && entity instanceof EntityLiving) {
 	            	ITGSpawnerNPC npc = (ITGSpawnerNPC) entity;
 	            	EntityLiving elb = (EntityLiving) entity;
 	
 		          //  if (net.minecraftforge.event.ForgeEventFactory.canEntitySpawnSpawner(npc, this.world, (float)entity.posX, (float)entity.posY, (float)entity.posZ))
 		          //  {
 		            	if (!net.minecraftforge.event.ForgeEventFactory.doSpecialSpawn(elb, this.world, (float)entity.posX, (float)entity.posY, (float)entity.posZ, null)) {
-		                    elb.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(entity)), (IEntityLivingData)null);
+		                    elb.onInitialSpawn(world.getDifficultyForLocation(new BlockPos(entity)), null);
 		            
 		                    if(elb instanceof EntityCreature) {
 		                    	((EntityCreature)elb).setHomePosAndDistance(blockpos, 10);
@@ -205,8 +198,8 @@ public class TGSpawnerTileEnt extends BasicTGTileEntity implements ITickable {
 			                AnvilChunkLoader.spawnEntity(entity, world);
 			                world.playEvent(2004, blockpos, 0);
 			
-			                if(!weaponOverride.isEmpty() && elb instanceof EntityLiving) {
-			                	((EntityLiving) elb).setItemStackToSlot(EntityEquipmentSlot.MAINHAND, this.weaponOverride.copy());
+			                if(!weaponOverride.isEmpty()) {
+			                	elb.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, this.weaponOverride.copy());
 			                }
 			                
 			                elb.spawnExplosionParticle();
@@ -255,14 +248,5 @@ public class TGSpawnerTileEnt extends BasicTGTileEntity implements ITickable {
 		}
 
 	}
-
-	/*
-	public void debug() {
-		System.out.println("Left:"+this.mobsLeft);
-		System.out.println("Active:"+this.activeMobs.size());
-		System.out.println("MaxActive:"+this.maxActive);
-		System.out.println("Delay:"+this.delay+"/"+this.spawndelay);
-		System.out.println("Types:"+this.mobtypes.size());
-	}*/
 	
 }

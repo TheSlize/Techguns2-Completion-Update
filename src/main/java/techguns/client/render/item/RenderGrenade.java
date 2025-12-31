@@ -6,6 +6,7 @@ import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformT
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 import techguns.client.models.ModelMultipart;
 import techguns.items.guns.GenericGrenade;
 import techguns.util.MathUtil;
@@ -30,54 +31,49 @@ public class RenderGrenade extends RenderItemBase {
 	}
 
 	@Override
-	public void renderItem(TransformType transform, ItemStack stack, EntityLivingBase elb, boolean leftHanded) {
+	public void renderItem(@NotNull TransformType transform, @NotNull ItemStack stack, EntityLivingBase elb, boolean leftHanded) {
 
 		float chargeProgress=0;
 		
-			GlStateManager.pushMatrix();
+		GlStateManager.pushMatrix();
+        GlStateManager.disableCull();
+		GlStateManager.translate(0.5f, 0.5f, 0.5f);
 
-			Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
 
-			this.applyTranslation(transform);
+		this.applyTranslation(transform);
 
-			GenericGrenade grenade = (GenericGrenade) stack.getItem();
+        if (transform == TransformType.FIRST_PERSON_LEFT_HAND || transform == TransformType.THIRD_PERSON_LEFT_HAND) {
+            GlStateManager.translate(-1f, 0f, 0f);
+        }
 			
-			if (TransformType.FIRST_PERSON_LEFT_HAND == transform || TransformType.FIRST_PERSON_RIGHT_HAND == transform) {
+		if (TransformType.FIRST_PERSON_LEFT_HAND == transform || TransformType.FIRST_PERSON_RIGHT_HAND == transform) {
+			if (!elb.getActiveItemStack().isEmpty() && elb.getActiveItemStack()==stack) {
+				int dur = stack.getItem().getMaxItemUseDuration(stack)-elb.getItemInUseCount();
 
-				if (!elb.getActiveItemStack().isEmpty() && elb.getActiveItemStack()==stack) {
-					
-					//float useAnimProgress;
-					int dur = stack.getItem().getMaxItemUseDuration(stack)-elb.getItemInUseCount();
-
-					chargeProgress = dur / ((GenericGrenade)stack.getItem()).fullChargeTime;
-					
-					chargeProgress = MathUtil.clamp(chargeProgress, 0f, 1f);
+				chargeProgress = dur / ((GenericGrenade)stack.getItem()).fullChargeTime;
+				chargeProgress = MathUtil.clamp(chargeProgress, 0f, 1f);
 				
-					GlStateManager.rotate(25.0f*chargeProgress, 1f, 0f, 0f);
-				}
-				
-			} else if (TransformType.THIRD_PERSON_LEFT_HAND == transform || TransformType.THIRD_PERSON_RIGHT_HAND == transform) {
-
-			} else if (TransformType.GUI == transform) {
-				GlStateManager.rotate(40.0f, 0, 1f, 0);
-				GlStateManager.rotate(20.0f, 1f, 0, 0);
-
-			} else if (TransformType.GROUND == transform) {
-
-			} else if (TransformType.FIXED == transform) {
-				GlStateManager.rotate(-90.0f, 0, 1.0f, 0);
+				GlStateManager.rotate(25.0f*chargeProgress, 1f, 0f, 0f);
 			}
+				
+		} else if (TransformType.GUI == transform) {
+			GlStateManager.rotate(40.0f, 0, 1f, 0);
+			GlStateManager.rotate(20.0f, 1f, 0, 0);
 
-			this.setBaseScale(elb,transform);
-			this.setBaseRotation(transform);
-			this.applyBaseTranslation();
+		} else if (TransformType.FIXED == transform) {
+			GlStateManager.rotate(-90.0f, 0, 1.0f, 0);
+		}
+
+		this.setBaseScale(elb,transform);
+		this.setBaseRotation(transform);
+		this.applyBaseTranslation();
 			
-			for (int i = 0; i < parts; i++) {
-				model.render(elb, 0, 0, 0, 0, 0, SCALE, 0, 0, transform, i, chargeProgress, chargeProgress);
-			}
-
-			GlStateManager.popMatrix();
-
+		for (int i = 0; i < parts; i++) {
+			model.render(elb, 0, 0, 0, 0, 0, SCALE, 0, 0, transform, i, chargeProgress, chargeProgress);
+		}
+        GlStateManager.enableCull();
+		GlStateManager.popMatrix();
 	}
 
 }

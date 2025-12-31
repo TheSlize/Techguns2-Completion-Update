@@ -1,7 +1,6 @@
 package techguns.world.structures;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockDirectional;
 import net.minecraft.block.BlockHorizontal;
 import net.minecraft.block.BlockStairs;
 import net.minecraft.block.BlockStairs.EnumHalf;
@@ -9,13 +8,12 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.EnumFacing;
 import techguns.TGBlocks;
+import techguns.blocks.BlockTGStairs;
 import techguns.blocks.EnumConcreteType;
 import techguns.blocks.TGMetalPanelType;
 import techguns.util.MBlock;
 import techguns.util.MBlockCamoNetTop;
 import techguns.util.MultiMBlock;
-import techguns.world.BlockRotator;
-import techguns.world.dungeon.presets.specialblocks.RandomStateMBlock;
 
 public class MBlockRegister {
 	public static MBlock[] crates = {
@@ -72,8 +70,8 @@ public class MBlockRegister {
 	public static MBlock IRON_BLOCK_VENTS = new MBlock(Blocks.IRON_BLOCK,0);
 	public static MBlock IRON_BLOCK_SMALL_INGOTS = new MBlock(Blocks.IRON_BLOCK,0);
 	
-	public static MBlock ALUMINIUM_STAIRS_WEST = new MBlock(TGBlocks.METAL_STAIRS.getDefaultState().withProperty(TGBlocks.METAL_STAIRS.FACING, EnumFacing.WEST).withProperty(TGBlocks.METAL_STAIRS.HALF, EnumHalf.BOTTOM));
-	public static MBlock ALUMINIUM_STAIRS_EAST = new MBlock(TGBlocks.METAL_STAIRS.getDefaultState().withProperty(TGBlocks.METAL_STAIRS.FACING, EnumFacing.EAST).withProperty(TGBlocks.METAL_STAIRS.HALF, EnumHalf.BOTTOM));
+	public static MBlock ALUMINIUM_STAIRS_WEST = new MBlock(TGBlocks.METAL_STAIRS.getDefaultState().withProperty(BlockTGStairs.FACING, EnumFacing.WEST).withProperty(BlockTGStairs.HALF, EnumHalf.BOTTOM));
+	public static MBlock ALUMINIUM_STAIRS_EAST = new MBlock(TGBlocks.METAL_STAIRS.getDefaultState().withProperty(BlockTGStairs.FACING, EnumFacing.EAST).withProperty(BlockTGStairs.HALF, EnumHalf.BOTTOM));
 	
 	//nether chisel blocks
 	public static MBlock NETHERRACK_ROCKY = new MBlock(Blocks.NETHERRACK,0); //5

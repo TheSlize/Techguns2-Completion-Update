@@ -38,10 +38,10 @@ public class ItemJetpack extends ItemTGSpecialSlotAmmo {
 
 					if (jump_pressed && !last_state) {
 						extendedPlayer.setJumpkeyPressed(true);
-						TGPackets.network.sendToServer(new PacketTGKeybindPress(TGKeybindsID.JETPACK_BOOST_START));
+						TGPackets.wrapper.sendToServer(new PacketTGKeybindPress(TGKeybindsID.JETPACK_BOOST_START));
 					} else if (!jump_pressed && last_state) {
 						extendedPlayer.setJumpkeyPressed(false);
-						TGPackets.network.sendToServer(new PacketTGKeybindPress(TGKeybindsID.JETPACK_BOOST_STOP));
+						TGPackets.wrapper.sendToServer(new PacketTGKeybindPress(TGKeybindsID.JETPACK_BOOST_STOP));
 					}
 				}
 
@@ -56,7 +56,7 @@ public class ItemJetpack extends ItemTGSpecialSlotAmmo {
 				} else {
 					if (extendedPlayer.isJumpkeyPressed()) {
 						extendedPlayer.setJumpkeyPressed(false);
-						TGPackets.network.sendToServer(new PacketTGKeybindPress(TGKeybindsID.JETPACK_BOOST_STOP));
+						TGPackets.wrapper.sendToServer(new PacketTGKeybindPress(TGKeybindsID.JETPACK_BOOST_STOP));
 					}
 				}
 

@@ -38,6 +38,20 @@ public class ChemLabTweaker {
 	public static void addRecipe(IItemStack input1,int amount1,IItemStack input2,int amount2, ILiquidStack fluidIn, boolean allowSwap, IItemStack output, ILiquidStack fluidOut, int rfTick){
 		CraftTweakerAPI.apply(new addInputAction(TGCraftTweakerHelper.toItemStackOreDict(input1),amount1,TGCraftTweakerHelper.toItemStackOreDict(input2),amount2,fluidIn,allowSwap,output, fluidOut,rfTick));
 	}
+
+	@ZenMethod
+	public static void addRecipe(IItemStack input1,int amount1,IItemStack input2,int amount2, IItemStack input3,int amount3, ILiquidStack fluidIn, boolean allowSwap, IItemStack output, ILiquidStack fluidOut, int rfTick){
+		CraftTweakerAPI.apply(new addInputAction3(TGCraftTweakerHelper.toItemStackOreDict(input1),amount1,TGCraftTweakerHelper.toItemStackOreDict(input2),amount2,input3,amount3,fluidIn,allowSwap,output, fluidOut,rfTick));
+	}
+
+	@ZenMethod
+	public static void addRecipe(IItemStack input1,int amount1, ILiquidStack fluidIn, boolean allowSwap, IItemStack output, ILiquidStack fluidOut, int rfTick){
+		CraftTweakerAPI.apply(new addInputAction1(TGCraftTweakerHelper.toItemStackOreDict(input1),amount1,fluidIn,allowSwap,output, fluidOut,rfTick));
+	}
+	@ZenMethod
+	public static void addRecipe(String input1,int amount1, ILiquidStack fluidIn, boolean allowSwap, IItemStack output, ILiquidStack fluidOut, int rfTick){
+		CraftTweakerAPI.apply(new addInputAction1(TGCraftTweakerHelper.toItemStackOreDict(input1),amount1,fluidIn,allowSwap,output, fluidOut,rfTick));
+	}
 	
 	@ZenMethod
 	public static void removeRecipe(IItemStack output, ILiquidStack fluidOut){
@@ -101,6 +115,119 @@ public class ChemLabTweaker {
 			return "Add Recipe for"+(this.output.isEmpty()?"NO_ITEM":this.output)+"/"+(this.fluidOut==null?"NO_FLUID":this.fluidOut.getUnlocalizedName())+" to ChemLab";
 		}
 	
+	}
+
+	private static class addInputAction3 implements IAction
+	{
+
+		ChemLabRecipe added_recipe=null;
+		ItemStackOreDict input1;
+		ItemStackOreDict input2;
+		ItemStack input3;
+		//ItemStackOreDict bottle=null;
+		FluidStack fluidIn;
+		FluidStack fluidOut;
+		boolean swap;
+		ItemStack output = ItemStack.EMPTY;
+		int power;
+		int amount1;
+		int amount2;
+		int amount3;
+
+		public addInputAction3(ItemStackOreDict input1, int amount1, ItemStackOreDict input2, int amount2, IItemStack input3, int amount3, ILiquidStack fluidIn, boolean swap, IItemStack output,ILiquidStack fluidOut, int power) {
+			super();
+			this.input1 = input1;
+			this.amount1=amount1;
+			this.input2 = input2;
+			this.amount2=amount2;
+			this.input3 = CraftTweakerMC.getItemStack(input3);
+			this.amount3=amount3;
+			this.fluidIn = CraftTweakerMC.getLiquidStack(fluidIn);
+			this.fluidOut = CraftTweakerMC.getLiquidStack(fluidOut);
+			this.swap = swap;
+			this.output = CraftTweakerMC.getItemStack(output);
+			this.power = power;
+
+			if (amount2<=0){
+				this.input2 = ItemStackOreDict.EMPTY;
+			}
+
+			if (this.fluidIn.amount<=0){
+				this.fluidIn=null;
+			}
+
+			if (this.fluidOut.amount<=0){
+				this.fluidOut=null;
+			}
+
+			if (!this.output.isEmpty() && this.output.getCount()<=0){
+				this.output=ItemStack.EMPTY;
+			}
+
+		}
+
+		@Override
+		public void apply() {
+			added_recipe = new ChemLabRecipe(input1,amount1,input2,amount2,input3,amount3,fluidIn,swap,output,fluidOut,power);
+			ChemLabRecipes.getRecipes().add(added_recipe);
+		}
+
+		@Override
+		public String describe() {
+			return "Add Recipe for"+(this.output.isEmpty()?"NO_ITEM":this.output)+"/"+(this.fluidOut==null?"NO_FLUID":this.fluidOut.getUnlocalizedName())+" to ChemLab";
+		}
+
+	}
+
+	private static class addInputAction1 implements IAction
+	{
+
+		ChemLabRecipe added_recipe=null;
+		ItemStackOreDict input1;
+		//ItemStackOreDict bottle=null;
+		FluidStack fluidIn;
+		FluidStack fluidOut;
+		boolean swap;
+		ItemStack output = ItemStack.EMPTY;
+		int power;
+		int amount1;
+
+		public addInputAction1(ItemStackOreDict input1, int amount1, ILiquidStack fluidIn, boolean swap, IItemStack output,ILiquidStack fluidOut, int power) {
+			super();
+			this.input1 = input1;
+			this.amount1=amount1;
+			this.fluidIn = CraftTweakerMC.getLiquidStack(fluidIn);
+			this.fluidOut = CraftTweakerMC.getLiquidStack(fluidOut);
+			this.swap = swap;
+			this.output = CraftTweakerMC.getItemStack(output);
+			this.power = power;
+
+
+			if (this.fluidIn.amount<=0){
+				this.fluidIn=null;
+			}
+
+			if (this.fluidOut.amount<=0){
+				this.fluidOut=null;
+			}
+
+			if (!this.output.isEmpty() && this.output.getCount()<=0){
+				this.output=ItemStack.EMPTY;
+			}
+
+		}
+
+		@Override
+		public void apply() {
+			added_recipe = new ChemLabRecipe(input1,amount1,ItemStackOreDict.EMPTY,0,ItemStack.EMPTY,0,fluidIn,swap,output,fluidOut,power);
+			ChemLabRecipes.getRecipes().add(added_recipe);
+		}
+
+		@Override
+		public String describe() {
+			return "Add Recipe for"+(this.output.isEmpty()?"NO_ITEM":this.output)+"/"+(this.fluidOut==null?"NO_FLUID":this.fluidOut.getUnlocalizedName())+" to ChemLab";
+		}
+
 	}
 	
 	private static class removeInputAction implements IAction

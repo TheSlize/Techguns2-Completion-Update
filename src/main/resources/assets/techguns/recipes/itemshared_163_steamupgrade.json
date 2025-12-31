@@ -1,0 +1,23 @@
+{
+  "result": {
+    "item": "techguns:itemshared",
+    "data": 163
+  },
+  "pattern": [
+    "pnp",
+    "ncn",
+    "pnp"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "c": {
+      "item": "techguns:itemshared",
+      "data": 162
+    },
+    "n": {
+      "item": "techguns:itemshared",
+      "data": 24
+    },
+    "p": { "type": "forge:ore_dict", "ore": "plateCopper" }
+  }
+}

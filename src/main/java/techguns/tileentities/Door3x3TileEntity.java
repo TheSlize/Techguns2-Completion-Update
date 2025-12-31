@@ -171,14 +171,14 @@ public class Door3x3TileEntity extends BasicRedstoneTileEnt {
 	 */
 	public void changeStateServerSide() {
 		if (!this.world.isRemote) {
-			ChunkPos cp = this.world.getChunkFromBlockCoords(getPos()).getPos();
+			ChunkPos cp = this.world.getChunk(getPos()).getPos();
 			PlayerChunkMapEntry entry = ((WorldServer) this.world).getPlayerChunkMap().getEntry(cp.x, cp.z);
 			if (entry != null) {
 				try {
 					List<EntityPlayerMP> players = (List<EntityPlayerMP>) ReactionChamberTileEntMaster.playerChunkMapEntry_Players.get(entry);
 					IMessage packet = new PacketDoorStateChange(this);
 					for (EntityPlayerMP entityplayermp : players) {
-						TGPackets.network.sendTo(packet, entityplayermp);
+						TGPackets.wrapper.sendTo(packet, entityplayermp);
 					}
 				} catch (IllegalArgumentException e) {
 					e.printStackTrace();

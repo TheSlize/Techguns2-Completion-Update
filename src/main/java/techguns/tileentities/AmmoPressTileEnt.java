@@ -73,7 +73,7 @@ public class AmmoPressTileEnt extends BasicMachineTileEnt {
 	}
 	
 	public byte buildPlan = 0;
-	private final byte maxPlan=3;
+	public final byte maxPlan=3;
 	
 	@Override
 	public void readClientDataFromNBT(NBTTagCompound tags) {

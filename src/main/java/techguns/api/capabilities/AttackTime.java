@@ -4,15 +4,15 @@ package techguns.api.capabilities;
  * Container class to group all values for recoil/reload timing together
  */
 public class AttackTime {
-	private long reloadTime=0;
-	private int reloadTimeTotal=0;
-	private long recoilTime=0;
-	private int recoilTimeTotal=0;
-	private byte attackType=0;
-	private float recoilChargeProgress=0f;
+	private long reloadTime = 0;
+	private int reloadTimeTotal = 0;
+	private long recoilTime = 0;
+	private int recoilTimeTotal = 0;
+	private byte attackType = 0;
+	private float recoilChargeProgress = 0f;
 	
-	private long muzzleFlashTime=0;
-	private int muzzleFlashTimeTotal=0;
+	private long muzzleFlashTime = 0;
+	private int muzzleFlashTimeTotal = 0;
 	
 	public long getReloadTime() {
 		return reloadTime;
@@ -64,22 +64,11 @@ public class AttackTime {
 	public void setRecoilChargeProgress(float recoilChargeProgress) {
 		this.recoilChargeProgress = recoilChargeProgress;
 	}
-	
-	public void reset(){
-		reloadTime=0;
-		reloadTimeTotal=0;
-		recoilTime=0;
-		recoilTimeTotal=0;
-		attackType=0;
-		muzzleFlashTime=0;
-		muzzleFlashTimeTotal=0;
-		recoilChargeProgress=0;
-	}
 
-	public boolean isRecoiling(){
-		return this.recoilTime>0;
+    public boolean isRecoiling(){
+		return this.recoilTime > 0;
 	}
 	public boolean isReloading(){
-		return this.reloadTime>0;
+		return this.reloadTime > 0;
 	}
 }

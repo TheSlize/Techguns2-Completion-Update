@@ -9,7 +9,6 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
-import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
 import techguns.TGPackets;
 import techguns.TGSounds;
@@ -21,9 +20,7 @@ import techguns.items.guns.GenericGun;
 import techguns.items.guns.IChargedProjectileFactory;
 import techguns.packets.PacketPlaySound;
 import techguns.packets.PacketSpawnParticle;
-import techguns.packets.PacketSpawnParticleOnEntity;
 import techguns.util.MathUtil;
-import techguns.util.SoundUtil;
 
 @Optional.Interface(iface="elucent.albedo.lighting.ILightProvider", modid="albedo")
 public class TFGProjectile extends GenericProjectile implements IEntityAdditionalSpawnData, ILightProvider{
@@ -66,19 +63,19 @@ public class TFGProjectile extends GenericProjectile implements IEntityAdditiona
 			float exp_r1 = size*1.0f;
 			float exp_r2 = size*2.0f;
 			
-			TGPackets.network.sendToAllAround(new PacketSpawnParticle("TFGExplosion", this.posX,this.posY,this.posZ, size*0.75f), TGPackets.targetPointAroundEnt(this, 100.0f));
+			TGPackets.wrapper.sendToAllAround(new PacketSpawnParticle("TFGExplosion", this.posX,this.posY,this.posZ, size*0.75f), TGPackets.targetPointAroundEnt(this, 100.0f));
 			
 			TGExplosion explosion = new TGExplosion(world, this.shooter, this, posX, posY, posZ, exp_dmgMax, exp_dmgMin, exp_r1, exp_r2, this.blockdamage?0.5:0.0);
 			explosion.blockDropChance = 0.1f;
 			
 			explosion.doExplosion(false);
-			TGPackets.network.sendToAllAround(new PacketPlaySound(TGSounds.TFG_EXPLOSION, this, 5.0f, 1.0f, false, false, false, TGSoundCategory.EXPLOISON), TGPackets.targetPointAroundEnt(this, 200.0f));
+			TGPackets.wrapper.sendToAllAround(new PacketPlaySound(TGSounds.TFG_EXPLOSION, this, 5.0f, 1.0f, false, false, false, TGSoundCategory.EXPLOISON), TGPackets.targetPointAroundEnt(this, 200.0f));
 			
 			//SoundUtil.playSoundAtEntityPos(world, this, TGSounds.TFG_EXPLOSION, 1.0f, 1.0f, false, TGSoundCategory.EXPLOISON);
 			
 			if (this.size > 3.0f) {
 				//SoundUtil.playSoundAtEntityPos(world, this, TGSounds.TFG_EXPLOSION_ECHO, 1.0f, 1.0f, false, TGSoundCategory.EXPLOISON);
-				TGPackets.network.sendToAllAround(new PacketPlaySound(TGSounds.TFG_EXPLOSION_ECHO, this, 10.0f, 1.0f, false, false, false, TGSoundCategory.EXPLOISON), TGPackets.targetPointAroundEnt(this, 200.0f));
+				TGPackets.wrapper.sendToAllAround(new PacketPlaySound(TGSounds.TFG_EXPLOSION_ECHO, this, 10.0f, 1.0f, false, false, false, TGSoundCategory.EXPLOISON), TGPackets.targetPointAroundEnt(this, 200.0f));
 				
 			}
 			

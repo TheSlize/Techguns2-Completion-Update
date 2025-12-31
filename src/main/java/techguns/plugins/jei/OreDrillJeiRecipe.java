@@ -7,6 +7,7 @@ import java.util.List;
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IStackHelper;
+import org.jetbrains.annotations.NotNull;
 import techguns.TGConfig;
 import techguns.TGOreClusters;
 import techguns.TGOreClusters.OreCluster;
@@ -29,7 +30,7 @@ public class OreDrillJeiRecipe extends BasicRecipeWrapper {
 	}
 
 	@Override
-	public List<String> getTooltipStrings(int mouseX, int mouseY) {
+	public @NotNull List<String> getTooltipStrings(int mouseX, int mouseY) {
 		if (TGBaseGui.isInRect(mouseX, mouseY, 8+BasicRecipeCategory.JEI_OFFSET_X, 17+BasicRecipeCategory.JEI_OFFSET_Y, 6, 60)) {
 			
 			List<String> tooltip = new ArrayList<>();

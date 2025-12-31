@@ -29,14 +29,10 @@ public abstract class ItemTGSpecialSlotAmmo extends ItemTGSpecialSlot {
 		return ammo;
 	}
 
-	public ItemStack getAmmoEmpty() {
-		return ammoEmpty;
-	}
-
 	@Override
 	public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
 		super.addInformation(stack, worldIn, tooltip, flagIn);
-		tooltip.add(ChatFormatting.AQUA+TextUtil.transTG("tooltip.reloads_with")+": "+TextUtil.trans(this.ammo.getUnlocalizedName()+".name"));
+		tooltip.add(ChatFormatting.AQUA+TextUtil.transTG("tooltip.reloads_with")+": "+TextUtil.trans(this.ammo.getTranslationKey()+".name"));
 	}
 
 	protected void tryReloadAndRepair(ItemStack item, EntityPlayer ply){
@@ -48,5 +44,20 @@ public abstract class ItemTGSpecialSlotAmmo extends ItemTGSpecialSlot {
 				}
 			}
 		}
+	}
+
+	@Override
+	public boolean isEnchantable(ItemStack stack) {
+		return false;
+	}
+
+	@Override
+	public boolean isBookEnchantable(ItemStack stack, ItemStack book) {
+		return false;
+	}
+
+	@Override
+	public boolean canApplyAtEnchantingTable(ItemStack stack, net.minecraft.enchantment.Enchantment enchantment) {
+		return false;
 	}
 }

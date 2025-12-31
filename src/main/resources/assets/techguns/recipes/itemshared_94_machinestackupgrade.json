@@ -11,13 +11,15 @@
   "type": "forge:ore_shaped",
   "key": {
     "p": {
-      "item": "#PLATEIRON"
+      "item": "techguns:itemshared",
+	  "data": 63
     },
     "c": {
-      "item": "minecraft:chest"
+      "item": "techguns:itemshared",
+	  "data": 162
     },
     "g": {
-      "item": "#DYEGREEN"
+      "item": "minecraft:chest"
     },
     "n": {
       "item": "#INGOTGOLD"

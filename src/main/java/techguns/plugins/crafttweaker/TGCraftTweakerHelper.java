@@ -3,6 +3,7 @@ package techguns.plugins.crafttweaker;
 import crafttweaker.api.item.IIngredient;
 import crafttweaker.api.item.IItemStack;
 import crafttweaker.api.minecraft.CraftTweakerMC;
+import net.minecraft.item.ItemStack;
 import techguns.util.ItemStackOreDict;
 
 public class TGCraftTweakerHelper {
@@ -21,9 +22,13 @@ public class TGCraftTweakerHelper {
 		sb.append("]");
 		return sb.toString();
 	}
-	
-	public static ItemStackOreDict toItemStackOreDict(IItemStack stack){
-		return new ItemStackOreDict(CraftTweakerMC.getItemStack(stack));
+
+	public static ItemStackOreDict toItemStackOreDict(IItemStack stack) {
+		ItemStack itemStack = CraftTweakerMC.getItemStack(stack);
+		if (!itemStack.isEmpty() && itemStack.hasTagCompound()) {
+			return new ItemStackOreDict(itemStack.copy());
+		}
+		return new ItemStackOreDict(itemStack);
 	}
 	
 	public static ItemStackOreDict toItemStackOreDict(String oreDictName){

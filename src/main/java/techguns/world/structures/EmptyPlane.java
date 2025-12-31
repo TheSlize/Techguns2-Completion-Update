@@ -14,13 +14,8 @@ public class EmptyPlane extends WorldgenStructure {
 		super (1, 1, 1, -1, -1, -1);
 		this.block = block;
 	}
-	
-	public EmptyPlane(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, IBlockState block) {
-		super(minX, minY, minZ, maxX, maxY, maxZ);
-		this.block = block;
-	}
 
-	@Override
+    @Override
 	public void setBlocks(World world, int posX, int posY, int posZ, int sizeX,
 			int sizeY, int sizeZ, int direction, BiomeColorType colorType, Random rnd) {
 		MutableBlockPos p = new MutableBlockPos();

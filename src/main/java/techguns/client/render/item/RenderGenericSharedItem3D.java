@@ -2,9 +2,11 @@ package techguns.client.render.item;
 
 import java.util.HashMap;
 
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import techguns.TGItems;
 import techguns.api.render.IItemRenderer;
 
@@ -17,7 +19,7 @@ public class RenderGenericSharedItem3D implements IItemRenderer {
 	}
 	
 	@Override
-	public void renderItem(TransformType transform, ItemStack stack, EntityLivingBase elb, boolean leftHanded) {
+	public void renderItem(@NotNull TransformType transform, @NotNull ItemStack stack, EntityLivingBase elb, boolean leftHanded) {
 		
 		String key = TGItems.SHARED_ITEM.get(stack.getItemDamage()).getName();
 		IItemRenderer renderer = renderEntries.get(key);

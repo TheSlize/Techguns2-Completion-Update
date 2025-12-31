@@ -24,7 +24,7 @@ public class TurretGui extends PoweredTileEntGui {
 		super(new TurretContainer(player, tile), tile);
 		this.tile=tile;
 		this.tex=texture;
-		this.hasUpgradeSlot=false;
+		this.showUpgradeSlot =false;
 	}
 
 	@Override

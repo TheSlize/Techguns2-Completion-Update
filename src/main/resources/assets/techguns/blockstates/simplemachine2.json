@@ -11,6 +11,10 @@
 		"facing=north,machinetype=armor_bench": { "model": "techguns:upgrade_bench" },
         "facing=south,machinetype=armor_bench": { "model": "techguns:upgrade_bench", "y": 180 },
         "facing=west,machinetype=armor_bench":  { "model": "techguns:upgrade_bench", "y": 270 },
-        "facing=east,machinetype=armor_bench":  { "model": "techguns:upgrade_bench", "y": 90 }
+        "facing=east,machinetype=armor_bench":  { "model": "techguns:upgrade_bench", "y": 90 },
+		"facing=north,machinetype=gun_bench": { "model": "techguns:gun_bench" },
+        "facing=south,machinetype=gun_bench": { "model": "techguns:gun_bench", "y": 180 },
+        "facing=west,machinetype=gun_bench":  { "model": "techguns:gun_bench", "y": 270 },
+        "facing=east,machinetype=gun_bench":  { "model": "techguns:gun_bench", "y": 90 }
     }
 }

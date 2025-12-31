@@ -3,10 +3,10 @@ package techguns.entities.npcs;
 
 import javax.annotation.Nullable;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.EntityAIFindEntityNearestPlayer;
 import net.minecraft.entity.item.EntityXPOrb;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -19,9 +19,12 @@ import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.NotNull;
 import techguns.TGPackets;
 import techguns.TGSounds;
 import techguns.Techguns;
+import techguns.api.npc.factions.ITGNpcTeam;
+import techguns.api.npc.factions.TGNpcFaction;
 import techguns.client.audio.TGSoundCategory;
 import techguns.damagesystem.TGDamageSource;
 import techguns.entities.ai.TGEntityAIFindEntityNearestPlayer;
@@ -283,7 +286,7 @@ public class AttackHelicopter extends GenericFlyingMob
                     {
                     	if(this.attackTimer==8) {
                     		
-                			TGPackets.network.sendToAllAround(new PacketPlaySound(TGSounds.HELICOPTER_BURST, this.parentEntity, 8.0f, 1.0f, false, false, TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(parentEntity, 100.0f));
+                			TGPackets.wrapper.sendToAllAround(new PacketPlaySound(TGSounds.HELICOPTER_BURST, this.parentEntity, 8.0f, 1.0f, false, false, TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(parentEntity, 100.0f));
                     	}
      
                         GenericProjectile bullet = new GenericProjectile(this.parentEntity.world, this.parentEntity,12.0f, 1.0f, 100, 0.05f, 30, 40, 8.0f, 0.25f,false,EnumBulletFirePos.CENTER);         
@@ -292,7 +295,7 @@ public class AttackHelicopter extends GenericFlyingMob
                     } else if (attackTimer == 40) {
                     	
 
-                    	TGPackets.network.sendToAllAround(new PacketPlaySound(TGSounds.ROCKET_FIRE, this.parentEntity, 8.0f, 1.0f, false, false, TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(parentEntity, 100.0f));
+                    	TGPackets.wrapper.sendToAllAround(new PacketPlaySound(TGSounds.ROCKET_FIRE, this.parentEntity, 8.0f, 1.0f, false, false, TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(parentEntity, 100.0f));
                 	    RocketProjectile rocket = new RocketProjectile(this.parentEntity.world, this.parentEntity,12.0f, 1.0f, 100, 0.05f, 30, 40, 8.0f, 0.25f,false,this.parentEntity.rand.nextBoolean()?EnumBulletFirePos.LEFT:EnumBulletFirePos.RIGHT, 4.0f, 0.0f);         
                         world.spawnEntity(rocket);
                     	
@@ -300,7 +303,7 @@ public class AttackHelicopter extends GenericFlyingMob
                     } else if (attackTimer == 45) {
 
 
-                        TGPackets.network.sendToAllAround(new PacketPlaySound(TGSounds.ROCKET_FIRE, this.parentEntity, 8.0f, 1.0f, false, false, TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(parentEntity, 100.0f));
+                        TGPackets.wrapper.sendToAllAround(new PacketPlaySound(TGSounds.ROCKET_FIRE, this.parentEntity, 8.0f, 1.0f, false, false, TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(parentEntity, 100.0f));
                         RocketProjectile rocket = new RocketProjectileHV(this.parentEntity.world, this.parentEntity,12.0f, 1.2f, 100, 0.05f, 30, 40, 8.0f, 0.25f,false,this.parentEntity.rand.nextBoolean()?EnumBulletFirePos.LEFT:EnumBulletFirePos.RIGHT, 4.0f, 0.0f);
                         world.spawnEntity(rocket);
 
@@ -308,7 +311,7 @@ public class AttackHelicopter extends GenericFlyingMob
                     } else if (attackTimer == 50) {
 
 
-                        TGPackets.network.sendToAllAround(new PacketPlaySound(TGSounds.ROCKET_FIRE, this.parentEntity, 8.0f, 1.0f, false, false, TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(parentEntity, 100.0f));
+                        TGPackets.wrapper.sendToAllAround(new PacketPlaySound(TGSounds.ROCKET_FIRE, this.parentEntity, 8.0f, 1.0f, false, false, TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(parentEntity, 100.0f));
                         RocketProjectile rocket = new RocketProjectile(this.parentEntity.world, this.parentEntity,12.0f, 1.0f, 100, 0.05f, 30, 40, 8.0f, 0.25f,false,this.parentEntity.rand.nextBoolean()?EnumBulletFirePos.LEFT:EnumBulletFirePos.RIGHT, 4.0f, 0.0f);
                         world.spawnEntity(rocket);
 
@@ -316,7 +319,7 @@ public class AttackHelicopter extends GenericFlyingMob
                     } else if (attackTimer == 55) {
 
 
-                        TGPackets.network.sendToAllAround(new PacketPlaySound(TGSounds.ROCKET_FIRE, this.parentEntity, 8.0f, 1.0f, false, false, TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(parentEntity, 100.0f));
+                        TGPackets.wrapper.sendToAllAround(new PacketPlaySound(TGSounds.ROCKET_FIRE, this.parentEntity, 8.0f, 1.0f, false, false, TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(parentEntity, 100.0f));
                         RocketProjectile rocket = new RocketProjectile(this.parentEntity.world, this.parentEntity,12.0f, 1.0f, 100, 0.05f, 30, 40, 8.0f, 0.25f,false,this.parentEntity.rand.nextBoolean()?EnumBulletFirePos.LEFT:EnumBulletFirePos.RIGHT, 4.0f, 0.0f);
                         world.spawnEntity(rocket);
 
@@ -324,7 +327,7 @@ public class AttackHelicopter extends GenericFlyingMob
                     } else if (attackTimer == 60) {
 
 
-                        TGPackets.network.sendToAllAround(new PacketPlaySound(TGSounds.ROCKET_FIRE, this.parentEntity, 8.0f, 1.0f, false, false, TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(parentEntity, 100.0f));
+                        TGPackets.wrapper.sendToAllAround(new PacketPlaySound(TGSounds.ROCKET_FIRE, this.parentEntity, 8.0f, 1.0f, false, false, TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(parentEntity, 100.0f));
                         RocketProjectile rocket = new RocketProjectileHV(this.parentEntity.world, this.parentEntity,12.0f, 1.2f, 100, 0.05f, 30, 40, 8.0f, 0.25f,false,this.parentEntity.rand.nextBoolean()?EnumBulletFirePos.LEFT:EnumBulletFirePos.RIGHT, 4.0f, 0.0f);
                         world.spawnEntity(rocket);
 
@@ -332,7 +335,7 @@ public class AttackHelicopter extends GenericFlyingMob
                     } else if (attackTimer == 65) {
 
 
-                        TGPackets.network.sendToAllAround(new PacketPlaySound(TGSounds.ROCKET_FIRE, this.parentEntity, 8.0f, 1.0f, false, false, TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(parentEntity, 100.0f));
+                        TGPackets.wrapper.sendToAllAround(new PacketPlaySound(TGSounds.ROCKET_FIRE, this.parentEntity, 8.0f, 1.0f, false, false, TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(parentEntity, 100.0f));
                         RocketProjectile rocket = new RocketProjectile(this.parentEntity.world, this.parentEntity,12.0f, 1.0f, 100, 0.05f, 30, 40, 8.0f, 0.25f,false,this.parentEntity.rand.nextBoolean()?EnumBulletFirePos.LEFT:EnumBulletFirePos.RIGHT, 4.0f, 0.0f);
                         world.spawnEntity(rocket);
 
@@ -416,4 +419,29 @@ public class AttackHelicopter extends GenericFlyingMob
 	protected int getTargetFlyHeight() {
 		return TARGET_FLY_HEIGHT;
 	}
+
+    @Override
+    public boolean attackEntityFrom(@NotNull DamageSource source, float amount) {
+        if (this.isFriendlyDamage(source)) {
+            return false;
+        }
+        return super.attackEntityFrom(source, amount);
+    }
+
+    private boolean isFriendlyDamage(DamageSource source) {
+        return this.isFriendlyEntity(source.getTrueSource()) || this.isFriendlyEntity(source.getImmediateSource());
+    }
+
+    private boolean isFriendlyEntity(@org.jetbrains.annotations.Nullable Entity entity) {
+        if (entity == null) {
+            return false;
+        }
+        if (entity == this) {
+            return true;
+        }
+        if (entity instanceof ITGNpcTeam) {
+            return ((ITGNpcTeam) entity).getTGFaction() == TGNpcFaction.HOSTILE;
+        }
+        return false;
+    }
 }

@@ -17,6 +17,13 @@
 					"fluid": "milk"
 				}
 			}
+		],
+		"steam": [
+			{
+				"custom": {
+					"fluid": "steam"
+				}
+			}
 		]
 	}
 }

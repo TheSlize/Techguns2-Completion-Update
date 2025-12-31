@@ -10,17 +10,15 @@ import net.minecraft.world.World;
 import techguns.TGBlocks;
 import techguns.TGuns;
 import techguns.blocks.EnumMonsterSpawnerType;
-import techguns.entities.npcs.CyberDemon;
 import techguns.entities.npcs.ZombiePigmanSoldier;
 import techguns.util.BlockUtils;
 import techguns.util.MBlock;
 import techguns.util.MultiMBlock;
 import techguns.world.dungeon.presets.specialblocks.MBlockTGSpawner;
-import techguns.world.structures.WorldgenStructure.BiomeColorType;
 
 public class NetherOreClusterCastle extends WorldgenStructure {
 
-	static ArrayList<MBlock> blockList = new ArrayList<MBlock>();
+	static ArrayList<MBlock> blockList = new ArrayList<>();
 	static short[][] blocks;
 	static {
 		blockList.add(new MBlock(TGBlocks.NETHER_METAL, 0));

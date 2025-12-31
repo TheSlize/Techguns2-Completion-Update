@@ -159,7 +159,7 @@ public void render(Entity entityIn, float limbSwing, float limbSwingAmount, floa
     	} else {
     		GlStateManager.pushMatrix();
 			if (fireProgress>0) {
-				float movebolt=0f;
+				float movebolt;
 				if (fireProgress >0.4f) {
 					movebolt = 1.0f-(fireProgress-0.4f)/0.6f;
 				} else {

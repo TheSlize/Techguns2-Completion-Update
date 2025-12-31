@@ -84,7 +84,7 @@ public class MiningDrill extends GenericGunMeleeCharge {
 	@Override
 	protected void spawnSweepParticle(World w, double x, double y, double z, double motionX, double motionY,
 			double motionZ) {
-		TGPackets.network.sendToAllAround(new PacketSpawnParticle("PowerhammerImpact",x,y,z), new TargetPoint(w.provider.getDimension(), x, y, z, 32.0f));
+		TGPackets.wrapper.sendToAllAround(new PacketSpawnParticle("PowerhammerImpact",x,y,z), new TargetPoint(w.provider.getDimension(), x, y, z, 32.0f));
 	}
 
 

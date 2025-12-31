@@ -38,7 +38,7 @@ public class TGGuiTabButton extends GuiButton {
 					Minecraft.getMinecraft().displayGuiScreen(new GuiInventory(mc.player));
 					
 				} else {
-					TGPackets.network.sendToServer(new PacketOpenPlayerGUI(GUI_ID));
+					TGPackets.wrapper.sendToServer(new PacketOpenPlayerGUI(GUI_ID));
 				}
 				return true;
 			}

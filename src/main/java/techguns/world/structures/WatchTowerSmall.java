@@ -10,7 +10,7 @@ import techguns.util.BlockUtils;
 
 public class WatchTowerSmall extends WorldgenStructure{
 	
-	int towerSize = 3;
+	int towerSize;
 
 	public WatchTowerSmall(int minX, int minY, int minZ, int maxX, int maxY,
 			int maxZ, int towerSize) {
@@ -58,12 +58,12 @@ public class WatchTowerSmall extends WorldgenStructure{
 		int meta = 0;
 		switch (direction) {
 			case 0:
-				xoffset = 0; zoffset=1;
+                zoffset=1;
 				meta = 4;
 				break;
 			case 1:
-				xoffset = 1; zoffset=0;
-				meta = 2;
+				xoffset = 1;
+                meta = 2;
 				break;
 			case 2:
 				xoffset = towerSize-1; zoffset=towerSize-2;

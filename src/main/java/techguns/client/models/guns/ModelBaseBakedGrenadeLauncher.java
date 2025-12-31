@@ -1,29 +1,19 @@
 package techguns.client.models.guns;
 
-import java.lang.reflect.InvocationTargetException;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.block.model.IBakedModel;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms.TransformType;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+
+import java.lang.reflect.InvocationTargetException;
 
 public class ModelBaseBakedGrenadeLauncher extends ModelBaseBaked {
 	
 	public ModelBaseBakedGrenadeLauncher(ResourceLocation texture_loc, ModelResourceLocation... modellocs) {
 		super(texture_loc, modellocs);
-	}
-
-	public ModelBaseBakedGrenadeLauncher(IBakedModel... bakedModels) {
-		super(bakedModels);
-	}
-
-	public ModelBaseBakedGrenadeLauncher(Item item, int parts) {
-		super(item, parts);
 	}
 
 	@Override
@@ -40,11 +30,7 @@ public class ModelBaseBakedGrenadeLauncher extends ModelBaseBaked {
 			RenderItem_renderModel.invoke(Minecraft.getMinecraft().getRenderItem(), bakedModels.get(1), ItemStack.EMPTY);
 			GlStateManager.popMatrix();
 			
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 			e.printStackTrace();
 		}
 	}

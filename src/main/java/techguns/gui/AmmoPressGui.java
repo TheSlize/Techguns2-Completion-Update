@@ -1,13 +1,18 @@
 package techguns.gui;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.fml.client.config.GuiButtonExt;
-import techguns.TGItems;
+import techguns.TGPackets;
 import techguns.Techguns;
 import techguns.gui.containers.AmmoPressContainer;
+import techguns.packets.PacketGuiButtonClick;
 import techguns.tileentities.AmmoPressTileEnt;
-import techguns.util.TextUtil;
+
+import java.io.IOException;
+
+import static techguns.gui.ReactionChamberGui.ru_ru;
 
 public class AmmoPressGui extends PoweredTileEntGui {
 	public static final ResourceLocation texture = new ResourceLocation(Techguns.MODID,"textures/gui/ammo_press_gui.png");// new
@@ -18,34 +23,29 @@ public class AmmoPressGui extends PoweredTileEntGui {
 		super(new AmmoPressContainer(ply, tileent),tileent);
 		this.tileent = tileent;
 		this.tex = texture;
+		this.ySize = 198;
 	}
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		
-		int x = 0;
-        int y = 0;
         int mx = mouseX - (this.width-this.xSize)/2;
         int my = mouseY - (this.height-this.ySize)/2;
-        int color = 4210752; //0xff101010;
-        
-        String s2="";
-        switch(this.tileent.buildPlan){
-        	case 0:
-        		s2=TextUtil.trans(TGItems.PISTOL_ROUNDS.getUnlocalizedName()+".name");
-        		break;
-        	case 1:
-        		s2=TextUtil.trans(TGItems.SHOTGUN_ROUNDS.getUnlocalizedName()+".name");
-        		break;
-        	case 2:
-        		s2=TextUtil.trans(TGItems.RIFLE_ROUNDS.getUnlocalizedName()+".name");
-        		break;
-        	case 3:
-        		s2=TextUtil.trans(TGItems.SNIPER_ROUNDS.getUnlocalizedName()+".name");
-        		break;
+        if(isInRect(mx, my, 42, 32, 29, 31)){
+	        switch (this.tileent.buildPlan) {
+				case 0:
+					this.drawHoveringText(I18n.format("techguns.gui.ammopress.build_plan.pistol"), mx, my);
+					break;
+				case 1:
+					this.drawHoveringText(I18n.format("techguns.gui.ammopress.build_plan.shotgun"), mx, my);
+					break;
+				case 2:
+					this.drawHoveringText(I18n.format("techguns.gui.ammopress.build_plan.rifle"), mx, my);
+					break;
+				case 3:
+					this.drawHoveringText(I18n.format("techguns.gui.ammopress.build_plan.sniper"), mx, my);
+					break;
+	        }
         }
-        this.fontRenderer.drawString(TextUtil.trans(Techguns.MODID+".gui.ammopress.build")+":", x+20, y+30, color);
-        this.fontRenderer.drawString(s2, x+20, y+40, color);
 		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
 	}
 
@@ -55,6 +55,8 @@ public class AmmoPressGui extends PoweredTileEntGui {
 		
 		int k = (this.width - this.xSize) / 2;
         int l = (this.height - this.ySize) / 2;
+
+		this.drawTexturedModalRect(k + 42, l + 32, 227, 132 + this.tileent.buildPlan * 31, 29, 31);
 		
 		if (this.tileent.isWorking()) {
 			int i1 = this.tileent.getProgressScaled(21);
@@ -62,15 +64,40 @@ public class AmmoPressGui extends PoweredTileEntGui {
 			this.drawTexturedModalRect(k + 119, l + 36, 176, 0, 19, i1 + 1);
 		}
 
+		if ("ru_ru".equalsIgnoreCase(Minecraft.getMinecraft().gameSettings.language)) {
+			this.mc.getTextureManager().bindTexture(ru_ru);
+			this.drawTexturedModalRect(k+40, l+18, 0, 33, 33, 9);
+		}
+
 	}
 
 	@Override
-	public void initGui() {
-		super.initGui();
-										//id, x, y, width, height, text
-		this.buttonList.add(new GuiButtonExt(AmmoPressTileEnt.BUTTON_ID_NEXT, this.guiLeft+40, this.guiTop+50, 20, 20, ">"));
-		this.buttonList.add(new GuiButtonExt(AmmoPressTileEnt.BUTTON_ID_PREV, this.guiLeft+20, this.guiTop+50, 20, 20, "<"));
+	protected void drawDefaultEnergyBar(){
+		drawEnergyBar(guiLeft, guiTop, 8, 17, 251, 1, 4, 59);
 	}
-	
+
+	@Override
+	protected void drawDefaultEnergyTooltip(int mouseX, int mouseY){
+		drawEnergyTooltip(mouseX, mouseY, 7, 17, 5, 59);
+	}
+
+	@Override
+	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
+		super.mouseClicked(mouseX, mouseY, mouseButton);
+
+		if (mouseButton != 0) return;
+
+		int mx = mouseX - (this.width - this.xSize) / 2;
+		int my = mouseY - (this.height - this.ySize) / 2;
+
+		if (isInRect(mx, my, 31, 68, 52 - 31, 80 - 68)) {
+			playVanillaButtonSound();
+			TGPackets.wrapper.sendToServer(new PacketGuiButtonClick(this.tileent, AmmoPressTileEnt.BUTTON_ID_PREV));
+		}
+		else if (isInRect(mx, my, 61, 68, 82 - 61, 80 - 68)) {
+			playVanillaButtonSound();
+			TGPackets.wrapper.sendToServer(new PacketGuiButtonClick(this.tileent, AmmoPressTileEnt.BUTTON_ID_NEXT));
+		}
+	}
 	
 }

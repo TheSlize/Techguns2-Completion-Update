@@ -573,7 +573,7 @@ public class ModelTFG extends ModelMultipart {
         GlStateManager.popMatrix();
         
         GlStateManager.pushMatrix();
-        GlStateManager.translate(0.0f, 1.0f * f2 , 0);   
+        GlStateManager.translate(0.0f, f2, 0);
         this.RU01.render(scale);
         this.RU02.render(scale);
         this.RU03.render(scale);
@@ -600,7 +600,7 @@ public class ModelTFG extends ModelMultipart {
         GlStateManager.popMatrix();
         
         GlStateManager.pushMatrix();
-        GlStateManager.translate(0.0f, 1.0f * f2 , 0);           
+        GlStateManager.translate(0.0f, f2, 0);
         this.LU01.render(scale);
         this.LU02.render(scale);
         this.LU03.render(scale);

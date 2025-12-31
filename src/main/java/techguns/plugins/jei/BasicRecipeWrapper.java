@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
+import org.jetbrains.annotations.NotNull;
 import techguns.gui.PoweredTileEntGui;
 import techguns.gui.TGBaseGui;
 import techguns.tileentities.operation.IMachineRecipe;
@@ -23,12 +25,10 @@ public abstract class BasicRecipeWrapper implements IRecipeWrapper {
 		this.recipe = recipe;
 	}
 
-	
-
 	@Override
-	public List<String> getTooltipStrings(int mouseX, int mouseY) {
+	public @NotNull List<String> getTooltipStrings(int mouseX, int mouseY) {
 
-		if (TGBaseGui.isInRect(mouseX, mouseY, 8+BasicRecipeCategory.JEI_OFFSET_X, 17+BasicRecipeCategory.JEI_OFFSET_Y, 6, 60)) {
+		if (TGBaseGui.isInRect(mouseX, mouseY, 7 - 3, 17 - 4, 4, 59)) {
 			
 			List<String> tooltip = new ArrayList<>();
 			tooltip.add(TextUtil.trans("techguns.container.power")+":");
@@ -50,7 +50,7 @@ public abstract class BasicRecipeWrapper implements IRecipeWrapper {
 	protected abstract int getRFperTick();
 	
 	@Override
-	public void getIngredients(IIngredients ingredients) {
+	public void getIngredients(@NotNull IIngredients ingredients) {
 		
 		List<List<ItemStack>> inputs = recipe.getItemInputs();
 		if(inputs!=null && !inputs.isEmpty()) {

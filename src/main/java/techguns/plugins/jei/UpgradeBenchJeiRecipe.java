@@ -1,5 +1,6 @@
 package techguns.plugins.jei;
 
+import org.jetbrains.annotations.NotNull;
 import techguns.tileentities.operation.UpgradeBenchRecipes.UpgradeBenchRecipe;
 import techguns.util.TextUtil;
 
@@ -41,7 +42,7 @@ public class UpgradeBenchJeiRecipe extends BasicRecipeWrapper {
 	}
 
 	@Override
-	public List<String> getTooltipStrings(int mouseX, int mouseY) {
+	public @NotNull List<String> getTooltipStrings(int mouseX, int mouseY) {
 		return Collections.emptyList();
 	}
 

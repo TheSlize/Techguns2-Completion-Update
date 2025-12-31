@@ -1,21 +1,26 @@
 package techguns.gui;
 
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.inventory.GuiContainer;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.*;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Container;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import techguns.tileentities.BasicInventoryTileEnt;
 import techguns.util.TextUtil;
 
 public abstract class TGBaseGui extends GuiContainer {
 	protected ResourceLocation tex;
 
-	protected boolean showInventoryText=true;
-	
+	protected boolean showInventoryText = true;
+	protected boolean showMachineName = true;
+	protected int invNameX = 8;
+
 	public TGBaseGui(Container inventorySlotsIn) {
 		super(inventorySlotsIn);
 	}
@@ -42,11 +47,11 @@ public abstract class TGBaseGui extends GuiContainer {
         int color = 4210752; //0xff101010;
         
         if(this.showInventoryText) {
-        	this.fontRenderer.drawString(TextUtil.trans("container.inventory"), 8, this.ySize - 96 + 2, color);
+        	this.fontRenderer.drawString(TextUtil.trans("container.inventory"), invNameX, this.ySize - 96 + 2, color);
         }
         
         String s = tileent.getDisplayName().getFormattedText();
-        this.fontRenderer.drawString(s, this.xSize / 2 - this.fontRenderer.getStringWidth(s) / 2, 6, color);
+		if(showMachineName) this.fontRenderer.drawString(s, this.xSize / 2 - this.fontRenderer.getStringWidth(s) / 2, 6, color);
 	}
 	
 	@Override
@@ -73,6 +78,27 @@ public abstract class TGBaseGui extends GuiContainer {
     		this.drawTexturedModelRectFromIconFluidTank(x, y+height-offset-len, tex,width,len);
     		offset+=tex.getIconHeight();
     	}
+	}
+
+	public void renderItem(ItemStack stack, int x, int y) {
+		if (stack.isEmpty()) return;
+
+		GlStateManager.pushMatrix();
+		GlStateManager.color(1F, 1F, 1F, 1F);
+		RenderHelper.enableGUIStandardItemLighting();
+		OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240F, 240F);
+		GlStateManager.enableRescaleNormal();
+
+		this.itemRender.zLevel = 10.0F;
+		this.itemRender.renderItemAndEffectIntoGUI(new ItemStack(stack.getItem(), 1, stack.getMetadata()), this.guiLeft + x, this.guiTop + y);
+		this.itemRender.zLevel = 0.0F;
+
+		GlStateManager.disableRescaleNormal();
+		RenderHelper.disableStandardItemLighting();
+		GlStateManager.enableAlpha();
+		GlStateManager.color(1F, 1F, 1F, 1F);
+
+		GlStateManager.popMatrix();
 	}
 	
 	protected void drawTexturedModelRectFromIconFluidTank(int x, int y, TextureAtlasSprite icon, int w, int h)
@@ -104,5 +130,9 @@ public abstract class TGBaseGui extends GuiContainer {
         bufferbuilder.pos((double)(x + 0), (double)(y + 0), (double)this.zLevel).tex((double)((float)(textureX + 0) * 0.00390625F), (double)((float)(textureY + 0) * 0.00390625F)).color(r, g, b, a).endVertex();
         tessellator.draw();
     }
+
+	protected void playVanillaButtonSound() {
+		mc.getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(SoundEvents.UI_BUTTON_CLICK, 1.0F));
+	}
     
 }

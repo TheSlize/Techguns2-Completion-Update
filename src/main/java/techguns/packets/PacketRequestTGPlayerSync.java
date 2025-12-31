@@ -42,7 +42,7 @@ public class PacketRequestTGPlayerSync implements IMessage {
 				EntityPlayer tracked = (EntityPlayer) ent;
 				TGExtendedPlayer props = TGExtendedPlayer.get(tracked);
 				if(props!=null) {
-					TGPackets.network.sendTo(new PacketTGExtendedPlayerSync(tracked, props, false), (EntityPlayerMP) sender);
+					TGPackets.wrapper.sendTo(new PacketTGExtendedPlayerSync(tracked, props, false), (EntityPlayerMP) sender);
 				}
 				
 			}

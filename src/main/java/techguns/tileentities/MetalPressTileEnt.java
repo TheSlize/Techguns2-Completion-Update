@@ -1,12 +1,22 @@
 package techguns.tileentities;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.oredict.OreDictionary;
+import org.jetbrains.annotations.Nullable;
+import techguns.TGFluids;
 import techguns.TGItems;
 import techguns.TGSounds;
 import techguns.gui.ButtonConstants;
@@ -25,11 +35,90 @@ public class MetalPressTileEnt extends BasicMachineTileEnt {
 	public static final int SLOT_UPGRADE=3;
 	
 	public static final int BUTTON_ID_AUTOSPLIT = ButtonConstants.BUTTON_ID_REDSTONE+1;
-	
-	int minSoundDelay = 0;
+
+	protected int pressureLevel = 0;
+	protected int pressureTickCounter = 0;
 	byte autoSlitMode =0;
 	
 	public static final int POWER_PER_TICK=20;
+
+	protected static final int STEAM_CAPACITY = 16 * Fluid.BUCKET_VOLUME;
+	protected static final int MAX_PRESSURE_LEVEL = 12;
+	protected static final int PRESSURE_TICKS_PER_LEVEL = 40;
+
+	protected final FluidTank steamTank = new FluidTank(STEAM_CAPACITY) {
+		@Override
+		public boolean canFillFluidType(FluidStack fluid) {
+			return MetalPressTileEnt.this.canAcceptSteam(fluid);
+		}
+
+		@Override
+		public int fill(FluidStack resource, boolean doFill) {
+			if (!MetalPressTileEnt.this.canAcceptSteam(resource)) {
+				return 0;
+			}
+
+			FluidStack normalized = MetalPressTileEnt.this.normalizeSteamStack(resource);
+			int filled = super.fill(normalized, doFill);
+			if (filled > 0 && doFill) {
+				MetalPressTileEnt.this.onSteamChanged();
+			}
+			return filled;
+		}
+
+		@Override
+		public FluidStack drain(FluidStack resource, boolean doDrain) {
+			FluidStack drained = super.drain(resource, doDrain);
+			if (drained != null && doDrain) {
+				MetalPressTileEnt.this.onSteamChanged();
+			}
+			return drained;
+		}
+
+		@Override
+		public FluidStack drain(int maxDrain, boolean doDrain) {
+			FluidStack drained = super.drain(maxDrain, doDrain);
+			if (drained != null && doDrain) {
+				MetalPressTileEnt.this.onSteamChanged();
+			}
+			return drained;
+		}
+
+		@Override
+		protected void onContentsChanged() {
+			super.onContentsChanged();
+			MetalPressTileEnt.this.markDirty();
+			MetalPressTileEnt.this.setContentsChanged(true);
+		}
+	};
+
+	private FluidStack normalizeSteamStack(FluidStack stack) {
+		if (stack == null) {
+			return null;
+		}
+		Fluid canonical = this.getCanonicalSteamFluid();
+		if (canonical == null) {
+			return stack;
+		}
+		Fluid incoming = stack.getFluid();
+		if (incoming != null && incoming != canonical && "steam".equalsIgnoreCase(incoming.getName())) {
+			FluidStack converted = new FluidStack(canonical, stack.amount);
+			if (stack.tag != null) {
+				converted.tag = stack.tag.copy();
+			}
+			return converted;
+		}
+		return stack;
+	}
+
+	@Nullable
+	private Fluid getCanonicalSteamFluid() {
+		Fluid steam = TGFluids.STEAM;
+		if (steam == null) {
+			steam = FluidRegistry.getFluid("steam");
+		}
+		return steam;
+	}
 	
 	public MachineSlotItem input1;
 	public MachineSlotItem input2;
@@ -56,7 +145,7 @@ public class MetalPressTileEnt extends BasicMachineTileEnt {
 				case SLOT_OUTPUT:
 					return false;
 				case SLOT_UPGRADE:
-					return TGItems.isMachineUpgrade(stack);
+					return TGItems.isMachineUpgrade(stack) || TGItems.isSteamUpgrade(stack);
 				}
 				return false;
 			}
@@ -71,21 +160,48 @@ public class MetalPressTileEnt extends BasicMachineTileEnt {
 
 	@Override
 	public ITextComponent getDisplayName() {
-		return new TextComponentTranslation("techguns.container.metalpress", new Object[0]);
+		return new TextComponentTranslation("techguns.container.metalpress");
 	}
-	
+
 	@Override
 	public void readClientDataFromNBT(NBTTagCompound tags) {
 		super.readClientDataFromNBT(tags);
-		this.autoSlitMode=tags.getByte("autoSplitMode");
+		this.autoSlitMode = tags.getByte("autoSplitMode");
+		if (tags.hasKey("steamTank")) {
+			this.steamTank.readFromNBT(tags.getCompoundTag("steamTank"));
+		} else {
+			this.steamTank.setFluid(null);
+		}
+		this.pressureLevel = tags.getInteger("pressureLevel");
 	}
-
-
 
 	@Override
 	public void writeClientDataToNBT(NBTTagCompound tags) {
 		super.writeClientDataToNBT(tags);
-		tags.setByte("autoSplitMode",this.autoSlitMode);
+		tags.setByte("autoSplitMode", this.autoSlitMode);
+		tags.setTag("steamTank", this.steamTank.writeToNBT(new NBTTagCompound()));
+		tags.setInteger("pressureLevel", this.pressureLevel);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound compound) {
+		super.readFromNBT(compound);
+		if (compound.hasKey("SteamTank")) {
+			this.steamTank.readFromNBT(compound.getCompoundTag("SteamTank"));
+		} else {
+			this.steamTank.setFluid(null);
+		}
+		this.pressureLevel = compound.getInteger("PressureLevel");
+		this.pressureTickCounter = compound.getInteger("PressureTickCounter");
+	}
+
+	@Override
+	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+		super.writeToNBT(compound);
+		compound.setTag("SteamTank", this.steamTank.writeToNBT(new NBTTagCompound()));
+		compound.setInteger("PressureLevel", this.pressureLevel);
+		compound.setInteger("PressureTickCounter", this.pressureTickCounter);
+		return compound;
 	}
 
 	@Override
@@ -98,8 +214,8 @@ public class MetalPressTileEnt extends BasicMachineTileEnt {
 
 	protected void splitSlot(MachineSlotItem src, MachineSlotItem target) {
 		int amount = src.get().getCount();
-		int amount2 = amount/2;
-		int amount1 = amount-amount2;
+		int amount2 = amount / 2;
+		int amount1 = amount - amount2;
 		
 		ItemStack targetStack = src.get().copy();
 		src.get().setCount(amount1);
@@ -119,51 +235,84 @@ public class MetalPressTileEnt extends BasicMachineTileEnt {
 			} else if (this.input1.get().isEmpty() && !this.input2.get().isEmpty() && this.input2.get().getCount()>1) {
 				if(!MetalPressRecipes.getOutputFor(this.input2.get(), this.input2.get()).isEmpty()) {
 					this.splitSlot(input2, input1);
-				}			
+				}
 			}
 		}
-		
-		
-		ItemStack output = MetalPressRecipes.getOutputFor(input1.get(), input2.get());//AmmoPressBuildPlans.getOutputFor(content[0],content[1], this.buildPlan);//AmmoPressRecipe.isRecipe(input);
+
+		ItemStack stackInput1 = this.input1.get();
+		ItemStack stackInput2 = this.input2.get();
+
+		MetalPressRecipes.MetalPressRecipe matchedRecipe = MetalPressRecipes.getRecipeForInputs(stackInput1, stackInput2);
+		ItemStack output = matchedRecipe != null ? matchedRecipe.output : ItemStack.EMPTY;
 
 		this.setContentsChanged(false);
-		
-		if (!output.isEmpty() && canOutput(output,SLOT_OUTPUT)){
-					
-			//check for multistack operation
-			ItemStack outputStack = TGItems.newStack(output, output.getCount());
-			int maxStack=this.getMaxMachineUpgradeMultiplier(SLOT_UPGRADE);
-			
-			int originalStacksize = output.getCount();
-			int multiplier=1;
-			int i;
-			for (i=maxStack;i>1;--i){
-				outputStack.setCount(output.getCount()*i);
 
-				if (canOutput(outputStack,SLOT_OUTPUT)){
-					if(this.input1.get().getCount()>=i && this.input2.get().getCount()>=i){
-						multiplier=i;
-						break;
-					}
-				}
-				
+		if (matchedRecipe == null || output.isEmpty() || !canOutput(output,SLOT_OUTPUT)) {
+			return;
+		}
+
+		boolean requiresSteam = matchedRecipe.requiresSteam();
+		if (requiresSteam) {
+			if (!this.hasSteamUpgrade()) {
+				return;
 			}
-			
-			this.input1.consume(multiplier);
-			this.input2.consume(multiplier);
-			
-			this.progress=0;
-			this.totaltime=100;
-		
-			ItemStack input1 = this.input1.getTypeWithSize(1);
-			ItemStack input2 = this.input2.getTypeWithSize(1);
-			
-			this.currentOperation = new MachineOperation(output, input1,input2);
-			this.currentOperation.setStackMultiplier(multiplier);
-			
-			if (!this.world.isRemote){
-				this.needUpdate();
+			if (this.pressureLevel < matchedRecipe.requiredPressure) {
+				return;
 			}
+		}
+
+		int required1 = matchedRecipe.input1Count;
+		int required2 = matchedRecipe.input2Count;
+
+		int maxMultiplier = this.getMaxMachineUpgradeMultiplier(SLOT_UPGRADE);
+		int possibleMult = Math.min(stackInput1.getCount() / required1, stackInput2.getCount() / required2);
+		int multiplier = Math.min(possibleMult, maxMultiplier);
+
+		if (requiresSteam && matchedRecipe.steamCost > 0) {
+			int availableSteam = this.steamTank.getFluidAmount();
+			int maxBySteam = availableSteam / matchedRecipe.steamCost;
+			if (maxBySteam <= 0) {
+				return;
+			}
+			multiplier = Math.min(multiplier, maxBySteam);
+		}
+
+		if (multiplier <= 0) {
+			return;
+		}
+
+		if (requiresSteam && matchedRecipe.steamCost > 0) {
+			int totalSteamCost = matchedRecipe.steamCost * multiplier;
+			FluidStack simulatedDrain = this.steamTank.drain(totalSteamCost, false);
+			if (simulatedDrain == null || simulatedDrain.amount < totalSteamCost) {
+				return;
+			}
+			this.steamTank.drain(totalSteamCost, true);
+		}
+
+		this.input1.consume(multiplier * required1);
+		this.input2.consume(multiplier * required2);
+
+		this.progress = 0;
+		this.totaltime = 100;
+
+		ItemStack input1Copy = this.input1.getTypeWithSize(1);
+		ItemStack input2Copy = this.input2.getTypeWithSize(1);
+		ItemStack result = TGItems.newStack(output, output.getCount());
+
+		this.currentOperation = new MachineOperation(result, input1Copy, input2Copy);
+		this.currentOperation.setStackMultiplier(multiplier);
+
+		if (!this.world.isRemote){
+			this.needUpdate();
+		}
+	}
+
+	@Override
+	public void update() {
+		super.update();
+		if (this.world != null && !this.world.isRemote) {
+			tickPressure();
 		}
 	}
 
@@ -172,7 +321,6 @@ public class MetalPressTileEnt extends BasicMachineTileEnt {
 		if (this.inventory.getStackInSlot(SLOT_OUTPUT).isEmpty()) {
 			this.inventory.setStackInSlot(SLOT_OUTPUT, currentOperation.getItemOutput0());
 		} else {
-			//this.inventory.getStackInSlot(SLOT_OUTPUT).grow(currentOperation.getItemOutput0().getCount());
 			this.inventory.insertItemNoCheck(SLOT_OUTPUT, currentOperation.getItemOutput0(), false);
 		}
 	}
@@ -186,6 +334,12 @@ public class MetalPressTileEnt extends BasicMachineTileEnt {
 		
 		if (this.progress == soundTick1 || this.progress == soundTick1+halfTime) {
 			world.playSound(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ(), TGSounds.METAL_PRESS_WORK,SoundCategory.BLOCKS, SOUND_VOLUME, 1.0F, true );
+		}
+
+		if(this.hasSteamUpgrade()) {
+			if (this.progress == soundTick1 + 10 || this.progress == soundTick1 + halfTime + 10) {
+				world.playSound(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ(), SoundEvents.BLOCK_FIRE_EXTINGUISH, SoundCategory.BLOCKS, SOUND_VOLUME, 1.0F, true);
+			}
 		}
 	}
 
@@ -222,7 +376,7 @@ public class MetalPressTileEnt extends BasicMachineTileEnt {
 			return SLOT_INPUT1;
 		} else if(!this.input1.get().isEmpty() && this.input2.get().isEmpty() && (!MetalPressRecipes.getOutputFor(this.input1.get(),item).isEmpty())){
 			return SLOT_INPUT2;
-		} else if(TGItems.isMachineUpgrade(item)) {
+		} else if (TGItems.isMachineUpgrade(item) || TGItems.isSteamUpgrade(item)) {
 			return SLOT_UPGRADE;
 		}
 		return -1;
@@ -239,12 +393,133 @@ public class MetalPressTileEnt extends BasicMachineTileEnt {
 		}
 	}
 
-	protected void changeAutoSplitMode(){
-		if(this.autoSlitMode==0){
-			this.autoSlitMode=1;
+	public void changeAutoSplitMode() {
+		if (this.autoSlitMode == 0) {
+			this.autoSlitMode = 1;
 		} else {
-			this.autoSlitMode=0;
+			this.autoSlitMode = 0;
 		}
 		this.setContentsChanged(true);
+	}
+
+	protected void tickPressure() {
+		if (this.world == null || this.world.isRemote) {
+			return;
+		}
+
+		if (!this.hasSteamUpgrade()) {
+			if (this.steamTank.getFluidAmount() > 0) {
+				this.steamTank.setFluid(null);
+			}
+			if (this.pressureLevel != 0 || this.pressureTickCounter != 0) {
+				this.pressureLevel = 0;
+				this.pressureTickCounter = 0;
+				this.markDirty();
+				this.setContentsChanged(true);
+				this.needUpdate();
+			}
+			return;
+		}
+
+		int maxPressureByFluid = Math.min(MAX_PRESSURE_LEVEL, this.steamTank.getFluidAmount() / Fluid.BUCKET_VOLUME);
+		boolean changed = false;
+
+		if (this.pressureLevel > maxPressureByFluid) {
+			this.pressureLevel = maxPressureByFluid;
+			this.pressureTickCounter = 0;
+			changed = true;
+		}
+
+		if (maxPressureByFluid == 0) {
+			if (this.pressureLevel != 0) {
+				this.pressureLevel = 0;
+				changed = true;
+			}
+			if (this.pressureTickCounter != 0) {
+				this.pressureTickCounter = 0;
+				changed = true;
+			}
+		} else if (this.pressureLevel < maxPressureByFluid) {
+			this.pressureTickCounter++;
+			if (this.pressureTickCounter >= PRESSURE_TICKS_PER_LEVEL) {
+				this.pressureTickCounter = 0;
+				this.pressureLevel++;
+				if (this.pressureLevel > maxPressureByFluid) {
+					this.pressureLevel = maxPressureByFluid;
+				}
+				changed = true;
+			}
+		} else if (this.pressureTickCounter != 0) {
+			this.pressureTickCounter = 0;
+		}
+
+		if (changed) {
+			this.markDirty();
+			this.setContentsChanged(true);
+			this.needUpdate();
+		}
+	}
+
+	protected void onSteamChanged() {
+		if (this.world == null || this.world.isRemote) {
+			return;
+		}
+
+		int maxPressureByFluid = Math.min(MAX_PRESSURE_LEVEL, this.steamTank.getFluidAmount() / Fluid.BUCKET_VOLUME);
+		if (this.pressureLevel > maxPressureByFluid) {
+			this.pressureLevel = maxPressureByFluid;
+			this.pressureTickCounter = 0;
+		}
+
+		this.markDirty();
+		this.setContentsChanged(true);
+		this.needUpdate();
+	}
+
+	protected boolean canAcceptSteam(@Nullable FluidStack fluid) {
+		if (fluid == null || !this.hasSteamUpgrade()) {
+			return false;
+		}
+		Fluid incoming = fluid.getFluid();
+		if (incoming == null) {
+			return false;
+		}
+
+		Fluid canonical = getCanonicalSteamFluid();
+		if (canonical != null && incoming == canonical) {
+			return true;
+		}
+
+		String name = incoming.getName();
+		return name != null && name.equalsIgnoreCase("steam");
+	}
+
+	public boolean hasSteamUpgrade() {
+		ItemStack upgrade = this.inventory.getStackInSlot(SLOT_UPGRADE);
+		return !upgrade.isEmpty() && TGItems.isSteamUpgrade(upgrade);
+	}
+
+	public int getPressureLevel() {
+		return this.pressureLevel;
+	}
+
+	public FluidTank getSteamTank() {
+		return this.steamTank;
+	}
+
+	@Override
+	public boolean hasCapability(Capability<?> capability, @Nullable EnumFacing facing) {
+		if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && this.hasSteamUpgrade()) {
+			return true;
+		}
+		return super.hasCapability(capability, facing);
+	}
+
+	@Override
+	public <T> T getCapability(Capability<T> capability, @Nullable EnumFacing facing) {
+		if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && this.hasSteamUpgrade()) {
+			return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(this.steamTank);
+		}
+		return super.getCapability(capability, facing);
 	}
 }

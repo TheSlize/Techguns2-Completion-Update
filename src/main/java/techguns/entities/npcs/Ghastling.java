@@ -4,7 +4,6 @@ import javax.annotation.Nullable;
 
 import net.minecraft.entity.*;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.ai.EntityAIFindEntityNearestPlayer;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIMoveTowardsRestriction;
@@ -12,11 +11,9 @@ import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAIWanderAvoidWater;
 import net.minecraft.entity.ai.EntityAIWatchClosest;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
-import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.projectile.EntitySmallFireball;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.network.datasync.DataParameter;
 import net.minecraft.network.datasync.DataSerializers;
@@ -24,17 +21,14 @@ import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
-import net.minecraft.world.storage.loot.LootTableList;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.NotNull;
 import techguns.TGPackets;
 import techguns.TGSounds;
 import techguns.Techguns;
@@ -46,13 +40,12 @@ import techguns.capabilities.TGSpawnerNPCData;
 import techguns.client.audio.TGSoundCategory;
 import techguns.damagesystem.TGDamageSource;
 import techguns.entities.projectiles.EnumBulletFirePos;
-import techguns.entities.projectiles.GenericProjectile;
 import techguns.entities.projectiles.RocketProjectile;
 import techguns.packets.PacketPlaySound;
 
 public class Ghastling extends EntityMob implements IMob, INpcTGDamageSystem, INPCTechgunsShooter, ITGSpawnerNPC, ITGNpcTeam {
 
-    private static final DataParameter<Boolean> ATTACKING = EntityDataManager.<Boolean>createKey(Ghastling.class, DataSerializers.BOOLEAN);
+    private static final DataParameter<Boolean> ATTACKING = EntityDataManager.createKey(Ghastling.class, DataSerializers.BOOLEAN);
 
     protected static final ResourceLocation LOOT = new ResourceLocation(Techguns.MODID, "entities/ghastling");
     
@@ -78,7 +71,7 @@ public class Ghastling extends EntityMob implements IMob, INpcTGDamageSystem, IN
     }
 
     @Override
-    public EnumCreatureAttribute getCreatureAttribute()
+    public @NotNull EnumCreatureAttribute getCreatureAttribute()
     {
         return EnumCreatureAttribute.UNDEAD;
     }
@@ -99,31 +92,25 @@ public class Ghastling extends EntityMob implements IMob, INpcTGDamageSystem, IN
          this.tasks.addTask(7, new EntityAIWanderAvoidWater(this, 1.0D, 0.0F));
          this.tasks.addTask(8, new EntityAIWatchClosest(this, EntityPlayer.class, 8.0F));
          this.tasks.addTask(8, new EntityAILookIdle(this));
-         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true, new Class[0]));
+         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
          this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, true));
     }
 
     @SideOnly(Side.CLIENT)
     public boolean isAttacking()
     {
-        return ((Boolean)this.dataManager.get(ATTACKING)).booleanValue();
+        return this.dataManager.get(ATTACKING);
     }
 
-    public void setAttacking(boolean attacking)
-    {
-        this.dataManager.set(ATTACKING, Boolean.valueOf(attacking));
+    public void setAttacking(boolean attacking) {
+        this.dataManager.set(ATTACKING, attacking);
     }
-
-    /*public int getFireballStrength()
-    {
-        return this.explosionStrength;
-    }*/
 
     @Override
     protected void entityInit()
     {
         super.entityInit();
-        this.dataManager.register(ATTACKING, Boolean.valueOf(false));
+        this.dataManager.register(ATTACKING, Boolean.FALSE);
     }
 
     protected void applyEntityAttributes()
@@ -134,24 +121,18 @@ public class Ghastling extends EntityMob implements IMob, INpcTGDamageSystem, IN
        	this.getEntityAttribute(SharedMonsterAttributes.ARMOR).setBaseValue(10.0);
        	this.getEntityAttribute(SharedMonsterAttributes.ARMOR_TOUGHNESS).setBaseValue(0);
     }
-	
-	@Override
-	public SoundCategory getSoundCategory()
-    {
-        return SoundCategory.HOSTILE;
-    }
-	
-	 protected SoundEvent getAmbientSound()
+
+    protected SoundEvent getAmbientSound()
     {
         return SoundEvents.ENTITY_GHAST_AMBIENT;
     }
 
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
+    protected @NotNull SoundEvent getHurtSound(@NotNull DamageSource damageSourceIn)
     {
         return SoundEvents.ENTITY_GHAST_HURT;
     }
 
-    protected SoundEvent getDeathSound()
+    protected @NotNull SoundEvent getDeathSound()
     {
         return SoundEvents.ENTITY_GHAST_DEATH;
     }
@@ -290,7 +271,7 @@ public class Ghastling extends EntityMob implements IMob, INpcTGDamageSystem, IN
                 if (attackTimer == 15) {
                 	
 
-                   TGPackets.network.sendToAllAround(new PacketPlaySound(TGSounds.NETHERBLASTER_FIRE, this.parentEntity, 1.0f, 1.0f, false, false, TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(parentEntity, 100.0f));
+                   TGPackets.wrapper.sendToAllAround(new PacketPlaySound(TGSounds.NETHERBLASTER_FIRE, this.parentEntity, 1.0f, 1.0f, false, false, TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(parentEntity, 100.0f));
                    RocketProjectile rocket = new RocketProjectile(this.parentEntity.world, this.parentEntity,12.0f, 1.15f, 100, 0.05f, 30, 40, 8.0f, 0.25f,false,this.parentEntity.rand.nextBoolean()?EnumBulletFirePos.LEFT:EnumBulletFirePos.RIGHT, 2.0f, 0.0f);
             	    
             	    world.spawnEntity(rocket);
@@ -350,61 +331,37 @@ public class Ghastling extends EntityMob implements IMob, INpcTGDamageSystem, IN
          /**
           * Keep ticking a continuous task that has already been started
           */
-         public void updateTask()
-         {
+         public void updateTask() {
              --this.attackTime;
              EntityLivingBase entitylivingbase = this.parentEntity.getAttackTarget();
              double d0 = this.parentEntity.getDistanceSq(entitylivingbase);
 
-             if (d0 < 4.0D)
-             {
-                 if (this.attackTime <= 0)
-                 {
+             if (d0 < 4.0D) {
+                 if (this.attackTime <= 0) {
                      this.attackTime = 20;
                      this.parentEntity.attackEntityAsMob(entitylivingbase);
                  }
 
                  this.parentEntity.getMoveHelper().setMoveTo(entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ, 1.0D);
              }
-             else if (d0 < this.getFollowDistance() * this.getFollowDistance())
-             {
-                 double d1 = entitylivingbase.posX - this.parentEntity.posX;
-                 double d2 = entitylivingbase.getEntityBoundingBox().minY + (double)(entitylivingbase.height / 2.0F) - (this.parentEntity.posY + (double)(this.parentEntity.height / 2.0F));
-                 double d3 = entitylivingbase.posZ - this.parentEntity.posZ;
-
-                 if (this.attackTime <= 0)
-                 {
+             else if (d0 < this.getFollowDistance() * this.getFollowDistance()) {
+                 if (this.attackTime <= 0) {
                      ++this.attackStep;
 
-                     if (this.attackStep == 1)
-                     {
+                     if (this.attackStep == 1) {
                          this.attackTime = 30;
                          this.parentEntity.setAttacking(true);
-                     }
-                     else if (this.attackStep <= 4)
-                     {
+                     } else if (this.attackStep <= 4) {
                          this.attackTime = 6;
-                     }
-                     else
-                     {
+                     } else {
                          this.attackTime = 50;
                          this.attackStep = 0;
                          //this.parentEntity.setOnFire(false);
                          this.parentEntity.setAttacking(false);
                      }
 
-                     if (this.attackStep > 1)
-                     {
-                         float f = MathHelper.sqrt(MathHelper.sqrt(d0)) * 0.5F;
-                         this.parentEntity.world.playEvent((EntityPlayer)null, 1018, new BlockPos((int)this.parentEntity.posX, (int)this.parentEntity.posY, (int)this.parentEntity.posZ), 0);
-
-                         /*for (int i = 0; i < 1; ++i)
-                         {
-                             EntitySmallFireball entitysmallfireball = new EntitySmallFireball(this.parentEntity.world, this.parentEntity, d1 + this.parentEntity.getRNG().nextGaussian() * (double)f, d2, d3 + this.parentEntity.getRNG().nextGaussian() * (double)f);
-                             entitysmallfireball.posY = this.parentEntity.posY + (double)(this.parentEntity.height / 2.0F) + 0.5D;
-                             this.parentEntity.world.spawnEntity(entitysmallfireball);
-                         }*/
-                        // TGPackets.network.sendToAllAround(new PacketPlaySound(TGSounds.NETHERBLASTER_FIRE, this.parentEntity, 1.0f, 1.0f, false, false, TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(parentEntity, 100.0f));
+                     if (this.attackStep > 1) {
+                         this.parentEntity.world.playEvent(null, 1018, new BlockPos((int)this.parentEntity.posX, (int)this.parentEntity.posY, (int)this.parentEntity.posZ), 0);
                  	    RocketProjectile rocket = new RocketProjectile(this.parentEntity.world, this.parentEntity,15.0f, 1.0f, 100, 0.05f, 30, 40, 8.0f, 0.25f,false,this.parentEntity.rand.nextBoolean()?EnumBulletFirePos.LEFT:EnumBulletFirePos.RIGHT, 1.0f, 0.0f);
                  	    
                  	    this.parentEntity.world.spawnEntity(rocket);
@@ -413,9 +370,7 @@ public class Ghastling extends EntityMob implements IMob, INpcTGDamageSystem, IN
                  }
 
                  this.parentEntity.getLookHelper().setLookPositionWithEntity(entitylivingbase, 10.0F, 10.0F);
-             }
-             else
-             {
+             } else {
                  this.parentEntity.getNavigator().clearPath();
                  this.parentEntity.getMoveHelper().setMoveTo(entitylivingbase.posX, entitylivingbase.posY, entitylivingbase.posZ, 1.0D);
              }
@@ -423,10 +378,9 @@ public class Ghastling extends EntityMob implements IMob, INpcTGDamageSystem, IN
              super.updateTask();
          }
 
-         private double getFollowDistance()
-         {
+         private double getFollowDistance() {
              IAttributeInstance iattributeinstance = this.parentEntity.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE);
-             return iattributeinstance == null ? 16.0D : iattributeinstance.getAttributeValue();
+             return iattributeinstance.getAttributeValue();
          }
      }
 	
@@ -455,7 +409,7 @@ public class Ghastling extends EntityMob implements IMob, INpcTGDamageSystem, IN
 	}
 
 	@Override
-	public void onDeath(DamageSource cause) {
+	public void onDeath(@NotNull DamageSource cause) {
 		super.onDeath(cause);
 		this.onDeathSpawner(world, dead);
 	}
@@ -474,5 +428,30 @@ public class Ghastling extends EntityMob implements IMob, INpcTGDamageSystem, IN
         }
         
         this.onUpdateSpawner(world);
+    }
+
+    @Override
+    public boolean attackEntityFrom(@NotNull DamageSource source, float amount) {
+        if (this.isFriendlyDamage(source)) {
+            return false;
+        }
+        return super.attackEntityFrom(source, amount);
+    }
+
+    private boolean isFriendlyDamage(DamageSource source) {
+        return this.isFriendlyEntity(source.getTrueSource()) || this.isFriendlyEntity(source.getImmediateSource());
+    }
+
+    private boolean isFriendlyEntity(@org.jetbrains.annotations.Nullable Entity entity) {
+        if (entity == null) {
+            return false;
+        }
+        if (entity == this) {
+            return true;
+        }
+        if (entity instanceof ITGNpcTeam) {
+            return ((ITGNpcTeam) entity).getTGFaction() == this.getTGFaction();
+        }
+        return false;
     }
 }

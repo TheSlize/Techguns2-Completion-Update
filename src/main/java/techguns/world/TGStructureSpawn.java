@@ -2,7 +2,6 @@ package techguns.world;
 
 import java.util.ArrayList;
 
-import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeDictionary;
 import techguns.world.structures.WorldgenStructure;
@@ -43,29 +42,18 @@ public class TGStructureSpawn {
 		if (this.biomeWhitelist == null) {
 			return this.spawnWeight;
 		} else {
-			for(int i=0; i<this.biomeWhitelist.size(); i++){
-				if (BiomeDictionary.hasType(biome, this.biomeWhitelist.get(i))){
-					return this.spawnWeight;
-				}
-			}
+            for (BiomeDictionary.Type value : this.biomeWhitelist) {
+                if (BiomeDictionary.hasType(biome, value)) {
+                    return this.spawnWeight;
+                }
+            }
 			
 			return 0;
 		}
 	}
-	
-	public boolean dimensionMatches(World w){
-		int id = w.provider.getDimension();
-		if(this.dimensionIDs.contains(id)){
-			return true;
-		} 
-		return false;
-	}
-	
-	public boolean dimensionMatches(int id){
-		if(this.dimensionIDs.contains(id)){
-			return true;
-		} 
-		return false;
-	}
+
+    public boolean dimensionMatches(int id){
+        return this.dimensionIDs.contains(id);
+    }
 	
 }

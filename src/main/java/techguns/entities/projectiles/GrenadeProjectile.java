@@ -127,7 +127,7 @@ public class GrenadeProjectile extends GenericProjectile {
 
 	protected void explode(){
 		if (!this.world.isRemote){
-			TGPackets.network.sendToAllAround(new PacketSpawnParticle("RocketExplosion", this.posX,this.posY,this.posZ), TGPackets.targetPointAroundEnt(this, 50.0f));
+			TGPackets.wrapper.sendToAllAround(new PacketSpawnParticle("RocketExplosion", this.posX,this.posY,this.posZ), TGPackets.targetPointAroundEnt(this, 50.0f));
 
 			/*Explosion explosion = new Explosion(world, this,this.posX,this.posY, this.posZ, 5, blockdamage, blockdamage);
 			explosion.doExplosionA();

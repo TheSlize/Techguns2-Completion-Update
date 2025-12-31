@@ -8,14 +8,13 @@ import net.minecraft.world.World;
 import techguns.TGBlocks;
 import techguns.blocks.EnumMonsterSpawnerType;
 import techguns.entities.npcs.CyberDemon;
-import techguns.entities.npcs.ZombieMiner;
 import techguns.util.BlockUtils;
 import techguns.util.MBlock;
 import techguns.world.dungeon.presets.specialblocks.MBlockTGSpawner;
 
 public class NetherAltarSmall extends WorldgenStructure {
 
-	static ArrayList<MBlock> blockList = new ArrayList<MBlock>();
+	static ArrayList<MBlock> blockList = new ArrayList<>();
 	static short[][] blocks;
 	static {
 		blockList.add(new MBlock(TGBlocks.NETHER_METAL, 0));

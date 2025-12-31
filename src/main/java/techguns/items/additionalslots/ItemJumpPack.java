@@ -24,7 +24,7 @@ public class ItemJumpPack extends ItemTGSpecialSlotAmmo{
 
 	private static int durPerUse=1;
 	
-	private static final float JUMPBOOST=0.8f;
+	private static final float JUMPBOOST=0.5f;
 	private static final float FREEHEIGHT=8.0f;
 	private static final float FALLDMG = 0.2f;
 	
@@ -90,14 +90,14 @@ public class ItemJumpPack extends ItemTGSpecialSlotAmmo{
 		if (!ply.world.isRemote){
 			TargetPoint targetPoint = TGPackets.targetPointAroundEnt(ply, 50);
 			
-			TGPackets.network.sendToAllAround(new PacketSpawnParticleOnEntity("JumpPackBoost",ply), targetPoint);
-			TGPackets.network.sendToAllAround(new PacketPlaySound(TGSounds.STEAM_JUMP_2, ply, 1.0f, 1.0f, false, true, false, true, TGSoundCategory.PLAYER_EFFECT), targetPoint);
+			TGPackets.wrapper.sendToAllAround(new PacketSpawnParticleOnEntity("JumpPackBoost",ply), targetPoint);
+			TGPackets.wrapper.sendToAllAround(new PacketPlaySound(TGSounds.STEAM_JUMP_2, ply, 1.0f, 1.0f, false, true, false, true, TGSoundCategory.PLAYER_EFFECT), targetPoint);
 		}
 	}
 
 	public void doFallEffect(EntityPlayer ply){
 		if (!ply.world.isRemote){
-			TGPackets.network.sendToAllAround(new PacketSpawnParticle("JumpPackFall",ply.posX, ply.posY, ply.posZ), TGPackets.targetPointAroundEnt(ply, 50));
+			TGPackets.wrapper.sendToAllAround(new PacketSpawnParticle("JumpPackFall",ply.posX, ply.posY, ply.posZ), TGPackets.targetPointAroundEnt(ply, 50));
 		}
 	}
 	

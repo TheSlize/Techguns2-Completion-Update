@@ -46,13 +46,6 @@ public class TGConfig {
 	public static boolean addOreDicts;
 	
 	/**
-	 * IDS
-	 */
-	public static int dataWatcherID_FaceSlot;
-	public static int dataWatcherID_BackSlot;
-	
-	//public static int GUI_ID_tgplayerInventory;
-	/**
 	 * NPC Spawns
 	 */
 	public static int distanceSpawnLevel0;
@@ -79,7 +72,17 @@ public class TGConfig {
 	public static int spawnWeightTGEnd;
 	
 	public static int cl_sortPassesPerTick;
-	
+
+    // Ammo HUD
+	public static boolean cl_enableLegacyHud;
+	public static float cl_ammoTextScale;
+	public static float cl_ammoIconScale;
+    public static float cl_ammoMagTextScale;
+	public static int cl_hudMarginRight;
+	public static int cl_hudMarginBottom;
+	public static int cl_iconTextGap;
+	public static int cl_textMagGap;
+
 	public static float damagePvP;
 	public static float damageTurretToPlayer;
 	public static float damageFactorNPC;
@@ -153,8 +156,8 @@ public class TGConfig {
 	private static final String CATEGORY_ENABLING_ITEMS = "Disable Items";
 	
 	public static final String CLIENTSIDE = "Clientside";
-	private static final String ID_CONFLICTS = "ID Conflicts";
-	private static final String WORLDGEN="World Generation";
+	public static final String AMMOHUD = "Ammo HUD";
+    private static final String WORLDGEN="World Generation";
 	private static final String DAMAGE_FACTORS="Damage Factors";
 	private static final String ORE_DRILLS = "Ore Drills";
 	
@@ -170,16 +173,16 @@ public class TGConfig {
 	public static void initValues() {
 		config.addCustomCategoryComment(CLIENTSIDE, "Clientside options, can be changed when playing on a server");
 		
-		debug = config.getBoolean("debug", config.CATEGORY_GENERAL, false, "Enable debug options and unfinished stuff, disable this for playing.");
+		debug = config.getBoolean("debug", Configuration.CATEGORY_GENERAL, false, "Enable debug options and unfinished stuff, disable this for playing.");
 		
-		upgrade_xp_cost = config.getInt("UpgradeXPCost", config.CATEGORY_GENERAL, 20, 0, 10000, "Base XP value for Upgrade Bench recipes (enchants)");
+		upgrade_xp_cost = config.getInt("UpgradeXPCost", Configuration.CATEGORY_GENERAL, 20, 0, 10000, "Base XP value for Upgrade Bench recipes (enchants)");
 		
-		limitUnsafeModeToOP = config.getBoolean("RestrictUnsafeModeToOP", config.CATEGORY_GENERAL, false, "Only opped players can use the unsafe mode of guns, this OVERRIDES the permission setting 'techguns.allowunsafemode'");
+		limitUnsafeModeToOP = config.getBoolean("RestrictUnsafeModeToOP", Configuration.CATEGORY_GENERAL, false, "Only opped players can use the unsafe mode of guns, this OVERRIDES the permission setting 'techguns.allowunsafemode'");
 		
-		disableAutofeeder = config.getBoolean("disableAutofeeder", config.CATEGORY_GENERAL, false, "Disable automatic feeding of Food in the Techguns tab. Disable autofeeding if you think it breaks the balance");	
-		machinesNeedNoPower = config.getBoolean("machinesNeedNoPower", config.CATEGORY_GENERAL, false, "Machines don't need power, activate this if you don't want to install a mod with generators and still be able to use the machines");
+		disableAutofeeder = config.getBoolean("disableAutofeeder", Configuration.CATEGORY_GENERAL, false, "Disable automatic feeding of Food in the Techguns tab. Disable autofeeding if you think it breaks the balance");
+		machinesNeedNoPower = config.getBoolean("machinesNeedNoPower", Configuration.CATEGORY_GENERAL, false, "Machines don't need power, activate this if you don't want to install a mod with generators and still be able to use the machines");
 		
-		keepLavaRecipesWhenFuelIsPresent = config.getBoolean("keepLavaRecipesWhenFuelIsPresent", config.CATEGORY_GENERAL, false, "Keep recipes with lava instead of fuel even when fuel is present. Fuels need to be added by other mods");
+		keepLavaRecipesWhenFuelIsPresent = config.getBoolean("keepLavaRecipesWhenFuelIsPresent", Configuration.CATEGORY_GENERAL, false, "Keep recipes with lava instead of fuel even when fuel is present. Fuels need to be added by other mods");
 			
 		addCopperIngots = config.getBoolean("addCopperIngot", CATEGORY_ENABLING_ITEMS, true, "Add copper ingots.");
 		addCopperNuggets = config.getBoolean("addCopperNugget", CATEGORY_ENABLING_ITEMS, true, "Add copper nuggets.");
@@ -214,7 +217,7 @@ public class TGConfig {
 		
 		spawnWeightCyberDemon = config.getInt("SpawnWeightCyberDemon", "NPC Spawn", 30, 0, 10000, "Spawn weight for spawning Cyber Demons (Nether only), at 0 spawn will not be registered");
 
-		spawnWeightGhastling = config.getInt("SpawnWeightGhastling", "NPC Spawn", 30, 0, 10000, "Spawn weight for spawning Ghastlings (Nether only), at 0 spawn will not be registered");
+		spawnWeightGhastling = config.getInt("SpawnWeightGhastling", "NPC Spawn", 10, 0, 10000, "Spawn weight for spawning Ghastlings (Nether only), at 0 spawn will not be registered");
 
 		spawnWeightSuperMutantBasic = config.getInt("SpawnWeightSuperMutantBasic", "NPC Spawn", 100, 0, 10000, "Spawn weight for spawning Basic Super Mutants (End only), at 0 spawn will not be registered");
 
@@ -264,9 +267,9 @@ public class TGConfig {
 		
 		spawnOreClusterStructures = config.getBoolean("SpawnOreClusterStructures", WORLDGEN, true, "When worldgen is enabled, include structure spawns that contain ore clusters.");
 		
-		explosiveChargeMaxBlockHardness = config.getFloat("ExplosiveChargeMaxHardness", config.CATEGORY_GENERAL, 30.0f, 0.0f, Float.MAX_VALUE, "Highest blockHardness normal explosive charges can break, obsidian is 50.0)");
+		explosiveChargeMaxBlockHardness = config.getFloat("ExplosiveChargeMaxHardness", Configuration.CATEGORY_GENERAL, 30.0f, 0.0f, Float.MAX_VALUE, "Highest blockHardness normal explosive charges can break, obsidian is 50.0)");
 		
-		explosiveChargeAdvancedMaxBlockHardness = config.getFloat("ExplosiveChargeAdvancedMaxHardness", config.CATEGORY_GENERAL, 100.0f, 0.0f, Float.MAX_VALUE, "Highest blockHardness advanced explosive charges can break, obsidian is 50.0)");
+		explosiveChargeAdvancedMaxBlockHardness = config.getFloat("ExplosiveChargeAdvancedMaxHardness", Configuration.CATEGORY_GENERAL, 100.0f, 0.0f, Float.MAX_VALUE, "Highest blockHardness advanced explosive charges can break, obsidian is 50.0)");
 		
 		
 		cl_enableDeathFX = config.getBoolean("EnableDeathEffects", CLIENTSIDE, true, "Enable Death Effects, pure clientside check.");
@@ -278,9 +281,17 @@ public class TGConfig {
 		cl_fixedSprintFov = config.getFloat("FixedSprintFovMultiplier", CLIENTSIDE, 1.15f, 1.0f, 10.0f, "Multiply the FOV while sprinting by this value independent from the actual speed, has no effect when LockSpeedDependantFov is false, pure clientside check.");
 		
 		cl_sortPassesPerTick = config.getInt("ParticleDepthSortPasses", CLIENTSIDE, 10, 0, 20, "How many bubble sort passes should be performed each tick on particles. 0=off. Clientside");
+
+        cl_enableLegacyHud = config.getBoolean("EnableLegacyHud", AMMOHUD, false, "Enables legacy ammo HUD while holding a gun (legacy - before 2.1 version)");
+        cl_ammoTextScale = config.getFloat("AmmoTextScale", AMMOHUD, 1.0F, 0.01F, 10.0F, "Changes the scale of the ammo text (e.g. 30/30 on AKM)");
+        cl_ammoIconScale = config.getFloat("AmmoIconScale", AMMOHUD, 1.0F, 0.01F, 10.0F, "Changes the scale of the ammo icon (e.g. rifle ammo on AKM)");
+        cl_ammoMagTextScale = config.getFloat("MagTextScale", AMMOHUD, 0.65F, 0.01F, 10.0F, "Changes the scale of the magazine count text (e.g. x19)");
+        cl_hudMarginRight = config.getInt("HudMarginRight", AMMOHUD, 40, 0, 9999, "How many pixels should the ammo counter be away from the right side of the screen?");
+        cl_hudMarginBottom = config.getInt("HudMarginBottom", AMMOHUD, 40, 0, 9999, "How many pixels should the ammo counter be away from the bottom side of the screen?");
+        cl_iconTextGap = config.getInt("HudIconTextGap", AMMOHUD, 6, 0, 999, "How many pixels should the ammo icon be away from the ammo count text? (note: it's always moved LEFT from the text)");
+        cl_textMagGap = config.getInt("HudTextMagGap", AMMOHUD, 3, 0, 999, "How many pixels should the mag count text be away from the ammo count text? (note: it's always moved LOWER from the a.c. text)");
 		
-		
-		WIP_disableRadiationSystem = config.getBoolean("WIP_disableRadiationSystem", config.CATEGORY_GENERAL, false, "Disable Radiation for players. (Radiation system is still WIP)");
+		WIP_disableRadiationSystem = config.getBoolean("WIP_disableRadiationSystem", Configuration.CATEGORY_GENERAL, false, "Disable Radiation for players. (Radiation system is still WIP)");
 
 		fluidListFuel = config.getStringList("FluidListFuel", "Fluid Recipes", new String[]{"fuel", "refined_fuel", "biofuel", "biodiesel", "diesel", "gasoline", "fluiddiesel", "fluidnitrodiesel", "fliudnitrofuel", "refined_biofuel", "fire_water", "rocket_fuel"}, "Fluids that can be used to fill up fuel tanks");
 		fluidListOil = config.getStringList("FluidListOil", "Fluid Recipes", new String[]{"oil", "tree_oil", "crude_oil", "fluidoil", "seed_oil"}, "Fluids that are treated as oil.");
@@ -305,25 +316,25 @@ public class TGConfig {
 		mininglevel_nether_crystal = config.getInt("cluster_mininglevel_nether_crystal", ORE_DRILLS,  2, 0, 10, "Mining Level for nether crystal ore clusters");
 		mininglevel_oil = config.getInt("cluster_mininglevel_oil", ORE_DRILLS,  					  2, 0, 10, "Mining Level for oil clusters");
 			
-		oremult_coal = config.getFloat("cluster_oremult_coal", ORE_DRILLS,  				   10f, 0.0001f, 1000f, "Ore Multiplier for coal ore clusters");
-		oremult_common_metal = config.getFloat("cluster_oremult_common_metal", ORE_DRILLS,      5f, 0.0001f, 1000f, "Ore Multiplier for common metal ore clusters");
-		oremult_rare_metal = config.getFloat("cluster_oremult_rare_metal", ORE_DRILLS,        2.5f, 0.0001f, 1000f, "Ore Multiplier for rare metal ore clusters");
-		oremult_shiny_metal = config.getFloat("cluster_oremult_shiny_metal", ORE_DRILLS,        1f, 0.0001f, 1000f, "Ore Multiplier for shiny metal ore clusters");
-		oremult_uranium = config.getFloat("cluster_oremult_uranium", ORE_DRILLS,              0.5f, 0.0001f, 1000f, "Ore Multiplier for uranium ore clusters");
-		oremult_common_gem = config.getFloat("cluster_oremult_common_gem", ORE_DRILLS,          5f, 0.0001f, 1000f, "Ore Multiplier for common gem ore clusters");
-		oremult_shiny_gem = config.getFloat("cluster_oremult_shiny_gem", ORE_DRILLS, 		  0.2f, 0.0001f, 1000f, "Ore Multiplier for shiny gem ore clusters");
-		oremult_nether_crystal = config.getFloat("cluster_oremult_nether_crystal", ORE_DRILLS,  4f, 0.0001f, 1000f, "Ore Multiplier for nether crystal ore clusters");
-		oremult_oil = config.getFloat("cluster_oremult_oil", ORE_DRILLS,  						4f, 0.0001f, 1000f, "Ore Multiplier for oil clusters");
+		oremult_coal = config.getFloat("cluster_oremult_coal", ORE_DRILLS,  				   20f, 0.0001f, 1000f, "Ore Multiplier for coal ore clusters");
+		oremult_common_metal = config.getFloat("cluster_oremult_common_metal", ORE_DRILLS,      10f, 0.0001f, 1000f, "Ore Multiplier for common metal ore clusters");
+		oremult_rare_metal = config.getFloat("cluster_oremult_rare_metal", ORE_DRILLS,        5f, 0.0001f, 1000f, "Ore Multiplier for rare metal ore clusters");
+		oremult_shiny_metal = config.getFloat("cluster_oremult_shiny_metal", ORE_DRILLS,        2f, 0.0001f, 1000f, "Ore Multiplier for shiny metal ore clusters");
+		oremult_uranium = config.getFloat("cluster_oremult_uranium", ORE_DRILLS,              1f, 0.0001f, 1000f, "Ore Multiplier for uranium ore clusters");
+		oremult_common_gem = config.getFloat("cluster_oremult_common_gem", ORE_DRILLS,          10f, 0.0001f, 1000f, "Ore Multiplier for common gem ore clusters");
+		oremult_shiny_gem = config.getFloat("cluster_oremult_shiny_gem", ORE_DRILLS, 		  0.4f, 0.0001f, 1000f, "Ore Multiplier for shiny gem ore clusters");
+		oremult_nether_crystal = config.getFloat("cluster_oremult_nether_crystal", ORE_DRILLS,  8f, 0.0001f, 1000f, "Ore Multiplier for nether crystal ore clusters");
+		oremult_oil = config.getFloat("cluster_oremult_oil", ORE_DRILLS,  						8f, 0.0001f, 1000f, "Ore Multiplier for oil clusters");
 		
-		powermult_coal = config.getFloat("cluster_powermult_coal", ORE_DRILLS,                      0.1f, 0.0001f, 1000f, "Power Multiplier for coal ore clusters");
-		powermult_common_metal = config.getFloat("cluster_powermult_common_metal", ORE_DRILLS,      0.2f, 0.0001f, 1000f, "Power Multiplier for common metal ore clusters");
-		powermult_rare_metal = config.getFloat("cluster_powermult_rare_metal", ORE_DRILLS,          0.4f, 0.0001f, 1000f, "Power Multiplier for rare metal ore clusters");
-		powermult_shiny_metal = config.getFloat("cluster_powermult_shiny_metal", ORE_DRILLS, 		1.0f, 0.0001f, 1000f, "Power Multiplier for shiny metal ore clusters");
-		powermult_uranium = config.getFloat("cluster_powermult_uranium", ORE_DRILLS, 				1.0f, 0.0001f, 1000f, "Power Multiplier for uranium ore clusters");
-		powermult_common_gem = config.getFloat("cluster_powermult_common_gem", ORE_DRILLS,  		0.2f, 0.0001f, 1000f, "Power Multiplier for common gem ore clusters");
-		powermult_shiny_gem = config.getFloat("cluster_powermult_shiny_gem", ORE_DRILLS,            1.0f, 0.0001f, 1000f, "Power Multiplier for shiny gem ore clusters");
-		powermult_nether_crystal = config.getFloat("cluster_powermult_nether_crystal", ORE_DRILLS,  0.5f, 0.0001f, 1000f, "Power Multiplier for nether crystal ore clusters");
-		powermult_oil = config.getFloat("cluster_powermult_oil", ORE_DRILLS,  						1.0f, 0.0001f, 1000f, "Power Multiplier for oil clusters");
+		powermult_coal = config.getFloat("cluster_powermult_coal", ORE_DRILLS,                      0.08f, 0.0001f, 1000f, "Power Multiplier for coal ore clusters");
+		powermult_common_metal = config.getFloat("cluster_powermult_common_metal", ORE_DRILLS,      0.16f, 0.0001f, 1000f, "Power Multiplier for common metal ore clusters");
+		powermult_rare_metal = config.getFloat("cluster_powermult_rare_metal", ORE_DRILLS,          0.32f, 0.0001f, 1000f, "Power Multiplier for rare metal ore clusters");
+		powermult_shiny_metal = config.getFloat("cluster_powermult_shiny_metal", ORE_DRILLS, 		0.8f, 0.0001f, 1000f, "Power Multiplier for shiny metal ore clusters");
+		powermult_uranium = config.getFloat("cluster_powermult_uranium", ORE_DRILLS, 				0.8f, 0.0001f, 1000f, "Power Multiplier for uranium ore clusters");
+		powermult_common_gem = config.getFloat("cluster_powermult_common_gem", ORE_DRILLS,  		0.16f, 0.0001f, 1000f, "Power Multiplier for common gem ore clusters");
+		powermult_shiny_gem = config.getFloat("cluster_powermult_shiny_gem", ORE_DRILLS,            0.8f, 0.0001f, 1000f, "Power Multiplier for shiny gem ore clusters");
+		powermult_nether_crystal = config.getFloat("cluster_powermult_nether_crystal", ORE_DRILLS,  0.4f, 0.0001f, 1000f, "Power Multiplier for nether crystal ore clusters");
+		powermult_oil = config.getFloat("cluster_powermult_oil", ORE_DRILLS,  						0.8f, 0.0001f, 1000f, "Power Multiplier for oil clusters");
 		
 		
 		if(config.hasChanged()) {

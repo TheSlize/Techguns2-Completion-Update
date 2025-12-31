@@ -48,7 +48,7 @@ public class SonicShotgun extends GenericGun {
     		proj.shiftForward(offset);
     	}
     	world.spawnEntity(proj);
-    	TGPackets.network.sendToAllAround(new PacketSpawnParticleOnEntity("SonicShotgunTrail", proj), TGPackets.targetPointAroundEnt(proj, 100.0f));
+    	TGPackets.wrapper.sendToAllAround(new PacketSpawnParticleOnEntity("SonicShotgunTrail", proj), TGPackets.targetPointAroundEnt(proj, 100.0f));
     	
 		
 		//Vec3 motion = Vec3.createVectorHelper(proj.motionX, proj.motionY, proj.motionZ).normalize(); //Shoot direction

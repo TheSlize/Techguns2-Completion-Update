@@ -10,7 +10,8 @@ public enum EnumOreClusterType implements IEnumOreClusterType {
 	COMMON_GEM(1,0.8f),
 	SHINY_GEM(3,0.1f),
 	NETHER_CRYSTAL(2,0.5f),
-	OIL(2,0.5f)
+	OIL(2,0.5f),
+	UNIVERSAL(2, 1f)
 	;
 
 	protected int mininglevel;

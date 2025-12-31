@@ -1,5 +1,6 @@
 package techguns.items.guns;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.input.Keyboard;
@@ -44,6 +45,7 @@ public class GenericGrenade extends GenericItem implements IItemTGRenderer{
 	public float spread = 0.1f;
 	
 	public float penetration =0f;
+	public static ArrayList<GenericGrenade> grenades = new ArrayList<>();
 	
 	protected SoundEvent startSound=null;
 	
@@ -55,6 +57,7 @@ public class GenericGrenade extends GenericItem implements IItemTGRenderer{
 		setNoRepair();
 		this.maxUseDur=maxUseDur;
 		this.projectile_factory = projectile_factory;
+		grenades.add(this);
 	}
 	
 	public GenericGrenade setStartSound(SoundEvent sound) {
@@ -104,7 +107,7 @@ public class GenericGrenade extends GenericItem implements IItemTGRenderer{
 	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
     	playerIn.setActiveHand(handIn);
     	if(!worldIn.isRemote && this.startSound!=null) {
-    		TGPackets.network.sendToAllAround(new PacketPlaySound(this.startSound, playerIn, 1, 1, false, false, true, true, TGSoundCategory.PLAYER_EFFECT), TGPackets.targetPointAroundEnt(playerIn, 24.0f));
+    		TGPackets.wrapper.sendToAllAround(new PacketPlaySound(this.startSound, playerIn, 1, 1, false, false, true, true, TGSoundCategory.PLAYER_EFFECT), TGPackets.targetPointAroundEnt(playerIn, 24.0f));
     	}
     	return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
 	}

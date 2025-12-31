@@ -9,7 +9,6 @@ import net.minecraft.world.World;
 import techguns.TGBlocks;
 import techguns.Techguns;
 import techguns.blocks.EnumMonsterSpawnerType;
-import techguns.entities.npcs.Ghastling;
 import techguns.entities.npcs.ZombiePigmanSoldier;
 import techguns.util.BlockUtils;
 import techguns.util.MBlock;
@@ -20,7 +19,7 @@ public class NetherLoot01 extends WorldgenStructure {
 
 	private static final ResourceLocation CHEST_LOOT = new ResourceLocation(Techguns.MODID,"chests/factory_building");
 		
-	static ArrayList<MBlock> blockList = new ArrayList<MBlock>();
+	static ArrayList<MBlock> blockList = new ArrayList<>();
 	static short[][] blocks;
 	
 	static {		

@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHandSide;
+import org.jetbrains.annotations.NotNull;
 import techguns.api.capabilities.AttackTime;
 import techguns.api.capabilities.ITGShooterValues;
 import techguns.api.npc.INPCTechgunsShooter;
@@ -25,7 +26,7 @@ public class RenderGunBase extends RenderItemBase {
 	
 	protected IScreenEffect scope=null;
 	
-	protected float muzzleFX_x_l=0f;
+	protected float muzzleFX_x_l=-1f;
 	protected float muzzleFX_x_r=0f;
 	protected float muzzleFX_y=0f;
 	protected float muzzleFX_z=0f;
@@ -106,12 +107,6 @@ public class RenderGunBase extends RenderItemBase {
 		return this;
 	}
 	
-	public RenderGunBase setRecoilAnim3p(GunAnimation anim, float... params) {
-		this.recoilAnim3p = anim;
-		this.recoilParams3p = params;
-		return this;
-	}
-	
 	public RenderGunBase setChargeTranslationAmount(float value) {
 		this.chargeTranslation=value;
 		return this;
@@ -178,56 +173,49 @@ public class RenderGunBase extends RenderItemBase {
 	}
 
 	@Override
-	public void renderItem(TransformType transform, ItemStack stack, EntityLivingBase entityIn, boolean leftHand) {
+	public void renderItem(@NotNull TransformType transform, @NotNull ItemStack stack, EntityLivingBase entityIn, boolean leftHand) {
 		GenericGun gun = ((GenericGun) stack.getItem());
 		ITGShooterValues values = getShooterValues(entityIn);
-		
-		//System.out.println("Render:"+stack+" for "+entityIn);
-		
 		boolean sneaking = false;
 		boolean isOffhand = false;
 		if (entityIn!=null){
 			sneaking = entityIn.isSneaking();
 			isOffhand = ((!leftHand) && entityIn.getPrimaryHand() == EnumHandSide.LEFT) || ((leftHand) && entityIn.getPrimaryHand() == EnumHandSide.RIGHT);
-			
-//			if (entityIn.getPrimaryHand()== EnumHandSide.LEFT){
-//				leftHand = !leftHand;
-//			}
-			
-//			if ((transform == TransformType.FIRST_PERSON_LEFT_HAND || transform == TransformType.FIRST_PERSON_RIGHT_HAND) &&ClientProxy.PARTIAL_TICK_TIME < 0.05f)
-//				System.out.println("Lefthand = "+leftHand+" isOffhand = "+isOffhand);
 		}
 
 		GlStateManager.pushMatrix();
-		
-		
+        GlStateManager.disableCull();
+		GlStateManager.translate(0.5f, 0.5f, 0.5f);
+
+
 
 		float fireProgress = 0.0f;
 		float reloadProgress = 0.0f;
 		float muzzleFlashProgress = 0.0f;
 		float chargeProgress = 0.0f;
-		
-		byte attackType=0;
-		
-		boolean renderScope = false;
+
+        boolean renderScope = false;
+
+		if (transform == TransformType.FIRST_PERSON_LEFT_HAND || transform == TransformType.THIRD_PERSON_LEFT_HAND) {
+			GlStateManager.translate(-1f, 0f, 0f);
+		}
 		
 		if (values != null && (TransformType.FIRST_PERSON_LEFT_HAND == transform || TransformType.FIRST_PERSON_RIGHT_HAND == transform
 				|| TransformType.THIRD_PERSON_LEFT_HAND == transform || TransformType.THIRD_PERSON_RIGHT_HAND == transform)) {
 			AttackTime attack = values.getAttackTime(isOffhand);
-			attackType = attack.getAttackType();
-			
-			if (gun.canCharge() && !isOffhand && !entityIn.getActiveItemStack().isEmpty()) {
-			
+
+            if (entityIn != null && gun.canCharge() && !isOffhand && !entityIn.getActiveItemStack().isEmpty()) {
+
 				int dur = stack.getItem().getMaxItemUseDuration(stack)-entityIn.getItemInUseCount();
 
 				chargeProgress = dur / ((GenericGunCharge)stack.getItem()).fullChargeTime;
-				
+
 				if (chargeProgress < 0.0f) {
 					chargeProgress = 0.0f;
 				} else if (chargeProgress > 1.0f) {
 					chargeProgress = 1.0f;
 				}
-				
+
 			} else if (attack.isReloading()) {
 				long diff = attack.getReloadTime() - System.currentTimeMillis();
 
@@ -239,9 +227,6 @@ public class RenderGunBase extends RenderItemBase {
 					reloadProgress = 1.0f - ((float) diff / (float) attack.getReloadTimeTotal());
 				}
 			} else if (attack.isRecoiling()) {
-				
-				//System.out.println(stack+": LeftHand:"+leftHand+ "  Offand:"+isOffhand);
-				
 				long diff = attack.getRecoilTime() - System.currentTimeMillis();
 
 				if (diff <= 0) {
@@ -251,29 +236,26 @@ public class RenderGunBase extends RenderItemBase {
 					attack.setRecoilChargeProgress(0f);
 				} else {
 					fireProgress = 1.0f - ((float) diff / (float) attack.getRecoilTimeTotal());
-					
+
 					if (gun.canCharge()) {
-						chargeProgress = (1.0f- fireProgress) * attack.getRecoilChargeProgress();						
+						chargeProgress = (1.0f- fireProgress) * attack.getRecoilChargeProgress();
 					}
 
 				}
 			}
-			
-			if (TransformType.FIRST_PERSON_LEFT_HAND == transform || TransformType.FIRST_PERSON_RIGHT_HAND == transform  || TransformType.THIRD_PERSON_LEFT_HAND == transform || TransformType.THIRD_PERSON_RIGHT_HAND == transform){
-				//Calculate muzzleFlash progress
-								
-				if(attack.getMuzzleFlashTime()>0) {
-					long diff = attack.getMuzzleFlashTime() - System.currentTimeMillis();
-					if (diff <= 0 || diff > attack.getMuzzleFlashTimeTotal()) {
-						attack.setMuzzleFlashTime(0L);
-						attack.setMuzzleFlashTimeTotal(0);
-					}else{			
-						muzzleFlashProgress = 1.0f-((float)diff / (float)attack.getMuzzleFlashTimeTotal());
-					}		
+
+			//Calculate muzzleFlash progress
+
+			if(attack.getMuzzleFlashTime()>0) {
+				long diff = attack.getMuzzleFlashTime() - System.currentTimeMillis();
+				if (diff <= 0 || diff > attack.getMuzzleFlashTimeTotal()) {
+					attack.setMuzzleFlashTime(0L);
+					attack.setMuzzleFlashTimeTotal(0);
+				}else{
+					muzzleFlashProgress = 1.0f-((float)diff / (float)attack.getMuzzleFlashTimeTotal());
 				}
-				
-			} 
-			
+			}
+
 		}
 
 		this.applyTranslation(transform);
@@ -319,20 +301,20 @@ public class RenderGunBase extends RenderItemBase {
 				GlStateManager.color(1f, 1f, 1f, 1f);
 			}
 			GlStateManager.popMatrix();
-			
+
 			this.applyAnimForParticles(entityIn, reloadProgress, transform, sneaking, isOffhand);
 			this.renderItemParticles(entityIn, transform, ClientProxy.get().PARTIAL_TICK_TIME);
-			GlStateManager.popMatrix();
-			
+
+
 			//Draw muzzle FX
 			if (muzzleFlashProgress>0){
 				if (TransformType.FIRST_PERSON_LEFT_HAND== transform || TransformType.FIRST_PERSON_RIGHT_HAND == transform ) {
 					if (!isOffhand && gun.getZoomMult()<1.0f && gun.isZooming())
-						this.drawMuzzleFx(muzzleFlashProgress, attackType, leftHand, gun.getZoomX(), gun.getZoomY());
+						this.drawMuzzleFx(muzzleFlashProgress, leftHand, gun.getZoomX(), gun.getZoomY());
 					else
-						this.drawMuzzleFx(muzzleFlashProgress, attackType, leftHand, 0f, 0f);
+						this.drawMuzzleFx(muzzleFlashProgress, leftHand, 0f, 0f);
 				} else {
-					this.drawMuzzleFx3P(muzzleFlashProgress, attackType, leftHand);
+					this.drawMuzzleFx3P(muzzleFlashProgress);
 				}
 			}else if (reloadProgress<=0){
 				if (TransformType.FIRST_PERSON_LEFT_HAND== transform || TransformType.FIRST_PERSON_RIGHT_HAND == transform ) {
@@ -341,8 +323,10 @@ public class RenderGunBase extends RenderItemBase {
 					this.drawIdleFx3P(leftHand);
 				}
 			}
-			
+            GlStateManager.enableCull();
+            GlStateManager.popMatrix();
 		} else {
+            GlStateManager.enableCull();
 			GlStateManager.popMatrix();
 			if (this.scopeRecoilAnim != null && fireProgress > 0f) {
 				this.scopeRecoilAnim.play(fireProgress, TransformType.FIRST_PERSON_LEFT_HAND == transform, this.scopeRecoilParams);
@@ -357,8 +341,8 @@ public class RenderGunBase extends RenderItemBase {
 
 	protected void setGLColorForPart(GenericGun gun, int part, ItemStack stack) {
 		
-	};
-	
+	}
+
 	public void applyAnimForParticles(EntityLivingBase entity, float reloadProgress, TransformType transform, boolean sneaking, boolean isOffhand) {
 		GlStateManager.pushMatrix();
 		if(reloadProgress==0) return;
@@ -390,7 +374,7 @@ public class RenderGunBase extends RenderItemBase {
 	}
 
 	protected void transformThirdPerson(EntityLivingBase ent, float fireProgress, float reloadProgress, boolean left) {
-		if( ent!=null && ent instanceof INPCTechgunsShooter) {
+		if(ent instanceof INPCTechgunsShooter) {
 			INPCTechgunsShooter shooter = (INPCTechgunsShooter) ent;
 			if(!shooter.hasWeaponArmPose()) {
 				GlStateManager.rotate(90.0f, 1, 0, 0);
@@ -424,11 +408,10 @@ public class RenderGunBase extends RenderItemBase {
 		GlStateManager.rotate(-90.0f, 0, 1.0f, 0);
 	}
 	
-	protected void drawMuzzleFx(float progress, byte attackType, boolean leftHand, float zoomX, float zoomY){
+	protected void drawMuzzleFx(float progress, boolean leftHand, float zoomX, float zoomY){
 		if (this.muzzleFX!=null){
 			float x= leftHand?this.muzzleFX_x_l:this.muzzleFX_x_r;
-			//float leftOffset = leftHand?0.05f:0f;
-			
+
 			//Muzzle flash jitter
 			ClientProxy cp = ClientProxy.get();
 			float scale = this.muzzleFX_scale;
@@ -437,19 +420,14 @@ public class RenderGunBase extends RenderItemBase {
 			if (this.mf_jitterScale > 0.0f) scale += mf_jitterScale*cp.muzzleFlashJitterScale;
 			if (this.mf_jitterX > 0.0f) offsetX += mf_jitterX*cp.muzzleFlashJitterX;
 			if (this.mf_jitterY > 0.0f) offsetY += mf_jitterY*cp.muzzleFlashJitterY;
-			//if (this.jitterAngle > 0.0f) angle += jitterAngle*cp.muzzleFlashJitterAngle*f;
 
-			//this.muzzleFX.doRender(progress, (x+Keybinds.X)/*+leftOffset*/, this.muzzleFX_y+Keybinds.Y, this.muzzleFX_z+Keybinds.Z, this.muzzleFX_scale, false);
-			
 			this.muzzleFX.doRender(progress, offsetX, offsetY, this.muzzleFX_z, scale, false);
 			
 		}
 	}
 
-	protected void drawMuzzleFx3P(float progress, byte attackType, boolean leftHand) {
+	protected void drawMuzzleFx3P(float progress) {
 		if (this.muzzleFX!=null) {
-			//float x= leftHand?this.muzzleFX_x_l:this.muzzleFX_x_r;
-			//this.muzzleFX.doRender(progress, 0, this.muzzleFX_3p_y+Keybinds.Y, this.muzzleFX_3p_z+Keybinds.Z, this.muzzleFX_scale*this.muzzleFX_3p_scale, true);
 			this.muzzleFX.doRender(progress, 0, this.muzzleFX_3p_y, this.muzzleFX_3p_z, this.muzzleFX_scale*this.muzzleFX_3p_scale, true);
 		}
 	}
@@ -468,7 +446,6 @@ public class RenderGunBase extends RenderItemBase {
 	
 	protected void transformADS(float Xzoom, float Yzoom, float Zzoom) {
 		GlStateManager.translate(Xzoom, Yzoom, Zzoom);
-		 //xyz
 	}
 	
 	public RenderGunBase setMuzzleFlashJitter(float jX, float jY, float jAngle, float jScale) {
@@ -493,7 +470,4 @@ public class RenderGunBase extends RenderItemBase {
 		this.ambientParticleFX = ambientParticleFX;
 		return this;
 	}
-	
-
-	
 }

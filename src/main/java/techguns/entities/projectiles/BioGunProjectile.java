@@ -25,7 +25,6 @@ import techguns.TGBlocks;
 import techguns.TGSounds;
 import techguns.Techguns;
 import techguns.api.damagesystem.DamageType;
-import techguns.client.ClientProxy;
 import techguns.damagesystem.TGDamageSource;
 import techguns.deatheffects.EntityDeathUtils.DeathType;
 import techguns.items.guns.GenericGun;
@@ -53,10 +52,9 @@ public class BioGunProjectile extends GenericProjectile implements IEntityAdditi
 		this.level=level;
 		this.gravity=gravity;
 	}
-	
+
 	public BioGunProjectile(World worldIn) {
 		super(worldIn);
-		ClientProxy.get().createFXOnEntity("BioGunTrail", this);
 	}
 
 	 @Override

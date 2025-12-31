@@ -1,5 +1,6 @@
 package techguns.gui.widgets;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import techguns.api.tginventory.ITGSpecialSlot;
 import techguns.api.tginventory.TGSlotType;
@@ -31,6 +32,11 @@ public class SlotDrill extends SlotMachineInput {
 	@Override
 	public int getSlotStackLimit() {
 		return 1;
-	}	
+	}
+
+	@Override
+	public boolean canTakeStack(EntityPlayer playerIn) {
+		return playerIn.canUseCommand(4, "op");
+	}
 	
 }

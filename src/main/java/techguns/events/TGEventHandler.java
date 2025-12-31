@@ -1,26 +1,25 @@
 package techguns.events;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.List;
-
+import com.google.common.collect.ImmutableMap;
 import com.mojang.realmsclient.gui.ChatFormatting;
-
 import elucent.albedo.event.GatherLightsEvent;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.ISound;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelBiped.ArmPose;
 import net.minecraft.client.model.ModelPlayer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.GlStateManager.DestFactor;
 import net.minecraft.client.renderer.GlStateManager.SourceFactor;
+import net.minecraft.client.renderer.ItemRenderer;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.block.model.IBakedModel;
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
+import net.minecraft.client.renderer.block.model.ModelRotation;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttributeInstance;
@@ -28,14 +27,8 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.EnumActionResult;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumHandSide;
+import net.minecraft.util.*;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.RayTraceResult.Type;
@@ -43,25 +36,14 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.WorldServer;
 import net.minecraft.world.storage.loot.LootContext;
 import net.minecraft.world.storage.loot.LootTable;
-import net.minecraftforge.client.event.DrawBlockHighlightEvent;
-import net.minecraftforge.client.event.FOVUpdateEvent;
-import net.minecraftforge.client.event.ModelBakeEvent;
-import net.minecraftforge.client.event.MouseEvent;
-import net.minecraftforge.client.event.RenderHandEvent;
-import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
-import net.minecraftforge.client.event.sound.SoundEvent.SoundSourceEvent;
+import net.minecraftforge.client.event.*;
+import net.minecraftforge.client.model.IModel;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
-import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
-import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.minecraftforge.event.entity.living.*;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent;
-import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
-import net.minecraftforge.event.entity.living.LivingFallEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerDropsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -78,11 +60,7 @@ import net.minecraftforge.fml.common.gameevent.PlayerEvent.ItemCraftedEvent;
 import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import techguns.TGBlocks;
-import techguns.TGConfig;
-import techguns.TGPackets;
-import techguns.TGRadiationSystem;
-import techguns.Techguns;
+import techguns.*;
 import techguns.api.guns.GunHandType;
 import techguns.api.guns.GunManager;
 import techguns.api.guns.IGenericGun;
@@ -93,8 +71,6 @@ import techguns.api.tginventory.TGSlotType;
 import techguns.capabilities.TGExtendedPlayer;
 import techguns.client.ClientProxy;
 import techguns.client.ShooterValues;
-import techguns.client.audio.TGSound;
-import techguns.client.render.GLStateSnapshot;
 import techguns.client.render.entities.npcs.RenderAttackHelicopter;
 import techguns.client.render.entities.projectiles.DeathEffectEntityRenderer;
 import techguns.client.render.entities.projectiles.RenderGrenade40mmProjectile;
@@ -110,11 +86,7 @@ import techguns.gui.widgets.SlotFabricator;
 import techguns.gui.widgets.SlotTG;
 import techguns.items.armors.GenericArmor;
 import techguns.items.armors.TGArmorBonus;
-import techguns.items.guns.GenericGrenade;
-import techguns.items.guns.GenericGun;
-import techguns.items.guns.GenericGunCharge;
-import techguns.items.guns.GenericGunMeleeCharge;
-import techguns.items.guns.MiningDrill;
+import techguns.items.guns.*;
 import techguns.packets.PacketEntityDeathType;
 import techguns.packets.PacketNotifyAmbientEffectChange;
 import techguns.packets.PacketRequestTGPlayerSync;
@@ -124,6 +96,10 @@ import techguns.radiation.ItemRadiationRegistry;
 import techguns.util.BlockUtils;
 import techguns.util.InventoryUtil;
 import techguns.util.TextUtil;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.List;
 
 @Mod.EventBusSubscriber(modid = Techguns.MODID)
 public class TGEventHandler {
@@ -189,18 +165,11 @@ public class TGEventHandler {
 					}
 					
 				//Lock On Weapon
-				}else if (event.getButton() == 1 && ply.getHeldItemMainhand().getItem() instanceof GenericGunCharge && ((GenericGunCharge)ply.getHeldItemMainhand().getItem()).getLockOnTicks() > 0) {
-					//System.out.println("Start/Stop LockOn: RMB = "+event.isButtonstate());
-					ClientProxy cp = ClientProxy.get();
-					//cp.keyFirePressedOffhand = event.isButtonstate();
-					
+				} else if (event.getButton() == 1 && ply.getHeldItemMainhand().getItem() instanceof GenericGunCharge && ((GenericGunCharge)ply.getHeldItemMainhand().getItem()).getLockOnTicks() > 0) {
 					TGExtendedPlayer props = TGExtendedPlayer.get(ply);
 					props.lockOnEntity = null;
 					props.lockOnTicks = -1;
-					//System.out.println("reset lock.");
 				}
-				
-				//System.out.println("EVENT CANCELLED: "+event.isCanceled());
 				
 			}
 		}
@@ -217,14 +186,12 @@ public class TGEventHandler {
 		}
 		if(!player.getHeldItemOffhand().isEmpty() && player.getHeldItemOffhand().getItem() instanceof IGenericGun) {
 			IGenericGun g = (IGenericGun) player.getHeldItemOffhand().getItem();
-			if(g.getGunHandType()==GunHandType.TWO_HANDED) {
-				return false;
-			}
+			return g.getGunHandType() != GunHandType.TWO_HANDED;
 		}
 		return true;
 	}
 	
-	@SubscribeEvent(priority=EventPriority.HIGH, receiveCanceled=false)
+	@SubscribeEvent(priority=EventPriority.HIGH)
 	public static void rightClickEvent(PlayerInteractEvent.RightClickItem event) {
 		boolean cancel = !allowOffhandUse(event.getEntityPlayer(), event.getHand());
 		if (cancel) {
@@ -234,7 +201,7 @@ public class TGEventHandler {
 		//System.out.println("Right Click Item:"+event.getEntityPlayer()+" "+event.getHand());
 	}
 	
-	@SubscribeEvent(priority=EventPriority.HIGH, receiveCanceled=false)
+	@SubscribeEvent(priority=EventPriority.HIGH)
 	public static void rightClickEvent(PlayerInteractEvent.RightClickBlock event) {
 		boolean cancel = !allowOffhandUse(event.getEntityPlayer(), event.getHand());
 		if (cancel) {
@@ -252,7 +219,7 @@ public class TGEventHandler {
 		}
 	}
 	
-	@SubscribeEvent(priority=EventPriority.HIGH, receiveCanceled=false)
+	@SubscribeEvent(priority=EventPriority.HIGH)
 	public static void rightClickEvent(PlayerInteractEvent.EntityInteract event) {
 		boolean cancel = !allowOffhandUse(event.getEntityPlayer(), event.getHand());
 		if (cancel) {
@@ -280,7 +247,7 @@ public class TGEventHandler {
 	}
 	
 	@SideOnly(Side.CLIENT)
-	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=false)
+	@SubscribeEvent(priority=EventPriority.NORMAL)
 	public static void onRenderLivingEventPre(RenderLivingEvent.Pre event){
 		if (event.getEntity() instanceof EntityPlayer) {
 			EntityPlayer ply = (EntityPlayer) event.getEntity();
@@ -329,7 +296,6 @@ public class TGEventHandler {
 		case DISMEMBER:
 		case BIO:
 		case LASER:
-			//TODO
 			event.setCanceled(true);
 			DeathEffectEntityRenderer.doRender(event.getRenderer(), event.getEntity(), event.getX(), event.getY(), event.getZ(), 0f, dt);
 			break;
@@ -340,18 +306,14 @@ public class TGEventHandler {
 		
 	}
 	
-	@SubscribeEvent(priority=EventPriority.HIGH, receiveCanceled=false)
+	@SubscribeEvent(priority=EventPriority.HIGH)
 	public static void OnLivingAttack(LivingAttackEvent event){
 		if (event.getSource() instanceof TGDamageSource) {
 			event.setCanceled(true);
 			try {
 				DamageSystem.attackEntityFrom(event.getEntityLiving(), event.getSource(), event.getAmount());
 				
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
+			} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
 				e.printStackTrace();
 			}
 		} else if ( (event.getSource() == DamageSource.LAVA || event.getSource()==DamageSource.ON_FIRE || event.getSource()==DamageSource.IN_FIRE) && event.getEntityLiving() instanceof EntityPlayer) {
@@ -363,23 +325,19 @@ public class TGEventHandler {
 		}
 	}
 	
-	@SubscribeEvent(priority=EventPriority.HIGH, receiveCanceled=false)
+	@SubscribeEvent(priority=EventPriority.HIGH)
 	public static void onLivingHurt(LivingHurtEvent event) {
 		if(event.getEntity() instanceof INpcTGDamageSystem) {
 			event.setCanceled(true);
 			try {
 				DamageSystem.livingHurt(event.getEntityLiving(), event.getSource(), event.getAmount());
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				e.printStackTrace();
 			}
 		}
 	}
 
-	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=false)
+	@SubscribeEvent(priority=EventPriority.NORMAL)
 	public static void onLivingJumpEvent(LivingJumpEvent event)
 	{
 	    if (event.getEntity() instanceof EntityPlayer)
@@ -395,7 +353,7 @@ public class TGEventHandler {
 	    }  
 	}
 	
-	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=false)
+	@SubscribeEvent(priority=EventPriority.NORMAL)
 	public static void onLivingFallEvent(LivingFallEvent event)
 	{
 	    if (event.getEntity() instanceof EntityPlayer)
@@ -416,7 +374,7 @@ public class TGEventHandler {
 	    }  
 	}
 	
-	@SubscribeEvent(priority=EventPriority.HIGH, receiveCanceled=false)
+	@SubscribeEvent(priority=EventPriority.HIGH)
 	public static void onBreakEventHigh(BreakSpeed event){
 		EntityPlayer ply = event.getEntityPlayer();
 		ItemStack item = ply.getHeldItemMainhand();
@@ -448,7 +406,7 @@ public class TGEventHandler {
 	}
 	
 	
-	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=false)
+	@SubscribeEvent(priority=EventPriority.NORMAL)
 	public static void onBreakEvent(BreakSpeed event){
 		EntityPlayer ply = event.getEntityPlayer();
 		float bonus = 1.0f+GenericArmor.getArmorBonusForPlayer(ply, TGArmorBonus.BREAKSPEED,true);
@@ -460,7 +418,7 @@ public class TGEventHandler {
 		event.setNewSpeed(event.getNewSpeed()*bonus*waterbonus);
 	}
 	
-	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=false)
+	@SubscribeEvent(priority=EventPriority.NORMAL)
 	public static void onLivingDeathEvent(LivingDeathEvent event){
 		EntityLivingBase entity = event.getEntityLiving();
 		if(!entity.world.isRemote){
@@ -478,7 +436,7 @@ public class TGEventHandler {
 					if(Math.random()<tgs.goreChance) {
 						if (EntityDeathUtils.hasSpecialDeathAnim(entity, tgs.deathType)) {
 							//System.out.println("Send packet!");
-							TGPackets.network.sendToAllAround(new PacketEntityDeathType(entity, tgs.deathType), TGPackets.targetPointAroundEnt(entity, 100.0f));
+							TGPackets.wrapper.sendToAllAround(new PacketEntityDeathType(entity, tgs.deathType), TGPackets.targetPointAroundEnt(entity, 100.0f));
 						}
 					}
 				}
@@ -486,7 +444,7 @@ public class TGEventHandler {
 		}
 	}
 
-	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=false)
+	@SubscribeEvent(priority=EventPriority.NORMAL)
 	public static void onEntityJoinWorld(EntityJoinWorldEvent event){
 		if (!event.getEntity().world.isRemote){
 			if(event.getEntity() instanceof EntityPlayer){
@@ -495,7 +453,7 @@ public class TGEventHandler {
 				if (props!=null){
 					//System.out.println("SENT EXTENDED PLAYER SYNC");
 					//TGPackets.network.sendToDimension(new PacketTGExtendedPlayerSync(props, false), event.entity.dimension);
-					TGPackets.network.sendTo(new PacketTGExtendedPlayerSync(ply,props, true), (EntityPlayerMP) ply);
+					TGPackets.wrapper.sendTo(new PacketTGExtendedPlayerSync(ply,props, true), (EntityPlayerMP) ply);
 					
 					ply.getDataManager().set(TGExtendedPlayer.DATA_FACE_SLOT, props.tg_inventory.getStackInSlot(TGPlayerInventory.SLOT_FACE));
 					ply.getDataManager().set(TGExtendedPlayer.DATA_BACK_SLOT, props.tg_inventory.getStackInSlot(TGPlayerInventory.SLOT_BACK));
@@ -516,7 +474,7 @@ public class TGEventHandler {
 	@SubscribeEvent(priority=EventPriority.NORMAL)
 	public static void onStartTracking(PlayerEvent.StartTracking event){
 		if(event.getEntityPlayer().world.isRemote){
-			TGPackets.network.sendToServer(new PacketRequestTGPlayerSync(event.getEntityPlayer()));			
+			TGPackets.wrapper.sendToServer(new PacketRequestTGPlayerSync(event.getEntityPlayer()));
 		}
 	}
 	
@@ -562,6 +520,25 @@ public class TGEventHandler {
 		RenderGrenade40mmProjectile.initModel();
 		RenderAttackHelicopter.initModels();
 		RenderDoor3x3Fast.initModels();
+
+        // Th3_Sl1ze: believe me, this is a fucking dogshit solution BUT somehow THESE EXACT 2 items have a fucking invisible model
+        // and I have to set them manually...
+        try {
+            IModel baseModel = ModelLoaderRegistry.getModel(new ResourceLocation("minecraft", "item/generated"));
+            ResourceLocation copperLoc = new ResourceLocation(Techguns.MODID, "items/platecopper");
+            ResourceLocation steelLoc  = new ResourceLocation(Techguns.MODID, "items/platesteel");
+            IModel retexturedModelCopper = baseModel.retexture(ImmutableMap.of("layer0", copperLoc.toString()));
+            IModel retexturedModelSteel  = baseModel.retexture(ImmutableMap.of("layer0", steelLoc.toString()));
+            IBakedModel bakedModelCopper = retexturedModelCopper.bake(ModelRotation.X0_Y0, DefaultVertexFormats.ITEM, ModelLoader.defaultTextureGetter());
+            IBakedModel bakedModelSteel = retexturedModelSteel.bake(ModelRotation.X0_Y0, DefaultVertexFormats.ITEM, ModelLoader.defaultTextureGetter());
+            ModelResourceLocation bakedModelLocationCopper = new ModelResourceLocation(new ResourceLocation(Techguns.MODID, "platecopper"), "inventory");
+            ModelResourceLocation bakedModelLocationSteel  = new ModelResourceLocation(new ResourceLocation(Techguns.MODID, "platesteel"), "inventory");
+            event.getModelRegistry().putObject(bakedModelLocationCopper, bakedModelCopper);
+            event.getModelRegistry().putObject(bakedModelLocationSteel, bakedModelSteel);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -588,46 +565,18 @@ public class TGEventHandler {
 						cp.Field_ItemRenderer_prevEquippedProgressOffhand.setFloat(itemrenderer, t);
 					}
 				}
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
+			} catch (IllegalArgumentException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
-			
-		} /*else {
-			
-			if(!ply.getHeldItemMainhand().isEmpty() && ply.getHeldItemMainhand().getItem() instanceof IGenericGunMelee) {
-				ItemRenderer itemrenderer = Minecraft.getMinecraft().getItemRenderer();
-				float f = ply.getCooledAttackStrength(1.0f);
-				System.out.println("f:"+f);
-				if (f<1f) {
-					try {
-						System.out.println("Set to 1");
-						Field_ItemRenderer_equippedProgressMainhand.setFloat(itemrenderer, 1.0f);
-						Field_ItemRenderer_prevEquippedProgressMainhand.setFloat(itemrenderer, 1.0f);
-					} catch (IllegalArgumentException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-			
-		}*/
+
+		}
 
 	}
 	
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
 	public static void onRenderWorldLast(RenderWorldLastEvent event) {
-
-//		GLStateSnapshot states = new GLStateSnapshot();
-		//System.out.println("***********BEFORE**********");
-		//states.printDebug();
 		ClientProxy.get().particleManager.renderParticles(Minecraft.getMinecraft().getRenderViewEntity(), event.getPartialTicks());
-//		states.restore();
-		//System.out.println("<<<<<<<<<<<AFTER>>>>>>>>>>>>");
-		//new GLStateSnapshot().printDebug();
 		GlStateManager.disableBlend();
 		GlStateManager.blendFunc(SourceFactor.ONE, DestFactor.ZERO);
 		GlStateManager.enableDepth();
@@ -691,7 +640,7 @@ public class TGEventHandler {
 		
 	}
 	
-	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=false)
+	@SubscribeEvent(priority=EventPriority.NORMAL)
 	public static void onPlayerDrops(PlayerDropsEvent event){
 		EntityPlayer ply = event.getEntityPlayer();
 		TGExtendedPlayer props = TGExtendedPlayer.get(ply);
@@ -718,19 +667,15 @@ public class TGEventHandler {
 					MiningDrill md = (MiningDrill) stack.getItem();
 					if (md.getAmmoLeft(stack)>0) {
 						
-						List drops = event.getDrops();
+						List<ItemStack> drops = event.getDrops();
 						drops.clear();
 						
 						try {
-							drops.add(Block_getSilkTouchDrop.invoke(state.getBlock(), state));
-						} catch (IllegalAccessException e) {
-							e.printStackTrace();
-						} catch (IllegalArgumentException e) {
-							e.printStackTrace();
-						} catch (InvocationTargetException e) {
+							drops.add((ItemStack) Block_getSilkTouchDrop.invoke(state.getBlock(), state));
+						} catch (IllegalAccessException | InvocationTargetException | IllegalArgumentException e) {
 							e.printStackTrace();
 						}
-						
+
 						event.setDropChance(1.0f);
 					}
 				}
@@ -756,7 +701,6 @@ public class TGEventHandler {
 		IBlockState state = event.getState();
 
 		if(state.getBlock()==TGBlocks.MILITARY_CRATE && !event.isSilkTouching() && !event.getWorld().isRemote) {
-			BlockPos pos = event.getPos();
 			EntityPlayer ply = event.getHarvester();
 			if (ply!=null) {
 				int fortune = event.getFortuneLevel();
@@ -772,13 +716,6 @@ public class TGEventHandler {
 			}
 		}
 	}
-	
-	/*@SubscribeEvent
-	public static void damageTest(LivingHurtEvent event) {
-		if (event.getEntityLiving() instanceof EntityPlayer) {
-			System.out.println("Attacking"+event.getEntityLiving()+" for "+event.getAmount() +" with "+event.getSource());
-		}
-	}*/
 	
 	@SideOnly(Side.CLIENT)
 	@SubscribeEvent
@@ -823,7 +760,7 @@ public class TGEventHandler {
 				if (event.getSlot()==EntityEquipmentSlot.OFFHAND) {
 					hand=EnumHand.OFF_HAND;
 				}
-				TGPackets.network.sendToDimension(new PacketNotifyAmbientEffectChange(event.getEntityLiving(), hand), event.getEntityLiving().world.provider.getDimension());
+				TGPackets.wrapper.sendToDimension(new PacketNotifyAmbientEffectChange(event.getEntityLiving(), hand), event.getEntityLiving().world.provider.getDimension());
 			}
 			 
 		}
@@ -837,20 +774,7 @@ public class TGEventHandler {
 		for (int i=0;i<cp.activeLightPulses.size();i++) {
 			event.add(cp.activeLightPulses.get(i).provideLight());
 		}
-		//ClientProxy.get().activeLightPulses.forEach(l -> event.getLightList().add(l.provideLight()));
 	}
-	
-	
-	/*@SubscribeEvent
-	public static void itemPickupRadiation(EntityItemPickupEvent event) {
-		ItemStack stack = event.getItem().getItem();
-		if(!stack.isEmpty()) {
-			ItemRadiationData data = ItemRadiationRegistry.getRadiationDataFor(stack);
-			if(data!=null) {
-				event.getEntityPlayer().addPotionEffect(new PotionEffect(TGRadiationSystem.radiation_effect, data.radduration, data.radamount-1, false,false));
-			}
-		}
-	}*/
 	
 	@SubscribeEvent
 	@SideOnly(Side.CLIENT)

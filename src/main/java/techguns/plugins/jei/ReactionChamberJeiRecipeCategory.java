@@ -1,79 +1,89 @@
 package techguns.plugins.jei;
 
 
-import java.util.List;
-
 import com.mojang.realmsclient.gui.ChatFormatting;
-
 import mezz.jei.api.IGuiHelper;
-import mezz.jei.api.gui.IDrawableStatic;
-import mezz.jei.api.gui.IGuiFluidStackGroup;
-import mezz.jei.api.gui.IGuiItemStackGroup;
-import mezz.jei.api.gui.IRecipeLayout;
-import mezz.jei.api.gui.ITooltipCallback;
+import mezz.jei.api.gui.*;
 import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.fluids.FluidStack;
-import techguns.gui.ChemLabGui;
-import techguns.gui.ReactionChamberGui;
-import techguns.gui.containers.ReactionChamberContainer;
-import techguns.tileentities.ReactionChamberTileEntMaster;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fluids.Fluid;
+import org.jetbrains.annotations.NotNull;
+import techguns.Techguns;
 import techguns.util.TextUtil;
 
-public class ReactionChamberJeiRecipeCategory extends BasicRecipeCategory<ReactionChamberJeiRecipe>{
+public class ReactionChamberJeiRecipeCategory extends BasicRecipeCategory<ReactionChamberJeiRecipe> {
 
-	protected IDrawableStatic tank_overlay;
-	
-	public ReactionChamberJeiRecipeCategory(IGuiHelper guiHelper) {
-		super(guiHelper, ReactionChamberGui.texture, "reactionchamber", TGJeiPlugin.REACTION_CHAMBER);
-		
-		tank_overlay = guiHelper.createDrawable(ReactionChamberGui.texture, 177, 32, 10, 50);
-	}
+    public static final ResourceLocation TEXTURE = new ResourceLocation(Techguns.MODID, "textures/gui/jei/reaction_chamber.png");
 
-	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, ReactionChamberJeiRecipe recipeWrapper,
-			IIngredients ingredients) {
-		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-		IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
-		
+    private static final int BG_U = 4;
+    private static final int BG_V = 4;
 
-		guiItemStacks.init(ReactionChamberTileEntMaster.SLOT_INPUT, true, ReactionChamberContainer.SLOT_INPUT_X+JEI_OFFSET_X, ReactionChamberContainer.SLOTS_ROW1_Y+JEI_OFFSET_Y);
-		guiItemStacks.init(ReactionChamberTileEntMaster.SLOT_FOCUS, true, ReactionChamberContainer.SLOT_FOCUS_X+JEI_OFFSET_X, ReactionChamberContainer.SLOTS_ROW1_Y+JEI_OFFSET_Y);
-		
-		
-		guiItemStacks.init(ReactionChamberTileEntMaster.SLOT_OUTPUT, false, ReactionChamberContainer.SLOT_OUTPUT_X+JEI_OFFSET_X, ReactionChamberContainer.SLOT_OUTPUT_Y+JEI_OFFSET_Y);
-		guiItemStacks.init(ReactionChamberTileEntMaster.SLOT_OUTPUT+1, false, ReactionChamberContainer.SLOT_OUTPUT_X+JEI_OFFSET_X+18, ReactionChamberContainer.SLOT_OUTPUT_Y+JEI_OFFSET_Y);
-		guiItemStacks.init(ReactionChamberTileEntMaster.SLOT_OUTPUT+2, false, ReactionChamberContainer.SLOT_OUTPUT_X+JEI_OFFSET_X, ReactionChamberContainer.SLOT_OUTPUT_Y+JEI_OFFSET_Y+18);
-		guiItemStacks.init(ReactionChamberTileEntMaster.SLOT_OUTPUT+3, false, ReactionChamberContainer.SLOT_OUTPUT_X+JEI_OFFSET_X+18, ReactionChamberContainer.SLOT_OUTPUT_Y+JEI_OFFSET_Y+18);
+    private static final int SLOT_INPUT = 0;
+    private static final int SLOT_FOCUS = 1;
 
-		
-		guiFluidStacks.init(0, true, ChemLabGui.INPUT_TANK_X+2+JEI_OFFSET_X, ChemLabGui.TANK_Y+1+JEI_OFFSET_Y, ChemLabGui.TANK_W, ChemLabGui.TANK_H, ReactionChamberTileEntMaster.CAPACITY_INPUT_TANK, false, tank_overlay);
-		guiFluidStacks.addTooltipCallback(new TankTooltipCallback(recipeWrapper));
-		
-		guiItemStacks.set(ingredients);
-		guiFluidStacks.set(ingredients);
-	}
-	
-	protected class TankTooltipCallback implements ITooltipCallback<FluidStack>{
-		ReactionChamberJeiRecipe jeiRec;
+    private static final int SLOT_OUT0 = 2;
+    private static final int SLOT_OUT1 = 3;
+    private static final int SLOT_OUT2 = 4;
+    private static final int SLOT_OUT3 = 5;
 
-		public TankTooltipCallback(ReactionChamberJeiRecipe jeiRec) {
-			super();
-			this.jeiRec = jeiRec;
-		}
+    private static final int SLOT_INPUT_X = 36 - BG_U;
+    private static final int SLOT_INPUT_Y = 65 - BG_V;
 
-		@Override
-		public void onTooltip(int slotIndex, boolean input, FluidStack ingredient, List<String> tooltip) {
-			int consumption = jeiRec.recipe.liquidConsumtion;
-			tooltip.add(tooltip.size()-1, ChatFormatting.GRAY+TextUtil.trans("techguns.container.reactionchamber.consumption")+": "+String.format("%,d",consumption)+" mB");
-		}
-		
-	}
-	
-	@Override
-	public void drawExtras(Minecraft minecraft) {
-		super.drawExtras(minecraft);
-		this.powerbar.draw(minecraft, 8+JEI_OFFSET_X, 17+JEI_OFFSET_Y);
-	}
+    private static final int SLOT_FOCUS_X = 81 - BG_U;
+    private static final int SLOT_FOCUS_Y = 13 - BG_V;
 
+    private static final int SLOT_OUT0_X = 126 - BG_U;
+    private static final int SLOT_OUT0_Y = 65 - BG_V;
+
+    private static final int SLOT_OUT1_X = 144 - BG_U;
+    private static final int SLOT_OUT1_Y = 47 - BG_V;
+
+    private static final int SLOT_OUT2_X = 144 - BG_U;
+    private static final int SLOT_OUT2_Y = 65 - BG_V;
+
+    private static final int SLOT_OUT3_X = 144 - BG_U;
+    private static final int SLOT_OUT3_Y = 83 - BG_V;
+
+    private final IDrawableStatic tankOverlay;
+
+    public ReactionChamberJeiRecipeCategory(IGuiHelper guiHelper) {
+        super(guiHelper, TEXTURE, "reactionchamber", TGJeiPlugin.REACTION_CHAMBER);
+        this.background = guiHelper.createDrawable(TEXTURE, 4, 4, 168, 100);
+        this.tankOverlay = guiHelper.createDrawable(TEXTURE, 226, 0, 12, 88);
+        this.powerbar_static = guiHelper.createDrawable(TEXTURE, 222, 1, 4, 86);
+        this.powerbar = guiHelper.createAnimatedDrawable(powerbar_static, 100, IDrawableAnimated.StartDirection.TOP, true);
+    }
+
+    @Override
+    public void setRecipe(IRecipeLayout recipeLayout, @NotNull ReactionChamberJeiRecipe recipeWrapper, @NotNull IIngredients ingredients) {
+        IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
+        IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
+
+        guiItemStacks.init(SLOT_INPUT, true, SLOT_INPUT_X, SLOT_INPUT_Y);
+        guiItemStacks.init(SLOT_FOCUS, true, SLOT_FOCUS_X, SLOT_FOCUS_Y);
+
+        guiItemStacks.init(SLOT_OUT0, false, SLOT_OUT0_X, SLOT_OUT0_Y);
+        guiItemStacks.init(SLOT_OUT1, false, SLOT_OUT1_X, SLOT_OUT1_Y);
+        guiItemStacks.init(SLOT_OUT2, false, SLOT_OUT2_X, SLOT_OUT2_Y);
+        guiItemStacks.init(SLOT_OUT3, false, SLOT_OUT3_X, SLOT_OUT3_Y);
+
+        guiFluidStacks.init(0, true,
+                ReactionChamberJeiRecipe.TANK_X, ReactionChamberJeiRecipe.TANK_Y,
+                ReactionChamberJeiRecipe.TANK_W, ReactionChamberJeiRecipe.TANK_H,
+                10 * Fluid.BUCKET_VOLUME, false, tankOverlay);
+
+        guiFluidStacks.addTooltipCallback((slotIndex, input, ingredient, tooltip) -> tooltip.add(tooltip.size() - 1,
+                ChatFormatting.GRAY
+                        + TextUtil.trans("techguns.container.reactionchamber.consumption") + ": "
+                        + String.format("%,d", recipeWrapper.recipe.liquidConsumtion) + " mB"));
+
+        guiItemStacks.set(ingredients);
+        guiFluidStacks.set(ingredients);
+    }
+
+    @Override
+    public void drawExtras(@NotNull Minecraft minecraft) {
+        this.powerbar.draw(minecraft, 9 - BG_U, 10 - BG_V);
+    }
 }

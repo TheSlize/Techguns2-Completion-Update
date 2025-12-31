@@ -31,7 +31,7 @@ public abstract class BasicRecipeCategory<T extends IRecipeWrapper> implements I
 		localizedName = TextUtil.trans(Techguns.MODID+".container."+name);
 		this.guiHelper=guiHelper;
 		this.uid = UID;
-		this.powerbar_static = guiHelper.createDrawable(AmmoPressGui.texture, 250, 0, 6, 50);
+		this.powerbar_static = guiHelper.createDrawable(AmmoPressGui.texture, 251, 1, 4, 59);
 		this.powerbar = guiHelper.createAnimatedDrawable(powerbar_static, 100, IDrawableAnimated.StartDirection.TOP, true);
 	}
 	

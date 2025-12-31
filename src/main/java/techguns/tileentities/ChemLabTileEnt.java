@@ -104,7 +104,7 @@ public class ChemLabTileEnt extends BasicMachineTileEnt implements ITileEntityFl
 				case SLOT_OUTPUT:
 					return false;
 				case SLOT_UPGRADE:
-					return TGItems.isMachineUpgrade(stack);
+					return TGItems.isMachineUpgrade(stack) || TGItems.isSteamUpgrade(stack);
 				}
 				return false;
 			}
@@ -119,7 +119,7 @@ public class ChemLabTileEnt extends BasicMachineTileEnt implements ITileEntityFl
 
 	@Override
 	public ITextComponent getDisplayName() {
-		return new TextComponentTranslation(Techguns.MODID+".container.chemlab", new Object[0]);
+		return new TextComponentTranslation(Techguns.MODID+".container.chemlab");
 	}
 
 	@Override
@@ -204,8 +204,8 @@ public class ChemLabTileEnt extends BasicMachineTileEnt implements ITileEntityFl
 		ItemStack in2 = output.getInputs().get(1);
 		ItemStack bottle = output.getInputs().get(2);
 		
-		FluidStack fluidIn =null;
-		int amount=0;
+		FluidStack fluidIn;
+		int amount = 0;
 		if (!output.getFluid_inputs().isEmpty()) {
 			fluidIn = output.getFluid_inputs().get(0);
 			if (fluidIn!=null) {
@@ -231,7 +231,7 @@ public class ChemLabTileEnt extends BasicMachineTileEnt implements ITileEntityFl
 	protected void checkAndStartOperation() {
 		this.setContentsChanged(false);
 		MachineOperation op = ChemLabRecipes.getOutputFor(this);
-	
+
 		if (op != null && canOutput(op)) {
 			
 			//check multiplier
@@ -306,12 +306,6 @@ public class ChemLabTileEnt extends BasicMachineTileEnt implements ITileEntityFl
 	public FluidStack getCurrentInputFluid() {
 		return this.inputTank.getFluid();
 	}
-	
-	public FluidStack getCurrentOutputFluid() {
-		return this.outputTank.getFluid();
-	}
-	
-	
 
 	public int getValidSlotForItemInMachine(ItemStack item) {
 		if (ChemLabRecipes.allowInFlaskSlot(item)) {
@@ -328,7 +322,7 @@ public class ChemLabTileEnt extends BasicMachineTileEnt implements ITileEntityFl
 			return SLOT_INPUT1;
 		} else if (!this.input1.get().isEmpty() && this.input2.get().isEmpty() && (ChemLabRecipes.allowAsInput2(this.input1.get(), item))) {
 			return SLOT_INPUT2;
-		} else if (TGItems.isMachineUpgrade(item)) {
+		} else if (TGItems.isMachineUpgrade(item) || TGItems.isSteamUpgrade(item)) {
 			return SLOT_UPGRADE;
 		}
 		return -1;
@@ -454,6 +448,11 @@ public class ChemLabTileEnt extends BasicMachineTileEnt implements ITileEntityFl
 		
 		return interacted;
 
+	}
+
+	public boolean hasSteamUpgrade() {
+		ItemStack upgrade = this.inventory.getStackInSlot(SLOT_UPGRADE);
+		return !upgrade.isEmpty() && TGItems.isSteamUpgrade(upgrade);
 	}
 	
 }

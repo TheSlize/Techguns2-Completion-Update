@@ -19,7 +19,7 @@ import techguns.util.MathUtil;
 
 public class GuidedMissileProjectile extends RocketProjectile{
 
-	public static final double MAX_TURN_ANGLE = 9.0 *MathUtil.D2R; //= 180° per second
+	public static final double MAX_TURN_ANGLE = 9.0 *MathUtil.D2R; //= 180 per second
 	
 	public Entity target;
 	
@@ -55,7 +55,7 @@ public class GuidedMissileProjectile extends RocketProjectile{
 	@Override
 	protected void explodeRocket() {
 		if (!this.world.isRemote){
-			TGPackets.network.sendToAllAround(new PacketSpawnParticle("GuidedMissileExplosion", this.posX,this.posY,this.posZ), TGPackets.targetPointAroundEnt(this, 50.0f));
+			TGPackets.wrapper.sendToAllAround(new PacketSpawnParticle("GuidedMissileExplosion", this.posX,this.posY,this.posZ), TGPackets.targetPointAroundEnt(this, 50.0f));
 			TGExplosion explosion = new TGExplosion(world, this.shooter, this, posX, posY, posZ, this.damage, this.damageMin, this.damageDropStart, this.damageDropEnd, this.blockdamage?0.25:0.0);
 			
 			explosion.doExplosion(true);
@@ -87,7 +87,7 @@ public class GuidedMissileProjectile extends RocketProjectile{
 		//Update Motion
 		if (this.target != null) {
 			Vec3d motion = new Vec3d(motionX, motionY, motionZ);
-			double speed = motion.lengthVector();
+			double speed = motion.length();
 			
 			Vec3d v2 = new Vec3d(target.posX, target.posY+target.height*0.5f, target.posZ).subtract(new Vec3d(this.posX, this.posY, this.posZ)).normalize();
 			Vec3d v1 = motion.normalize();
@@ -107,7 +107,7 @@ public class GuidedMissileProjectile extends RocketProjectile{
 			this.motionY = motion.y;
 			this.motionZ = motion.z;
 		}
-		//System.out.println("Motion.length="+new Vec3d(motionX, motionY, motionZ).lengthVector());
+		//System.out.println("Motion.length="+new Vec3d(motionX, motionY, motionZ).length());
 		super.onUpdate();		
 	}
 	

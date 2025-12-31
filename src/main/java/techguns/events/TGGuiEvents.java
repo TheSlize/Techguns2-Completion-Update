@@ -1,27 +1,21 @@
 package techguns.events;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.EnumHandSide;
 import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import techguns.TGConfig;
 import techguns.TGItems;
 import techguns.TGRadiationSystem;
 import techguns.Techguns;
@@ -30,13 +24,10 @@ import techguns.api.guns.GunManager;
 import techguns.api.radiation.TGRadiation;
 import techguns.api.render.IItemRenderer;
 import techguns.capabilities.TGExtendedPlayer;
-import techguns.client.ClientProxy;
-import techguns.client.render.GLStateSnapshot;
 import techguns.client.render.ItemRenderHack;
+import techguns.client.render.enums.EnumAmmoMagConversion;
+import techguns.client.render.enums.EnumAmmoRenderTypes;
 import techguns.client.render.item.RenderGunBase;
-import techguns.debug.Keybinds;
-import techguns.entities.projectiles.EnumBulletFirePos;
-import techguns.gui.player.TGGuiTabButton;
 import techguns.gui.player.TGPlayerInventory;
 import techguns.gui.player.TGPlayerInventoryGui;
 import techguns.items.additionalslots.ItemTGSpecialSlotAmmo;
@@ -46,29 +37,33 @@ import techguns.items.guns.GenericGun;
 import techguns.util.InventoryUtil;
 import techguns.util.MathUtil;
 
-public class TGGuiEvents extends Gui{
+public class TGGuiEvents extends Gui {
 
-	public static ResourceLocation crosshairs_texture = new ResourceLocation(Techguns.MODID,"textures/gui/crosshairs.png");
-	public static ResourceLocation tg_crosshairs_texture = new ResourceLocation(Techguns.MODID,"textures/gui/tg_crosshairs.png");
+	public static ResourceLocation crosshairsTexture = new ResourceLocation(Techguns.MODID,"textures/gui/crosshairs.png");
+	public static ResourceLocation tgCrosshairsTexture = new ResourceLocation(Techguns.MODID,"textures/gui/tg_crosshairs.png");
+
+    private static float AMMO_TEXT_SCALE;
+    private static float AMMO_ICON_SCALE;
+    private static float AMMO_MAG_TEXT_SCALE;
+    private static int HUD_MARGIN_RIGHT;
+    private static int HUD_MARGIN_BOTTOM;
+    private static int ICON_TEXT_GAP;
+    private static int TEXT_MAG_GAP;
 	
 	@SideOnly(Side.CLIENT)
-	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=false)
+	@SubscribeEvent(priority=EventPriority.NORMAL)
 	public void onRenderGameOverlyEvent(RenderGameOverlayEvent event){
-		if(event.isCancelable() || event.getType() != ElementType.EXPERIENCE)
-	    {      
-	      return;
-	    }
-
-
+		if(event.isCancelable() || event.getType() != ElementType.EXPERIENCE) return;
 		Minecraft mc = Minecraft.getMinecraft();
+        updateHudScaling(mc);
 		
 		EntityPlayer ply = mc.player;
 		
 		if(ply.isSpectator()) return;
 		
 		TGExtendedPlayer props = TGExtendedPlayer.get(ply);
-		ItemStack item =ply.getHeldItemMainhand();
-		ItemStack item_off =ply.getHeldItemOffhand();
+		ItemStack item = ply.getHeldItemMainhand();
+		ItemStack itemOff = ply.getHeldItemOffhand();
 		ScaledResolution sr = new ScaledResolution(mc);
 		
 		int offsetY = sr.getScaledHeight()-32;
@@ -82,19 +77,18 @@ public class TGGuiEvents extends Gui{
 			showSafemode=true;
 		}
 
-		if(!item_off.isEmpty() && item_off.getItem() instanceof GenericGun){
-			if (GunManager.canUseOffhand(item,item_off,ply)) {
-				GenericGun gun = ((GenericGun) item_off.getItem());
-				this.drawGunAmmoCount(mc, sr, gun, item_off, ply, props, -12);
+		if(!itemOff.isEmpty() && itemOff.getItem() instanceof GenericGun){
+			if (GunManager.canUseOffhand(item,itemOff,ply)) {
+				GenericGun gun = ((GenericGun) itemOff.getItem());
+				if(TGConfig.cl_enableLegacyHud) this.drawGunAmmoCount(mc, sr, gun, itemOff, ply, props, -12);
+				else this.drawGunAmmoCount(mc, sr, gun, itemOff, ply, props, 0);
 				showSafemode=true;
 			}
 		}
 		
-		if(props!=null && props.showTGHudElements && showSafemode){
-
+		if(props != null && props.showTGHudElements && showSafemode) {
 			mc.getTextureManager().bindTexture(TGPlayerInventoryGui.texture);
 			this.drawTexturedModalRect(sr.getScaledWidth()-10, offsetY, 242+7*(props.enableSafemode?1:0), 14, 7,7);
-
 		}
 		
 		if(props!=null && props.showTGHudElements){
@@ -104,11 +98,11 @@ public class TGGuiEvents extends Gui{
 		
 			//draw power icon
 			ItemStack chest =ply.inventory.armorInventory.get(2);
-			if(chest!=null && chest.getItem() instanceof PoweredArmor){
+			if(chest.getItem() instanceof PoweredArmor){
 				this.drawTexturedModalRect(sr.getScaledWidth()-10, offsetY, 249, 35, 7,7);
 				
 				PoweredArmor pwrchest = (PoweredArmor) chest.getItem();
-				double percent = (pwrchest.getPower(chest)*1.0D) / (pwrchest.maxpower*1.0D);
+				double percent = (PoweredArmor.getPower(chest)*1.0D) / (pwrchest.maxpower*1.0D);
 				
 				ItemStack ammoitem  = pwrchest.getBattery();
 				int count = InventoryUtil.countItemInInv(ply.inventory.mainInventory, ammoitem, 0, ply.inventory.mainInventory.size());
@@ -116,42 +110,35 @@ public class TGGuiEvents extends Gui{
 				
 				String text = ChatFormatting.YELLOW+""+count+"x"+ChatFormatting.WHITE+(int)(percent*100)+"%";
 				mc.fontRenderer.drawString(text, sr.getScaledWidth()-2-text.length()*6-8+24, offsetY, 0xFFFFFFFF);
-				//mc.fontRenderer.drawString(text2, sr.getScaledWidth()-2-(text.length()+text2.length())*6-8, offsetY, 0xFFFFFFFF);
 				offsetY-=10;
 				
 			}
 			
-			ItemStack backslot = props.tg_inventory.inventory.get(props.tg_inventory.SLOT_BACK);
-			if (backslot !=null){
-				
-				//TODO: unhardcode this
-				if (backslot.getItem() == TGItems.JETPACK || backslot.getItem() == TGItems.JUMPPACK || backslot.getItem() == TGItems.ANTI_GRAV_PACK){
+			ItemStack backslot = props.tg_inventory.inventory.get(TGPlayerInventory.SLOT_BACK);
+			//TODO: unhardcode this
+			if (backslot.getItem() == TGItems.JETPACK || backslot.getItem() == TGItems.JUMPPACK || backslot.getItem() == TGItems.ANTI_GRAV_PACK){
 
-					int x = 242;
-					if (props.enableJetpack){
-						x+=7;
-					}
-					//bind again because string drawing fucks it up
-					mc.getTextureManager().bindTexture(TGPlayerInventoryGui.texture);
-					this.drawTexturedModalRect(sr.getScaledWidth()-10, offsetY, x, 42, 7,7);
-			
-					double percent = 1.0D-(backslot.getItemDamage()*1.0f) / (backslot.getMaxDamage()*1.0f);
-					
-					ItemStack ammoitem  = ((ItemTGSpecialSlotAmmo)backslot.getItem()).getAmmo();
-					int count = InventoryUtil.countItemInInv(ply.inventory.mainInventory, ammoitem, 0, ply.inventory.mainInventory.size());
-					count += InventoryUtil.countItemInInv(props.tg_inventory.inventory, ammoitem, TGPlayerInventory.SLOTS_AMMO_START, TGPlayerInventory.SLOTS_AMMO_END+1);
-					
-					String text = ChatFormatting.YELLOW+""+count+"x"+ChatFormatting.WHITE+(int)(percent*100)+"%";
-				
-					//String text= ""+(int)(percent*100)+"%";
-					mc.fontRenderer.drawString(text, sr.getScaledWidth()-2-text.length()*6-8+24, offsetY, 0xFFFFFFFF);
-					
-					offsetY-=10;
-					
+				int x = 242;
+				if (props.enableJetpack){
+					x+=7;
 				}
-				
+				//bind again because string drawing fucks it up
+				mc.getTextureManager().bindTexture(TGPlayerInventoryGui.texture);
+				this.drawTexturedModalRect(sr.getScaledWidth()-10, offsetY, x, 42, 7,7);
+
+				double percent = 1.0D-(backslot.getItemDamage()*1.0f) / (backslot.getMaxDamage()*1.0f);
+
+				ItemStack ammoitem  = ((ItemTGSpecialSlotAmmo)backslot.getItem()).getAmmo();
+				int count = InventoryUtil.countItemInInv(ply.inventory.mainInventory, ammoitem, 0, ply.inventory.mainInventory.size());
+				count += InventoryUtil.countItemInInv(props.tg_inventory.inventory, ammoitem, TGPlayerInventory.SLOTS_AMMO_START, TGPlayerInventory.SLOTS_AMMO_END+1);
+
+				String text = ChatFormatting.YELLOW+""+count+"x"+ChatFormatting.WHITE+(int)(percent*100)+"%";
+				mc.fontRenderer.drawString(text, sr.getScaledWidth()-2-text.length()*6-8+24, offsetY, 0xFFFFFFFF);
+
+				offsetY-=10;
+
 			}
-			
+
 			//needs rebind after string drawing
 			mc.getTextureManager().bindTexture(TGPlayerInventoryGui.texture);
 			if(Techguns.proxy.getHasNightvision()){
@@ -202,7 +189,7 @@ public class TGGuiEvents extends Gui{
 				
 				offsetY-=10;
 				
-				String currentRadText="";
+				String currentRadText;
 				PotionEffect currentRad = ply.getActivePotionEffect(TGRadiationSystem.radiation_effect);
 				if(currentRad!=null) {
 					int res = (int) ply.getEntityAttribute(TGRadiation.RADIATION_RESISTANCE).getAttributeValue();
@@ -211,14 +198,25 @@ public class TGGuiEvents extends Gui{
 					
 					currentRadText= "+["+amount+" RAD/s]";
 					mc.fontRenderer.drawString(currentRadText, sr.getScaledWidth()-currentRadText.length()*6 + 4, offsetY, 0xFFFFFFFF);
-					
-					offsetY-=10;
 				}
 			}
 			
 		}
 
 	}
+
+    private static void updateHudScaling(Minecraft mc) {
+        int guiScale = mc.gameSettings.guiScale == 0 ? 4 : mc.gameSettings.guiScale;
+        float scaleFactor = 4F / guiScale;
+
+        AMMO_TEXT_SCALE = TGConfig.cl_ammoTextScale * scaleFactor;
+        AMMO_ICON_SCALE = TGConfig.cl_ammoIconScale * scaleFactor;
+        AMMO_MAG_TEXT_SCALE = TGConfig.cl_ammoMagTextScale * scaleFactor;
+        HUD_MARGIN_RIGHT = (int)(TGConfig.cl_hudMarginRight * scaleFactor);
+        HUD_MARGIN_BOTTOM = (int)(TGConfig.cl_hudMarginBottom * scaleFactor);
+        ICON_TEXT_GAP = (int)(TGConfig.cl_iconTextGap * scaleFactor);
+        TEXT_MAG_GAP = (int)(TGConfig.cl_textMagGap * scaleFactor);
+    }
 	
 	private int getAmmoCountOfStack(ItemStack ammoitem, GenericGun gun, EntityPlayer ply, TGExtendedPlayer props) {
 		int count = InventoryUtil.countItemInInv(ply.inventory.mainInventory, ammoitem, 0, ply.inventory.mainInventory.size());
@@ -229,56 +227,116 @@ public class TGGuiEvents extends Gui{
 		} 
 		return count;
 	}
-	
-	private void drawGunAmmoCount(Minecraft mc,ScaledResolution sr, GenericGun gun, ItemStack item, EntityPlayer ply, TGExtendedPlayer props, int offsetY) {
-		ItemStack[] ammoitem  = gun.getReloadItem(item);
-		int minCount = 0;
-		for(ItemStack stack: ammoitem) {
-			int c = getAmmoCountOfStack(stack, gun, ply, props); 
-			if (c>minCount) {
-				minCount = c;
-			}
-		}
-		
-		String text= gun.getAmmoLeftCountTooltip(item)+"/"+gun.getClipsizeTooltip() +ChatFormatting.YELLOW+"x" +minCount;
-		mc.fontRenderer.drawString(text, sr.getScaledWidth()+1-text.length()*6,sr.getScaledHeight()-mc.fontRenderer.FONT_HEIGHT-2+offsetY , 0xFFFFFFFF);
-	}
-	
-	
-/*	@SideOnly(Side.CLIENT)
-	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=false)
-	public void onGuiPostInit(GuiScreenEvent.InitGuiEvent.Post event){
-		//System.out.println("Init GUI:"+event.getGui());
-		if (event.getGui() instanceof GuiInventory){
-		    int xSize = 176;
-		    int ySize = 166;
-			
-		    int k = (event.getGui().width - xSize) / 2;
-	        int l = (event.getGui().height - ySize) / 2;
-			
-	       // get this from config file
-	       int index = 2;
-	       event.getButtonList().add(new TGGuiTabButton(index, k+5, l-26, false,new ItemStack(Blocks.CRAFTING_TABLE,1),0));
-	       event.getButtonList().add(new TGGuiTabButton(index, k+5+28, l-26, true,TGItems.newStack(TGItems.PISTOL_ROUNDS,1),0));
-			
-		}
-	}*/
+
+    private void drawGunAmmoCount(Minecraft mc, ScaledResolution sr, GenericGun gun, ItemStack item, EntityPlayer ply, TGExtendedPlayer props, int offsetY) {
+        ItemStack[] ammoitem  = gun.getReloadItem(item);
+        ItemStack ammoIcon = EnumAmmoMagConversion.getAmmo(gun.getAmmoType().getAmmo(gun.getCurrentAmmoVariant(item))[0]);
+        int minCount = 0;
+        for(ItemStack stack: ammoitem) {
+            int c = getAmmoCountOfStack(stack, gun, ply, props);
+            if (c>minCount) {
+                minCount = c;
+            }
+        }
+
+        EnumAmmoRenderTypes type = EnumAmmoRenderTypes.getEnum(ammoIcon);
+        if (type == EnumAmmoRenderTypes.EMPTY) {
+            return;
+        }
+
+        if (!TGConfig.cl_enableLegacyHud) {
+            int screenW = sr.getScaledWidth();
+            int screenH = sr.getScaledHeight();
+
+            boolean offhand = ply.getHeldItemOffhand() == item;
+
+            String ammoText = gun.getAmmoLeftCountTooltip(item)+"/"+gun.getClipsizeTooltip();
+            String fullAmmoText = gun.getClipsizeTooltip()+"/"+gun.getClipsizeTooltip();
+
+            int ammoTextWidth = mc.fontRenderer.getStringWidth(ammoText);
+            int maxAmmoTextWidth = mc.fontRenderer.getStringWidth(fullAmmoText);
+
+            int scaledTextWidth = Math.round(ammoTextWidth * AMMO_TEXT_SCALE);
+            int scaledMaxTextWidth = Math.round(maxAmmoTextWidth * AMMO_TEXT_SCALE);
+            int scaledTextHeight = Math.round(mc.fontRenderer.FONT_HEIGHT * AMMO_TEXT_SCALE);
+
+            float scaledIconWidth = type.width * AMMO_ICON_SCALE;
+            float scaledIconHeight = type.height * AMMO_ICON_SCALE;
+
+            String magText = ChatFormatting.YELLOW + "x" + minCount;
+            int magTextWidth = mc.fontRenderer.getStringWidth(magText);
+            int scaledMagTextWidth = Math.round(magTextWidth * AMMO_MAG_TEXT_SCALE);
+
+            int textDrawY = screenH - HUD_MARGIN_BOTTOM - scaledTextHeight + offsetY;
+            int textCenterY = textDrawY + scaledTextHeight / 2;
+            int iconY = Math.round(textCenterY - scaledIconHeight / 2.0F);
+
+            if (!offhand) {
+                int textRight = screenW - HUD_MARGIN_RIGHT;
+                int textDrawX = textRight - scaledTextWidth;
+
+                int iconX = Math.round(textRight - scaledMaxTextWidth - ICON_TEXT_GAP - scaledIconWidth);
+
+                GlStateManager.pushMatrix();
+                GlStateManager.translate((float) textDrawX, (float) textDrawY, 0.0F);
+                GlStateManager.scale(AMMO_TEXT_SCALE, AMMO_TEXT_SCALE, 1.0F);
+                mc.fontRenderer.drawStringWithShadow(ammoText, 0, 0, 0xFFFFFFFF);
+                GlStateManager.popMatrix();
+
+                GlStateManager.pushMatrix();
+                GlStateManager.translate((float) iconX, (float) iconY, 0.0F);
+                GlStateManager.scale(AMMO_ICON_SCALE, AMMO_ICON_SCALE, 1.0F);
+                type.renderAmmoIcon(mc, 0, 0);
+                GlStateManager.popMatrix();
+
+                int magX = textRight - scaledMagTextWidth;
+                int magY = textDrawY + scaledTextHeight + TEXT_MAG_GAP;
+
+                GlStateManager.pushMatrix();
+                GlStateManager.translate((float) magX, (float) magY, 0.0F);
+                GlStateManager.scale(AMMO_MAG_TEXT_SCALE, AMMO_MAG_TEXT_SCALE, 1.0F);
+                mc.fontRenderer.drawStringWithShadow(magText, 0, 0, 0xFFFFFFFF);
+                GlStateManager.popMatrix();
+            } else {
+                int textLeft = HUD_MARGIN_RIGHT;
+
+                int iconX = Math.round(textLeft + scaledMaxTextWidth + ICON_TEXT_GAP);
+
+                GlStateManager.pushMatrix();
+                GlStateManager.translate((float) textLeft, (float) textDrawY, 0.0F);
+                GlStateManager.scale(AMMO_TEXT_SCALE, AMMO_TEXT_SCALE, 1.0F);
+                mc.fontRenderer.drawStringWithShadow(ammoText, 0, 0, 0xFFFFFFFF);
+                GlStateManager.popMatrix();
+
+                GlStateManager.pushMatrix();
+                GlStateManager.translate((float) iconX, (float) iconY, 0.0F);
+                GlStateManager.scale(AMMO_ICON_SCALE, AMMO_ICON_SCALE, 1.0F);
+                type.renderAmmoIcon(mc, 0, 0);
+                GlStateManager.popMatrix();
+
+                int magY = textDrawY + scaledTextHeight + TEXT_MAG_GAP;
+
+                GlStateManager.pushMatrix();
+                GlStateManager.translate((float) textLeft, (float) magY, 0.0F);
+                GlStateManager.scale(AMMO_MAG_TEXT_SCALE, AMMO_MAG_TEXT_SCALE, 1.0F);
+                mc.fontRenderer.drawStringWithShadow(magText, 0, 0, 0xFFFFFFFF);
+                GlStateManager.popMatrix();
+            }
+        } else {
+            String text= gun.getAmmoLeftCountTooltip(item)+"/"+gun.getClipsizeTooltip() +ChatFormatting.YELLOW+"x" +minCount;
+            mc.fontRenderer.drawString(text, sr.getScaledWidth()+1-text.length()*6,sr.getScaledHeight()-mc.fontRenderer.FONT_HEIGHT-2+offsetY , 0xFFFFFFFF);
+        }
+    }
 	
 	@SideOnly(Side.CLIENT)
-	@SubscribeEvent(priority=EventPriority.NORMAL, receiveCanceled=false)
+	@SubscribeEvent(priority=EventPriority.NORMAL)
 	public void onRenderCrosshairs(RenderGameOverlayEvent event){
-		if(event.isCanceled() || event.getType() != ElementType.CROSSHAIRS)
-	    {      
-	      return;
-	    }
+		if(event.isCanceled() || event.getType() != ElementType.CROSSHAIRS) return;
 		
 		Minecraft mc = Minecraft.getMinecraft();
 		EntityPlayer player = mc.player;
 				
-		//if (player.getActiveItemStack().getItem() instanceof GenericGun) {
 		if (player.getHeldItemMainhand().getItem() instanceof GenericGun) {
-			
-			//check 1st person
 			if(mc.gameSettings.thirdPersonView != 0) {
 				return;
 			}
@@ -286,14 +344,12 @@ public class TGGuiEvents extends Gui{
 			/*
 			 * Render Lock on GUI effect
 			 */
-			GameSettings gamesettings = mc.gameSettings;
 			ScaledResolution sr = new ScaledResolution(mc);
 			TGExtendedPlayer epc = TGExtendedPlayer.get(player);
 			
 			int x = sr.getScaledWidth() / 2;
 			int y = sr.getScaledHeight() / 2;
-			
-			//GenericGun gun = (GenericGun)player.getActiveItemStack().getItem();
+
 			GenericGun gun = (GenericGun)player.getHeldItemMainhand().getItem();
 			if (gun.getLockOnTicks() > 0 && epc.lockOnEntity != null && epc.lockOnTicks > 0) {
 				event.setCanceled(true);
@@ -301,15 +357,10 @@ public class TGGuiEvents extends Gui{
 				float maxTicks = (float)gun.getLockOnTicks(); //TODO: Store in capabilities
 				float progress = (float)epc.lockOnTicks/maxTicks;
 				
-				mc.getTextureManager().bindTexture(crosshairs_texture);
-							
-				//GlStateManager.blendFunc(1, 0);
+				mc.getTextureManager().bindTexture(crosshairsTexture);
+
 				GlStateManager.disableBlend();
 				GlStateManager.enableAlpha();
-				
-//				float offset = (Math.max(0.0f, (1.0f-progress)*16.0f))+3.5f;
-//				float x = (float)(sr.getScaledWidth_double()*0.5);
-//				float y = (float)(sr.getScaledHeight_double()*0.5);
 				
 				int offset = (int)(Math.max(0.0f, (1.0f-progress)*16.0f))+5;
 				//Outer parts
@@ -325,11 +376,9 @@ public class TGGuiEvents extends Gui{
 				if (progress < 1.0f) {
 					String text = "Locking... : "+epc.lockOnEntity.getName();
 					mc.fontRenderer.drawString(text, (int)(sr.getScaledWidth_double()*0.5)+2, (int)(sr.getScaledHeight_double()*0.5)+10, 0xFFFFFFFF);
-				}else {
-					//this.drawTexturedModalRect(x-6.5f, y-6.5f, 28, 0, 13,13);
-					//if (event.getPartialTicks() > 0.5f) {
+				} else {
 					this.drawTexturedModalRect(x-6, y-6, 28, 0, 13,13);
-					if (Minecraft.getMinecraft().getSystemTime() / 250 % 2 == 0) {
+					if (Minecraft.getSystemTime() / 250 % 2 == 0) {
 						this.drawTexturedModalRect(x-9, y-9, 41, 0, 19,19);
 					}
 					
@@ -341,17 +390,11 @@ public class TGGuiEvents extends Gui{
 				//Restore settings
 				GlStateManager.enableBlend();
 				GlStateManager.disableAlpha();
-				
-//				if (!(gamesettings.showDebugInfo && !gamesettings.hideGUI && !player.hasReducedDebug() && !gamesettings.reducedDebugInfo))
-//	            {
-//	                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-//	                GlStateManager.enableAlpha();
-//	            }
 			} else {
 				//gun crosshair
 				if(gun.isZooming()) {
 					IItemRenderer irenderer = ItemRenderHack.getRendererForItem(gun);
-					if(irenderer!=null && irenderer instanceof RenderGunBase) {
+					if(irenderer instanceof RenderGunBase) {
 						RenderGunBase rgun = (RenderGunBase) irenderer;
 						
 						if(rgun.hasScopeTexture()) {
@@ -361,18 +404,16 @@ public class TGGuiEvents extends Gui{
 					}
 				}
 				
-					if(gun.getCrossHairStyle()!=EnumCrosshairStyle.VANILLA) {
+					if(gun.getCrossHairStyle() != EnumCrosshairStyle.VANILLA) {
 						event.setCanceled(true);
 		
 						//Vanilla does this setting too
-					    Minecraft.getMinecraft().getTextureManager().bindTexture(tg_crosshairs_texture);
+					    Minecraft.getMinecraft().getTextureManager().bindTexture(tgCrosshairsTexture);
 					    GlStateManager.enableBlend();
 		
 		                GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.ONE_MINUS_DST_COLOR, GlStateManager.DestFactor.ONE_MINUS_SRC_COLOR, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
 		                GlStateManager.enableAlpha();
 		                //end vanilla gl states
-		                
-		                //this.drawTexturedModalRect(l / 2 - 7, i1 / 2 - 7, 0, 0, 16, 16);
 						
 		                float spread = gun.getSpread();
 		                
@@ -386,8 +427,6 @@ public class TGGuiEvents extends Gui{
 			        	if(gun.isZooming()){
 			        		spread*=gun.getZoombonus();
 			        	}
-		              	
-			        	//System.out.println("Spread:"+spread);
 			        	
 		                int spacing = MathUtil.clamp(Math.round(100*spread),1,10);
 		                
@@ -453,8 +492,6 @@ public class TGGuiEvents extends Gui{
 									break;
 									
 								case VERTICAL:
-									//NYI
-									//break;
 								default:
 									this.drawTexturedModalRect(x-7, y-7, crosshair.getLocX(), crosshair.getLocY(), 16,16);
 									break;

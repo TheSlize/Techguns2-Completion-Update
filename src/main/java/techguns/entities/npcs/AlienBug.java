@@ -141,7 +141,7 @@ public class AlienBug extends EntitySpider implements ITGNpcTeam, INpcTGDamageSy
 		public void startExecuting() {
 			super.startExecuting();
 			if(!this.taskOwner.world.isRemote) {
-				TGPackets.network.sendToAllAround(new PacketPlaySound(TGSounds.ALIENBUG_AGGRO, this.taskOwner, 1.0f, 1.0f,
+				TGPackets.wrapper.sendToAllAround(new PacketPlaySound(TGSounds.ALIENBUG_AGGRO, this.taskOwner, 1.0f, 1.0f,
 						false, false, TGSoundCategory.HOSTILE), TGPackets.targetPointAroundEnt(taskOwner, 24.0f));
 			}
 		}
@@ -178,7 +178,7 @@ public class AlienBug extends EntitySpider implements ITGNpcTeam, INpcTGDamageSy
        this.attackTimer = 10;
 
        if(!this.world.isRemote) {
-    	   TGPackets.network.sendToAllAround(new PacketPlaySound(TGSounds.ALIENBUG_BITE, this, 2.0f, 1.0f,false,false, TGSoundCategory.HOSTILE), TGPackets.targetPointAroundEnt(this, 24.0f));
+    	   TGPackets.wrapper.sendToAllAround(new PacketPlaySound(TGSounds.ALIENBUG_BITE, this, 2.0f, 1.0f,false,false, TGSoundCategory.HOSTILE), TGPackets.targetPointAroundEnt(this, 24.0f));
        }
 
        this.world.setEntityState(this, (byte)4);

@@ -3,6 +3,7 @@ package techguns.util;
 import java.util.ArrayList;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class ItemStackOreDict {
@@ -12,6 +13,7 @@ public class ItemStackOreDict {
 	public ItemStack item;
 	//strict mode, check for damage value
 	public boolean strict = false;
+	public NBTTagCompound nbt;
 	
 	public static final ItemStackOreDict EMPTY = new ItemStackOreDict();
 	
@@ -36,12 +38,18 @@ public class ItemStackOreDict {
 		this.stackSize = stackSize;
 		this.item = item;
 		this.oreDictName=null;
+		if (item.hasTagCompound()) {
+			this.nbt = item.getTagCompound().copy();
+		}
 	}
 	public ItemStackOreDict(ItemStack item) {
 		if (item !=null){
 			this.stackSize = item.getCount();
-			this.item = item;
+			this.item = item.copy();
 			this.oreDictName=null;
+			if (item.hasTagCompound()) {
+				this.nbt = item.getTagCompound();
+			}
 		} else {
 			this.stackSize=0;
 			this.item=ItemStack.EMPTY;
@@ -57,6 +65,11 @@ public class ItemStackOreDict {
 		}else {
 			return !this.item.isEmpty();
 		}
+	}
+
+	public ItemStackOreDict setCount(int count){
+		this.stackSize = count;
+		return this;
 	}
 	
 	/**
@@ -85,9 +98,9 @@ public class ItemStackOreDict {
 			return OreDictionary.itemMatches(this.item, other, strict); //OreDictionary.itemMatches(this.item, other,strict); //ItemUtil.isItemEqual(this.item, other);
 		} else {
 			ArrayList<ItemStack> items = this.getItemStacks();
-			
-			for (int i=0; i<items.size();i++){
-				if (OreDictionary.itemMatches(items.get(i), other, strict)){
+
+			for (ItemStack itemStack : items) {
+				if (OreDictionary.itemMatches(itemStack, other, strict)) {
 					return true;
 				}
 			}
@@ -100,7 +113,11 @@ public class ItemStackOreDict {
 		
 		if(this.oreDictName==null){
 			if(!this.item.isEmpty()){
-				list.add(new ItemStack(this.item.getItem(),this.stackSize,this.item.getItemDamage()));
+				ItemStack stack = this.item;
+				if(this.nbt!=null){
+					stack.setTagCompound(this.nbt.copy());
+				}
+				list.add(stack);
 			}
 		} else {
 			OreDictionary.getOres(oreDictName).forEach(s -> {
@@ -146,9 +163,23 @@ public class ItemStackOreDict {
 			return OreDictionary.itemMatches(this.item, other.item, false);
 		}
 	}
-	
-	public boolean matches (ItemStack other) {
-		return this.matches(new ItemStackOreDict(other, other.getCount()));
+
+	public boolean matches(ItemStack other) {
+		if (!this.matchesWithoutNBT(other)) {
+			return false;
+		}
+		if (this.nbt != null) {
+			return this.nbt.equals(other.getTagCompound());
+		}
+		return true;
+	}
+
+	private boolean matchesWithoutNBT(ItemStack other) {
+		if (this.oreDictName != null) {
+			return this.isEqualWithOreDict(other);
+		} else {
+			return OreDictionary.itemMatches(this.item, other, strict);
+		}
 	}
 
 }

@@ -1,7 +1,5 @@
 package techguns.tileentities;
 
-import static techguns.gui.ButtonConstants.BUTTON_ID_SECURITY;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -82,10 +80,7 @@ public class TurretTileEnt extends BasicPoweredTileEnt implements ITickable{
 					return stack.getItem() instanceof IGenericGun;
 				} else if (slot==SLOT_ARMOR) {
 					return stack.getItem() instanceof ITGSpecialSlot && ((ITGSpecialSlot)stack.getItem()).getSlot(stack)==TGSlotType.TURRETARMOR;
-				} else if (slot>=SLOT_INPUT1 && slot < SLOT_INPUT1+INPUTS_SIZE) {
-					return true;
-				}
-				return false;
+				} else return slot >= SLOT_INPUT1 && slot < SLOT_INPUT1 + INPUTS_SIZE;
 			}
 
 			@Override
@@ -97,7 +92,7 @@ public class TurretTileEnt extends BasicPoweredTileEnt implements ITickable{
 	
 	@Override
 	public ITextComponent getDisplayName() {
-		return new TextComponentTranslation(Techguns.MODID+".container.turretbase", new Object[0]);
+		return new TextComponentTranslation(Techguns.MODID+".container.turretbase");
 	}
 	
 	public int getRepairTimeScaled(int max){
@@ -111,7 +106,7 @@ public class TurretTileEnt extends BasicPoweredTileEnt implements ITickable{
 		if(tags.hasKey("mountedTurret")){
 			if (this.world!=null){
 				Entity ent = this.world.getEntityByID(tags.getInteger("mountedTurret"));
-				if (ent !=null && ent instanceof NPCTurret){
+				if (ent instanceof NPCTurret){
 					this.mountedTurret=(NPCTurret) ent;
 					this.mountedTurret.setTileEnt(this);
 					//System.out.println("Set tileent for mounted turret");
@@ -126,7 +121,7 @@ public class TurretTileEnt extends BasicPoweredTileEnt implements ITickable{
 //			this.mountedTurret=null;
 		}
 		
-		this.facing = EnumFacing.getFront(tags.getByte("facing"));
+		this.facing = EnumFacing.byIndex(tags.getByte("facing"));
 		this.turretDeath=tags.getBoolean("turretDeath");
 		this.repairTime=tags.getInteger("repairTime");
 		this.turretHealTime=tags.getInteger("turretHealTime");
@@ -134,12 +129,12 @@ public class TurretTileEnt extends BasicPoweredTileEnt implements ITickable{
 		this.pvpsetting=tags.getByte("pvpsetting");
 		
 		NBTTagCompound tagsWeapon = tags.getCompoundTag("weapon");
-		if(tagsWeapon!=null && !tagsWeapon.hasNoTags()) {
+		if(!tagsWeapon.isEmpty()) {
 			this.inventory.setStackInSlot(SLOT_WEAPON, new ItemStack(tagsWeapon));
 		}
 		
 		NBTTagCompound tagsArmor = tags.getCompoundTag("armor");
-		if(tagsArmor!=null && !tagsArmor.hasNoTags()) {
+		if(!tagsArmor.isEmpty()) {
 			this.inventory.setStackInSlot(SLOT_ARMOR, new ItemStack(tagsArmor));
 		}
 	}
@@ -228,8 +223,8 @@ public class TurretTileEnt extends BasicPoweredTileEnt implements ITickable{
 	
 	protected void doReload(ItemStack gunstack){
 		GenericGun gun = (GenericGun) gunstack.getItem();
-		ItemStack ammo[] = gun.getAmmoType().getAmmo(gun.getCurrentAmmoVariant(gunstack));
-		ItemStack emptyMag[] = gun.getAmmoType().getEmptyMag();
+		ItemStack[] ammo = gun.getAmmoType().getAmmo(gun.getCurrentAmmoVariant(gunstack));
+		ItemStack[] emptyMag = gun.getAmmoType().getEmptyMag();
 		
 		boolean canConsume=true;
 		for(int i=0;i<emptyMag.length;i++) {
@@ -450,7 +445,7 @@ public class TurretTileEnt extends BasicPoweredTileEnt implements ITickable{
 			
 			if (this.mountedTurret==null && !this.turretDeath){
 				if((System.currentTimeMillis()-this.lastRequest)>1000){
-					TGPackets.network.sendToServer(new PacketRequestTileEntitySync(this.getPos()));
+					TGPackets.wrapper.sendToServer(new PacketRequestTileEntitySync(this.getPos()));
 					this.lastRequest=System.currentTimeMillis();
 	//				System.out.println("Sent request for sync");
 				}

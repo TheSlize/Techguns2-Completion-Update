@@ -41,7 +41,7 @@ public class PowerHammerProjectile extends GenericProjectile {
 	    	double y = rayTraceResult.hitVec.y;
 	    	double z = rayTraceResult.hitVec.z;
 			this.world.playSound(x, y, z, TGSounds.POWERHAMMER_IMPACT, SoundCategory.PLAYERS, 1.0f, 1.0f, false);
-			TGPackets.network.sendToAllAround(new PacketSpawnParticle("PowerhammerImpact",x,y,z), TGPackets.targetPointAroundEnt(this, 32.0f));
+			TGPackets.wrapper.sendToAllAround(new PacketSpawnParticle("PowerhammerImpact",x,y,z), TGPackets.targetPointAroundEnt(this, 32.0f));
 		}
 	}
 
@@ -52,7 +52,7 @@ public class PowerHammerProjectile extends GenericProjectile {
 	    	double y = rayTraceResult.hitVec.y;
 	    	double z = rayTraceResult.hitVec.z;
 			this.world.playSound(x, y, z, TGSounds.POWERHAMMER_IMPACT, SoundCategory.PLAYERS, 1.0f, 1.0f, false);
-			TGPackets.network.sendToAllAround(new PacketSpawnParticle("PowerhammerImpact",x,y,z), TGPackets.targetPointAroundEnt(this, 32.0f));
+			TGPackets.wrapper.sendToAllAround(new PacketSpawnParticle("PowerhammerImpact",x,y,z), TGPackets.targetPointAroundEnt(this, 32.0f));
 		}
 	}
 	

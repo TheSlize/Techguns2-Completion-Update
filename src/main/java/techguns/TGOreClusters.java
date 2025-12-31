@@ -39,6 +39,7 @@ public class TGOreClusters implements ITGInitializer{
 		registry.put(EnumOreClusterType.SHINY_GEM, new OreCluster(TGConfig.mininglevel_shiny_gem, TGConfig.oremult_shiny_gem, TGConfig.powermult_shiny_gem));
 		registry.put(EnumOreClusterType.NETHER_CRYSTAL, new OreCluster(TGConfig.mininglevel_nether_crystal, TGConfig.oremult_nether_crystal, TGConfig.powermult_nether_crystal));
 		registry.put(EnumOreClusterType.OIL, new OreCluster(TGConfig.mininglevel_oil, TGConfig.oremult_oil, TGConfig.powermult_oil));
+		registry.put(EnumOreClusterType.UNIVERSAL, new OreCluster(1, 2.2f, 1));
 	}
 
 	public void RecipeInit() {
@@ -65,7 +66,21 @@ public class TGOreClusters implements ITGInitializer{
 		this.addOreToCluster(new ItemStack(Blocks.QUARTZ_ORE), EnumOreClusterType.NETHER_CRYSTAL, 50);
 		this.addOreToCluster(new ItemStack(Blocks.GLOWSTONE), EnumOreClusterType.NETHER_CRYSTAL, 40);
 		this.addOreToCluster(new ItemStack(Items.BLAZE_ROD), EnumOreClusterType.NETHER_CRYSTAL, 10);
-		
+
+		this.addOreToCluster(new ItemStack(Blocks.IRON_ORE, 3), EnumOreClusterType.UNIVERSAL, 45);
+		this.addOreToCluster(new ItemStack(Items.COAL, 1), EnumOreClusterType.COAL, 40);
+		this.addOreToCluster("oreCopper", EnumOreClusterType.UNIVERSAL, 40, 4);
+		this.addOreToCluster("oreTin", EnumOreClusterType.UNIVERSAL, 30, 3);
+		this.addOreToCluster("oreLead", EnumOreClusterType.UNIVERSAL, 35, 3);
+		this.addOreToCluster(new ItemStack(Blocks.GOLD_ORE, 2), EnumOreClusterType.UNIVERSAL, 20);
+		this.addOreToCluster(new ItemStack(Items.DIAMOND, 3), EnumOreClusterType.UNIVERSAL, 10);
+		this.addOreToCluster(new ItemStack(Items.EMERALD, 1), EnumOreClusterType.UNIVERSAL, 7);
+		this.addOreToCluster("oreAluminum", EnumOreClusterType.UNIVERSAL, 35, 3);
+		this.addOreToCluster("oreSilver", EnumOreClusterType.UNIVERSAL, 30, 3);
+		this.addOreToCluster("crystalCertusQuartz", EnumOreClusterType.UNIVERSAL, 30, 3);
+		this.addOreToCluster("oreOsmium", EnumOreClusterType.UNIVERSAL, 30, 3);
+		this.addOreToCluster("oreNickel", EnumOreClusterType.UNIVERSAL, 30, 3);
+
 		if(!TGFluids.worldspawn_oils.isEmpty()) {
 			//prefer oil which has a block implementation
 			if(TGFluids.OIL_WORLDSPAWN!=null) {
@@ -122,7 +137,6 @@ public class TGOreClusters implements ITGInitializer{
 		OreCluster c = this.registry.get(type);
 		if(c!=null) {
 			ItemStack ore2=ore.copy();
-			ore2.setCount(1);
 			OreClusterWeightedEntry entry = new OreClusterWeightedEntry(ore2, weight);
 			if(!c.oreEntries.contains(entry)) {
 				c.oreEntries.add(entry);
@@ -151,6 +165,16 @@ public class TGOreClusters implements ITGInitializer{
 			}
 		}
 	}
+
+	public void addOreToCluster(String oredict, EnumOreClusterType type, int weight, int amount) {
+		OreCluster c = this.registry.get(type);
+		if(c!=null) {
+			OreClusterWeightedEntry entry = new OreClusterWeightedEntry(oredict, weight, amount);
+			if(!entry.isEmpty() && !c.oreEntries.contains(entry)) {
+				c.oreEntries.add(entry);
+			}
+		}
+	}
 	
 	public static class OreClusterWeightedEntry extends WeightedRandom.Item {
 		ItemStack ore = ItemStack.EMPTY;
@@ -172,6 +196,15 @@ public class TGOreClusters implements ITGInitializer{
 			NonNullList<ItemStack> ores = OreDictionary.getOres(oredictname);
 			if(!ores.isEmpty()) {
 				this.ore = ores.get(0).copy();
+			}
+		}
+
+		public OreClusterWeightedEntry(String oredictname, int itemWeightIn, int amount) {
+			super(itemWeightIn);
+			NonNullList<ItemStack> ores = OreDictionary.getOres(oredictname);
+			if(!ores.isEmpty()) {
+				this.ore = ores.get(0).copy();
+				ore.setCount(amount);
 			}
 		}
 
@@ -244,7 +277,7 @@ public class TGOreClusters implements ITGInitializer{
 				MachineOperation op=null;
 				
 				if(!entry.ore.isEmpty()) {
-					op= new MachineOperation(new ItemStack(entry.ore.getItem(),1,entry.ore.getItemDamage()), null, new ItemStack[0]);
+					op = new MachineOperation(entry.ore.copy(), null, new ItemStack[0]);
 				} else if (entry.fluid!=null){
 					op= new MachineOperation(ItemStack.EMPTY, new FluidStack(entry.fluid.getFluid(),Fluid.BUCKET_VOLUME), new ItemStack[0]);
 				} 

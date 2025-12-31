@@ -38,7 +38,6 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import techguns.TGBlocks;
 import techguns.TGPackets;
 import techguns.TGSounds;
@@ -70,17 +69,13 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
 	public static final int SLOT_FOCUS=1;
 	public static final int SLOT_OUTPUT=2;
 	public static final int OUTPUT_SLOTS_COUNT=4;
-	
-	public static final int BUTTON_ID_LIQUIDLEVEL_INC=ButtonConstants.BUTTON_ID_REDSTONE+1;
-	public static final int BUTTON_ID_LIQUIDLEVEL_DEC=ButtonConstants.BUTTON_ID_REDSTONE+2;
 	public static final int BUTTON_ID_INTENSITY_INC=ButtonConstants.BUTTON_ID_REDSTONE+3;
-	public static final int BUTTON_ID_INTENSTIY_DEC=ButtonConstants.BUTTON_ID_REDSTONE+4;
+	public static final int BUTTON_ID_INTENSITY_DEC =ButtonConstants.BUTTON_ID_REDSTONE+4;
 	public static final int BUTTON_ID_DUMPTANK=ButtonConstants.BUTTON_ID_REDSTONE+5;
 	
 	public static Field playerChunkMapEntry_Players = ObfuscationReflectionHelper.findField(PlayerChunkMapEntry.class, "field_187283_c"); //ReflectionHelper.findField(PlayerChunkMapEntry.class, "players","field_187283_c");
 	
 	protected byte intensity=0;
-	protected byte liquidLevel=0;
 	
 	public MachineSlotItem input;
 	
@@ -160,7 +155,6 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
 		this.inputTank.readFromNBT(inputTankTags);
 		
 		this.intensity= tags.getByte("intensity");
-		this.liquidLevel=tags.getByte("liquidLevel");
 		
 		if(tags.hasKey("inputSlot")) {
 			ItemStack inputSlot = new ItemStack(tags.getCompoundTag("inputSlot"));
@@ -186,7 +180,6 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
 		tags.setTag("inputTank", inputTankTags);
 		
 		tags.setByte("intensity", this.intensity);
-		tags.setByte("liquidLevel", this.liquidLevel);
 		
 		if (!this.input.get().isEmpty()) {
 			NBTTagCompound inputSlot = new NBTTagCompound();
@@ -232,7 +225,7 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
 			if (currentReaction != null && currentReaction.getRecipe()!=null) {
 				
 				this.progress++;
-				boolean state = currentReaction.tick(this.intensity,this.liquidLevel,this.world.isRemote,this,currentReaction.getRecipe().RFTick);
+				boolean state = currentReaction.tick(this.intensity,this.world.isRemote,this,currentReaction.getRecipe().RFTick);
 				
 				if (!this.world.isRemote && state) {
 					if (currentReaction.isSuccess()){
@@ -294,20 +287,29 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
 	@Override
 	protected void checkAndStartOperation() {
 		this.contentsChanged=false;
-		
-		ReactionChamberRecipe rec = ReactionChamberRecipe.getMatchingRecipe(this.inventory.getStackInSlot(SLOT_INPUT), this.inventory.getStackInSlot(SLOT_FOCUS), this.inputTank.getFluid(), this.liquidLevel, this.intensity);
-		if (rec!=null){
-			
-			if (rec.RFTick<=this.energy.getEnergyStored()){
-			
-				this.currentOperation = new ReactionChamberOperation(rec,this);
-				
-				this.input.consume(1);
-				this.totaltime = rec.ticks*ReactionChamberOperation.RECIPE_TICKRATE;
-				this.progress=0;
-				
+
+		ItemStack inputStack = this.inventory.getStackInSlot(SLOT_INPUT);
+
+		ReactionChamberRecipe rec = ReactionChamberRecipe.getMatchingRecipe(
+				inputStack,
+				this.inventory.getStackInSlot(SLOT_FOCUS),
+				this.inputTank.getFluid(),
+				this.intensity
+		);
+
+		if (rec != null){
+			if (inputStack.getCount() >= rec.input.item.getCount()) {
+				if (rec.RFTick <= this.energy.getEnergyStored()){
+					int count = rec.input.item.getCount();
+					this.currentOperation = new ReactionChamberOperation(rec, this);
+					this.input.consume(count);
+					this.totaltime = rec.ticks * ReactionChamberOperation.RECIPE_TICKRATE;
+					this.progress = 0;
+				} else {
+					this.contentsChanged = true;
+				}
 			} else {
-				this.contentsChanged=true; //need check start next time
+				this.contentsChanged = true;
 			}
 		}
 	}
@@ -417,16 +419,8 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
 		return intensity;
 	}
 
-	public byte getLiquidLevel() {
-		return liquidLevel;
-	}
-
 	public void setIntensity(byte intensity) {
 		this.intensity = intensity;
-	}
-
-	public void setLiquidLevel(byte liquidLevel) {
-		this.liquidLevel = liquidLevel;
 	}
 
 	public ReactionChamberOperation getCurrentReaction() {
@@ -486,7 +480,7 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
 						
 			if (type == 0){
 			
-				TGPackets.network.sendToAllAround(new PacketSpawnParticle("FragGrenadeExplosion", centerPos.getX()+0.5d, centerPos.getY()+0.5d, centerPos.getZ()+0.5d), new TargetPoint(this.world.provider.getDimension(), centerPos.getX()+0.5d, centerPos.getY()+0.5d, centerPos.getZ()+0.5d, 50.0f));
+				TGPackets.wrapper.sendToAllAround(new PacketSpawnParticle("FragGrenadeExplosion", centerPos.getX()+0.5d, centerPos.getY()+0.5d, centerPos.getZ()+0.5d), new TargetPoint(this.world.provider.getDimension(), centerPos.getX()+0.5d, centerPos.getY()+0.5d, centerPos.getZ()+0.5d, 50.0f));
 				this.world.playSound((EntityPlayer)null, centerPos.getX()+0.5d, centerPos.getY()+0.5d, centerPos.getZ()+0.5d, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0F, (1.0F + (this.world.rand.nextFloat() - this.world.rand.nextFloat()) * 0.2F) * 0.7F);
 
 			} else if (type == 1){
@@ -528,27 +522,15 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
 		} else {
 			if (this.isUseableByPlayer(ply)){
 				switch(id){
-					case BUTTON_ID_LIQUIDLEVEL_INC: 
-						if (this.liquidLevel<10){
-							this.liquidLevel++;
-							this.contentsChanged=true;
-						}
-						break;
-					case BUTTON_ID_LIQUIDLEVEL_DEC:
-						if (this.liquidLevel>0){
-							this.liquidLevel--;
-							this.contentsChanged=true;
-						}
-						break;
 					case BUTTON_ID_INTENSITY_INC: 
-						if (this.intensity<10){
-							this.intensity++;
+						if (this.intensity<11){
+							this.intensity = (byte) Integer.parseInt(data);
 							this.contentsChanged=true;
 						}
 						break;
-					case BUTTON_ID_INTENSTIY_DEC: 
+					case BUTTON_ID_INTENSITY_DEC:
 						if (this.intensity>0){
-							this.intensity--;
+							this.intensity = 0;
 							this.contentsChanged=true;
 						}
 						break;
@@ -560,7 +542,7 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
 		}
 	}
 
-	private void dumpLiquid(){
+	public void dumpLiquid(){
 		this.inputTank.setFluid(null);
 		this.contentsChanged=true;
 		this.needUpdate();
@@ -575,7 +557,7 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
 			this.tile=tile;
 		}
 		private int getFillCapacity() {
-			return tile.liquidLevel*Fluid.BUCKET_VOLUME;
+			return CAPACITY_INPUT_TANK;
 		}
 		
 		@Override
@@ -662,7 +644,7 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
 		
 		@Override
 		public FluidStack drainInternal(int maxDrain, boolean doDrain) {			
-			int maxDrainAmount = Math.max(fluid.amount - tile.liquidLevel*Fluid.BUCKET_VOLUME,0);
+			int maxDrainAmount = Math.max(fluid.amount - CAPACITY_INPUT_TANK,0);
 			int drainAmount = Math.min(maxDrainAmount, maxDrain);
 			
 			  if (fluid == null || drainAmount <= 0)
@@ -724,14 +706,14 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
 	public void needFluidUpdate() {
 		if (!this.world.isRemote) {
 			
-			ChunkPos cp = this.world.getChunkFromBlockCoords(getPos()).getPos();
+			ChunkPos cp = this.world.getChunk(getPos()).getPos();
 			PlayerChunkMapEntry entry = ((WorldServer) this.world).getPlayerChunkMap().getEntry(cp.x, cp.z);
 			if(entry !=null ) {
 				try {
 					List<EntityPlayerMP> players = (List<EntityPlayerMP>) playerChunkMapEntry_Players.get(entry);
 					IMessage packet = new PacketUpdateTileEntTanks(this, this.getPos());
 					for (EntityPlayerMP entityplayermp : players) {
-						TGPackets.network.sendTo(packet, entityplayermp);
+						TGPackets.wrapper.sendTo(packet, entityplayermp);
 					}
 				} catch (IllegalArgumentException e) {
 					e.printStackTrace();
@@ -749,24 +731,6 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
 	@Optional.Method(modid="opencomputers")
 	public String getComponentName(){
 		return "tg2_reactionchamber";
-	}
-
-	@Optional.Method(modid="opencomputers")
-	@Callback(doc = "function(int:liquidLimit):boolean -- sets the liquid limit for the input tank", direct = false)
-	public Object[] setLiquidLevel(Context context, Arguments args) {
-		if(args.count() < 1)
-			return new Object[]{ false, "no liquid level specified" };
-
-		byte newLiquidLevel = (byte) Math.max(0, Math.min(args.checkInteger(0), 10));
-
-		setLiquidLevel(newLiquidLevel);
-		return new Object[]{ getLiquidLevel() == newLiquidLevel };
-	}
-
-	@Optional.Method(modid="opencomputers")
-	@Callback(doc = "function():int -- returns the liquid limit", direct = false)
-	public Object[] getLiquidLevel(Context context, Arguments args) {
-		return new Object[]{ getLiquidLevel() };
 	}
 
 	@Optional.Method(modid="opencomputers")

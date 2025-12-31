@@ -6,6 +6,7 @@ import java.util.List;
 
 import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.recipe.IStackHelper;
+import org.jetbrains.annotations.NotNull;
 import techguns.tileentities.operation.CamoBenchRecipes;
 import techguns.tileentities.operation.CamoBenchRecipes.CamoBenchRecipe;
 
@@ -35,7 +36,7 @@ public class CamoBenchJeiRecipe extends BasicRecipeWrapper {
 	}
 
 	@Override
-	public List<String> getTooltipStrings(int mouseX, int mouseY) {
+	public @NotNull List<String> getTooltipStrings(int mouseX, int mouseY) {
 		return Collections.EMPTY_LIST;
 	}
 	

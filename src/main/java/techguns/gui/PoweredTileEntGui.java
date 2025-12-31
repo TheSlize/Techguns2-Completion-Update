@@ -13,7 +13,7 @@ public abstract class PoweredTileEntGui extends RedstoneTileEntGui {
 	protected BasicPoweredTileEnt poweredTileEnt;
 	public static final ResourceLocation power_texture = new ResourceLocation(Techguns.MODID,"textures/gui/ammo_press_gui.png");
 	
-	protected boolean hasUpgradeSlot=true;
+	protected boolean showUpgradeSlot =true;
 	
 	protected int upgradeSlotX=151;
 	protected int upgradeSlotY=59;
@@ -29,20 +29,22 @@ public abstract class PoweredTileEntGui extends RedstoneTileEntGui {
 		
 		int k = (this.width - this.xSize) / 2;
         int l = (this.height - this.ySize) / 2;
-        
-		 //draw power bar
-        int power = (int) (this.poweredTileEnt.getEnergyStorage().getEnergyStored()*48 / this.poweredTileEnt.getEnergyStorage().getMaxEnergyStored());
-        int diff=48-power;
-        if(TGConfig.machinesNeedNoPower) {
-        	diff=0;
-        }
-        this.mc.getTextureManager().bindTexture(power_texture);
-        this.drawTexturedModalRect(k+8, l+17+diff, 251, 1+diff, 4, 48);
-        //System.out.println("Power:"+power+" diff:"+diff);
+
+		drawDefaultEnergyBar();
         
         //draw upgrade slot
-        if (hasUpgradeSlot) {
-        	this.drawTexturedModalRect(k+upgradeSlotX, l+upgradeSlotY, 119, 59, 20, 20);
+        if (showUpgradeSlot) {
+			switch(appearanceType){
+				case BRONZISH:
+					this.drawTexturedModalRect(k+upgradeSlotX+1, l+upgradeSlotY+1, 209, 202, 18, 18);
+					break;
+				case ADVANCED:
+					this.drawTexturedModalRect(k+upgradeSlotX+1, l+upgradeSlotY+1, 209, 220, 18, 18);
+					break;
+				case REGULAR:
+					this.drawTexturedModalRect(k+upgradeSlotX+1, l+upgradeSlotY+1, 209, 238, 18, 18);
+					break;
+			}
         }
 
 	}
@@ -53,14 +55,74 @@ public abstract class PoweredTileEntGui extends RedstoneTileEntGui {
 		
 		int mx = mouseX - (this.width-this.xSize)/2;
         int my = mouseY - (this.height-this.ySize)/2;
-        
-        if (isInRect(mx,my,7,17,5,49)){
-        	if(TGConfig.machinesNeedNoPower) {
-        		this.drawHoveringText(TextUtil.trans("techguns.container.power"),mx,my);
-        	} else {
-        		this.drawHoveringText(TextUtil.trans("techguns.container.power")+": "+this.poweredTileEnt.getEnergyStorage().getEnergyStored()+"/"+this.poweredTileEnt.getEnergyStorage().getMaxEnergyStored()+" "+POWER_UNIT, mx, my);
-        	}	
-        }
+
+		drawDefaultEnergyTooltip(mx, my);
+	}
+
+	protected void drawDefaultEnergyBar(){
+		drawEnergyBar(guiLeft, guiTop, 8, 17, 251, 1, 4, 48);
+	}
+
+	protected void drawDefaultEnergyTooltip(int mouseX, int mouseY){
+		drawEnergyTooltip(mouseX, mouseY, 8, 17, 4, 48);
+	}
+
+
+	protected void drawEnergyBar(int guiLeft, int guiTop, int x, int y, int textureX, int textureY, int width, int height) {
+		int energyStored = this.poweredTileEnt.getEnergyStorage().getEnergyStored();
+		int maxEnergy    = this.poweredTileEnt.getEnergyStorage().getMaxEnergyStored();
+
+		int filled = TGConfig.machinesNeedNoPower
+				? height
+				: (maxEnergy > 0 ? (int)Math.round((double)energyStored * height / (double)maxEnergy) : 0);
+
+		if (filled < 0) filled = 0;
+		if (filled > height) filled = height;
+
+		this.mc.getTextureManager().bindTexture(power_texture);
+
+		int screenX = guiLeft + x;
+		int screenY = guiTop + y;
+
+		int offset = height - filled;
+
+		this.drawTexturedModalRect(screenX, screenY + offset, textureX, textureY + offset, width, filled);
+	}
+
+	protected void drawEnergyTooltip(int mx, int my, int x, int y, int w, int h) {
+		if (isInRect(mx, my, x, y, w, h)) {
+			if (TGConfig.machinesNeedNoPower) {
+				this.drawHoveringText(TextUtil.trans("techguns.container.power"), mx, my);
+			} else {
+				int cur = this.poweredTileEnt.getEnergyStorage().getEnergyStored();
+				int max = this.poweredTileEnt.getEnergyStorage().getMaxEnergyStored();
+				this.drawHoveringText(
+						TextUtil.trans("techguns.container.power") + ": " + cur + "/" + max + " " + POWER_UNIT,
+						mx, my
+				);
+			}
+		}
+	}
+
+	protected void drawEnergyBar(int guiLeft, int guiTop, int x, int y, int textureX, int textureY, int width, int height, ResourceLocation power_texture) {
+		int energyStored = this.poweredTileEnt.getEnergyStorage().getEnergyStored();
+		int maxEnergy    = this.poweredTileEnt.getEnergyStorage().getMaxEnergyStored();
+
+		int filled = TGConfig.machinesNeedNoPower
+				? height
+				: (maxEnergy > 0 ? (int)Math.round((double)energyStored * height / (double)maxEnergy) : 0);
+
+		if (filled < 0) filled = 0;
+		if (filled > height) filled = height;
+
+		this.mc.getTextureManager().bindTexture(power_texture);
+
+		int screenX = guiLeft + x;
+		int screenY = guiTop + y;
+
+		int offset = height - filled;
+
+		this.drawTexturedModalRect(screenX, screenY + offset, textureX, textureY + offset, width, filled);
 	}
 	
 }

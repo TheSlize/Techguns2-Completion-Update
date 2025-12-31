@@ -2,7 +2,6 @@ package techguns.world.structures;
 
 import java.util.Random;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
@@ -60,40 +59,40 @@ public class CampProps extends WorldgenStructure {
 		if (this.variant == -1) variant = world.rand.nextInt(2);
 		
 		switch (variant) {
-			case 0: //pile of crates
-		    default:
-				setCrateBlocks(world, posX, posY, posZ, sizeX, sizeY, sizeZ,rnd);
-				break;
 			case 1: //crate + roof
 				setRoofBlocks(world, posX, posY, posZ, sizeX, sizeY, sizeZ, camoMeta);
 				setCrateBlocks(world, posX+1, posY, posZ+1, sizeX-2, sizeY-2, sizeZ-2,rnd);				
 				break;
 			case 2: //Sandbags
-				setSandbagBlocks(world, posX, posY, posZ, sizeX, sizeY, sizeZ, direction);
+				setSandbagBlocks(world, posX, posY, posZ, sizeX, sizeZ, direction);
 				break;
 			case 3: //Sandbags + roof
 				setRoofBlocks(world, posX, posY+1, posZ, sizeX, sizeY-1, sizeZ, camoMeta);
-				setSandbagBlocks(world, posX, posY, posZ, sizeX, sizeY, sizeZ, direction);
+				setSandbagBlocks(world, posX, posY, posZ, sizeX, sizeZ, direction);
 				break;
 			case 4: //row of sandbags
-				setSandbagRow(world, posX, posY, posZ, sizeX, sizeY, sizeZ, direction);
+				setSandbagRow(world, posX, posY, posZ, sizeX, sizeY, sizeZ);
 				break;
 			case 5: //Sandbags + roof
 				setRoofBlocks(world, posX, posY+1, posZ, sizeX, sizeY-1, sizeZ, camoMeta);
-				setSandbagBlocks(world, posX, posY, posZ, sizeX, sizeY, sizeZ, direction);
+				setSandbagBlocks(world, posX, posY, posZ, sizeX, sizeZ, direction);
 				setCrateBlocks(world, posX+1, posY, posZ+1, sizeX-2, sizeY-2, sizeZ-2,rnd);				
 				break;
+            case 0: //pile of crates
+            default:
+                setCrateBlocks(world, posX, posY, posZ, sizeX, sizeY, sizeZ,rnd);
+                break;
 		}
 		
 	}
 	
 	private void setSandbagRow(World world, int px, int py, int pz,
-			int sizeX, int sizeY, int sizeZ, int direction) {
+			int sizeX, int sizeY, int sizeZ) {
 
 		MutableBlockPos pos = new MutableBlockPos();
 
-		int x = 0;
-		int z = 0;
+		int x;
+		int z;
 		int i = 1;
 		for (int y = 1; y < sizeY; y++) {
 			if (sizeX > sizeZ) {
@@ -101,7 +100,7 @@ public class CampProps extends WorldgenStructure {
 				for (x = i; x < sizeX-i; x++) {
 					world.setBlockState(pos.setPos(px+x, py+y, pz+z), sandbagsState, 2);
 				}
-			}else {
+			} else {
 				x = sizeX/2;
 				for (z = i; z < sizeZ-i; z++) {
 					world.setBlockState(pos.setPos(px+x, py+y, pz+z),sandbagsState, 2);
@@ -111,28 +110,20 @@ public class CampProps extends WorldgenStructure {
 		}
 	}
 
-	private void setSandbagBlocks(World world, int posX, int posY, int posZ,
-			int sizeX, int sizeY, int sizeZ, int direction) {
+	private void setSandbagBlocks(World world, int posX, int posY, int posZ, int sizeX, int sizeZ, int direction) {
 		
 		MutableBlockPos p = new MutableBlockPos();
-		
-	//	for (int y = 0; y < 2; y++) {
-			for (int x = 0; x < sizeX; x++) {
-				for (int z = 0; z < sizeZ; z++ ) {
-			//		if (y == 0) {
-			//			world.setBlock(posX+x, posY+y, posZ+z, groundBlock.block, groundBlock.meta, 2);
-			//		}else if (y == 1) {
-						if (x== 0 || x == sizeX-1 || z==0 || z == sizeZ-1) {
-							world.setBlockState(p.setPos(posX+x, posY+1, posZ+z), sandbagsState, 2);
-						}
-			//		}
-				}
-			}
-		//}
+
+        for (int x = 0; x < sizeX; x++) {
+            for (int z = 0; z < sizeZ; z++ ) {
+                if (x== 0 || x == sizeX-1 || z==0 || z == sizeZ-1) {
+                    world.setBlockState(p.setPos(posX+x, posY+1, posZ+z), sandbagsState, 2);
+                }
+            }
+        }
 			
 			
-			int xoffset, zoffset; //Door/center positions
-			int dx, dz;
+        int xoffset, zoffset; //Door/center positions
 			
 			switch (direction) {
 				case 0:
@@ -171,44 +162,19 @@ public class CampProps extends WorldgenStructure {
 
 		MutableBlockPos p = new MutableBlockPos();
 		
-//		boolean placeLamp = false;
-//		if (((sizeX+sizeZ)/2.0f)/6.0f > r.nextFloat()) placeLamp = true;
-		
 		for (int x = 0; x < sizeX; x++) {
 			for (int z=0; z <sizeZ; z++) {
 				world.setBlockState(p.setPos(posX+x, posY, posZ+z), groundstate, 2);
 				
 				//roll for special chest
-				float chestroll = rnd.nextFloat();
-				Block chest=null;
-				
-				/*if (chestroll<=0.05f){
-					chest = TGBlocks.tgchest;
-				} else if ( chestroll<=0.1f){
-					chest = TGBlocks.tgchest_weapon;
-				} */
-				
-				
-				if (chest==null){
-				
-					for (int y = 1; y < sizeY; y++) {
-						if (!isFreeSpace(world, posX+x, posY+y-1, posZ+z) && rnd.nextFloat() > 0.5f) {
-							int index = rnd.nextInt(crateBlocks.length);
-	//						if (placeLamp && (y == sizeY-1 || r.nextFloat() > 0.25f*y)) {
-	//							world.setBlock(posX+x, posY+y, posZ+z, TGBlocks.lamp01, 7, 2);
-	//							placeLamp = false;
-	//						}else {
-								world.setBlockState(p.setPos(posX+x, posY+y, posZ+z), crateBlocks[index].getState(), 2);
-							//}
-						}
-					}
-				} /*else {
-					int meta = 2+rnd.nextInt(4);
-					MBlock TGChest = new MBlock(chest,meta);
-					TGChest.setBlock(world, posX+x, posY+1, posZ+z, 0, this.lootTier);
+                for (int y = 1; y < sizeY; y++) {
+                    if (!isFreeSpace(world, posX + x, posY + y - 1, posZ + z) && rnd.nextFloat() > 0.5f) {
+                        int index = rnd.nextInt(crateBlocks.length);
+                        world.setBlockState(p.setPos(posX + x, posY + y, posZ + z), crateBlocks[index].getState(), 2);
 
-				}*/
-			}
+                    }
+                }
+            }
 		}
 		
 		if (((sizeX+sizeZ)/2.0f)/6.0f > rnd.nextFloat()) { //place lantern

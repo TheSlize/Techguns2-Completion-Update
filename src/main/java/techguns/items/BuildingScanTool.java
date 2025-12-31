@@ -1,12 +1,10 @@
 package techguns.items;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -19,6 +17,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
 import techguns.util.BlockPosInd;
 import techguns.util.MBlock;
 
@@ -30,8 +29,8 @@ public class BuildingScanTool extends GenericItem {
 	}
 	
 	@Override
-	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand,
-			EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public @NotNull EnumActionResult onItemUse(EntityPlayer player, @NotNull World world, BlockPos pos, @NotNull EnumHand hand,
+                                               @NotNull EnumFacing facing, float hitX, float hitY, float hitZ) {
 		
 		ItemStack item = player.getHeldItem(hand);
 		int x = pos.getX();
@@ -73,12 +72,9 @@ public class BuildingScanTool extends GenericItem {
 	
 	private void scanStructure(World world, int x, int y, int z, int sizeX, int sizeY, int sizeZ) {
 		StringBuilder sbDefBlocks = new StringBuilder();
-		//StringBuilder sbSetBlocks = new StringBuilder();
-		StringBuilder sbIndices = new StringBuilder();
-		ArrayList<MBlock> blockList = new ArrayList<MBlock>();
-		ArrayList<BlockPosInd> blockPosList = new ArrayList<BlockPosInd>();
+		ArrayList<MBlock> blockList = new ArrayList<>();
+		ArrayList<BlockPosInd> blockPosList = new ArrayList<>();
 		
-		//sbDefBlocks.append("ArrayList<MBlock> blockList = new ArrayList<MBlock>();\n");
 		MutableBlockPos p = new MutableBlockPos();
 		
 		for (int ix=0;ix<sizeX;ix++){
@@ -90,21 +86,14 @@ public class BuildingScanTool extends GenericItem {
 					int coordZ=z+iz;
 					
 					IBlockState bs = world.getBlockState(p.setPos(coordX, coordY, coordZ));
-					Block b = bs.getBlock(); //world.getBlock(coordX, coordY, coordZ);
-					//int meta = world.getBlockMetadata(coordX, coordY, coordZ);
-					
+
 					
 					if ((bs != Blocks.AIR.getDefaultState()) && (bs != Blocks.DIRT.getDefaultState()) && (bs!= Blocks.GRASS.getDefaultState()) ){
 						MBlock mblock = new MBlock(bs);
 						if (!blockList.contains(mblock)) {
 							blockList.add(mblock);
-							//sbDefBlocks.append("MBlock block_"+blockList.indexOf(mblock)+" = new MBlock(Block.getBlockFromName(\""+mblock.block.getUnlocalizedName()+"\"), "+mblock.meta+");\n");
-							//sbDefBlocks.append("blockList.add(new MBlock(Block.getBlockFromName(\""+mblock.block.getUnlocalizedName()+"\"), "+mblock.meta+"));\n");
-							sbDefBlocks.append("blockList.add(new MBlock(\""+mblock.block.getRegistryName()+"\", "+mblock.meta+"));\n");
+							sbDefBlocks.append("blockList.add(new MBlock(\"").append(mblock.block.getRegistryName()).append("\", ").append(mblock.meta).append("));\n");
 						}	
-						//String name = "block_"+blockList.indexOf(mblock);
-						//System.out.println("Block("+coordX+","+coordY+","+coordZ+"):"+b.getUnlocalizedName()+":"+meta);
-						//sbSetBlocks.append("BlockUtils.setBlockRotated(world, "+name+", posX, posY, posZ, "+ix+", "+iy+", "+iz+", cntX, cntY, cntZ, rotation);\n");					
 						blockPosList.add(new BlockPosInd(ix, iy, iz, blockList.indexOf(mblock)));
 					}
 					
@@ -113,15 +102,14 @@ public class BuildingScanTool extends GenericItem {
 		}
 		
 		try {
-			PrintWriter pw = new PrintWriter(new FileWriter(new File("structure_scan.txt")));
-			pw.println(sbDefBlocks.toString());
+			PrintWriter pw = new PrintWriter(new FileWriter("structure_scan.txt"));
+			pw.println(sbDefBlocks);
 			pw.println("---");
 			pw.println();
 			pw.println(blockPosList.size());
-			for (int i = 0; i < blockPosList.size(); i++) {
-				BlockPosInd bp = blockPosList.get(i);
-				pw.println(bp.toString());
-			}
+            for (BlockPosInd bp : blockPosList) {
+                pw.println(bp.toString());
+            }
 			
 			pw.flush();
 			pw.close();

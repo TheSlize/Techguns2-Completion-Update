@@ -6,10 +6,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.event.*;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -19,6 +16,7 @@ import techguns.init.ITGInitializer;
 import techguns.items.guns.ammo.AmmoTypes;
 import techguns.plugins.chisel.TGChiselBlocks;
 import techguns.plugins.crafttweaker.TGCraftTweakerIntegration;
+import techguns.server.CommandSetSpawner;
 import techguns.world.OreGenerator;
 import techguns.world.WorldGenTGStructureSpawn;
 import techguns.world.dungeon.DungeonTemplate;
@@ -28,11 +26,11 @@ public class Techguns
 {
     public static final String MODID = "techguns";
     public static final String MCVERSION = "1.12.2";
-    public static final String VERSION = "2.0.2.0";
+    public static final String VERSION = "2.1";
     public static final String NAME = "Techguns";
     public static final String GUI_FACTORY = "techguns.gui.config.GuiFactoryTechguns";
 
-	public static final Logger LOGGER = LogManager.getLogger(MODID);
+	public static final Logger logger = LogManager.getLogger(MODID);
     public static final String UPDATEURL = "https://raw.githubusercontent.com/pWn3d1337/Techguns2/master/update.json";
     public static final String FORGE_BUILD = "14.23.5.2807";
     public static final String DEPENDENCIES = "required:forge@["+FORGE_BUILD+",);after:ftblib;after:chisel;after:patchouli";
@@ -79,13 +77,13 @@ public class Techguns
 		
 	    @Override
 	    @SideOnly(Side.CLIENT)
-	    public ItemStack getTabIconItem() {
+	    public ItemStack createIcon() {
 	        return TGItems.newStack(TGItems.PISTOL_ROUNDS,1);
 	    }
 
 		@Override
-		public String getTranslatedTabLabel() {
-			return Techguns.MODID+"."+super.getTranslatedTabLabel();
+		public String getTranslationKey() {
+			return Techguns.MODID+"."+super.getTranslationKey();
 		}
 
 		@Override
@@ -150,6 +148,11 @@ public class Techguns
     	}
     	DungeonTemplate.init();
     }
+
+	@EventHandler
+	public void serverStarting(FMLServerStartingEvent evt) {
+		evt.registerServerCommand(new CommandSetSpawner());
+	}
     
     
 }

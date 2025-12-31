@@ -14,7 +14,6 @@ import techguns.blocks.EnumMonsterSpawnerType;
 import techguns.entities.npcs.ArmySoldier;
 import techguns.entities.npcs.AttackHelicopter;
 import techguns.entities.npcs.Commando;
-import techguns.entities.npcs.ZombieMiner;
 import techguns.util.BlockUtils;
 import techguns.util.MBlock;
 import techguns.world.EnumLootType;
@@ -25,7 +24,7 @@ public class AircraftCarrier extends WorldgenStructure {
 
 	private final static ResourceLocation LOOT_TABLE = new ResourceLocation(Techguns.MODID, "chests/aircraftcarrier");
 	
-	static ArrayList<MBlock> blockList = new ArrayList<MBlock>();
+	static ArrayList<MBlock> blockList = new ArrayList<>();
 	static short[][] blocks;
 	static {
 		blockList.add(MBlockRegister.HELIPAD_HAZARDBLOCK);//new MBlock(ChiselBlocks.factoryblock, 6));
@@ -82,16 +81,10 @@ public class AircraftCarrier extends WorldgenStructure {
 	public void spawnStructureWorldgen(World world, int chunkX, int chunkZ, int sizeX, int sizeY, int sizeZ, Random rnd, Biome biome) {
 		int y =BlockUtils.getValidSpawnYWater(world, chunkX*16, chunkZ*16, sizeX, sizeZ,2);
 		
-		if (y<0){
-			return;
-		}
+		if (y < 0) return;
 		
 		int x = chunkX*16;
 		int z = chunkZ*16;
-		
-		/*if(removeJunkOnWorldspawn){
-			BlockUtils.removeJunkInArea(world, x-1, z-1, sizeX+2, sizeZ+2);
-		}*/
 		
 		this.setBlocks(world, x, y-3, z, sizeX, sizeY, sizeZ, rnd.nextInt(4), getBiomeColorTypeFromBiome(biome), rnd);
 	}
@@ -116,62 +109,5 @@ public class AircraftCarrier extends WorldgenStructure {
 
 		BlockUtils.placeScannedStructure(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 0, this.lootTier, colorType);
 		BlockUtils.placeScannedStructure(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 1,  this.lootTier, colorType);
-		
-		//Place flag
-	//	BlockUtils.setBlockRotated(world, new MBlock(TGBlocks.basicMachine, 7), posX, posY+8, posZ, 24, 9, centerX, centerZ, direction, this.lootTier);
-	//	int[] pos = Structure.rotatePoint(24,9,direction,centerX,centerZ);
-		
-		
-		
-		//spawn points
-	/*	BlockUtils.setBlockRotated(world, new MBlock(Blocks.lapis_block, 0), posX, posY+8, posZ, 22, 9, centerX, centerZ, direction, this.lootTier);
-		
-		BlockUtils.setBlockRotated(world, new MBlock(Blocks.lapis_block, 0), posX, posY+12, posZ, 28, 6, centerX, centerZ, direction, this.lootTier);
-		BlockUtils.setBlockRotated(world, new MBlock(Blocks.lapis_block, 0), posX, posY+16, posZ, 28, 6, centerX, centerZ, direction, this.lootTier);
-		
-		BlockUtils.setBlockRotated(world, new MBlock(Blocks.lapis_block, 0), posX, posY+8, posZ, 43, 6, centerX, centerZ, direction, this.lootTier);
-		BlockUtils.setBlockRotated(world, new MBlock(Blocks.lapis_block, 0), posX, posY+12, posZ, 43, 6, centerX, centerZ, direction, this.lootTier);
-		
-		BlockUtils.setBlockRotated(world, new MBlock(Blocks.lapis_block, 0), posX, posY+4, posZ, 18, 9, centerX, centerZ, direction, this.lootTier);
-		
-		BlockUtils.setBlockRotated(world, new MBlock(Blocks.lapis_block, 0), posX, posY+1, posZ, 18, 9, centerX, centerZ, direction, this.lootTier);
-		
-		BlockUtils.setBlockRotated(world, new MBlock(Blocks.lapis_block, 0), posX, posY+4, posZ, 43, 9, centerX, centerZ, direction, this.lootTier);
-		
-		BlockUtils.setBlockRotated(world, new MBlock(Blocks.lapis_block, 0), posX, posY+1, posZ, 39, 9, centerX, centerZ, direction, this.lootTier);
-	*/	
-		
-	/*	int[] spawnPos = new int[9*3];
-		setSpawnPoint(spawnPos, 0, 22, 8, 9, centerX, centerZ, direction);
-				
-		setSpawnPoint(spawnPos, 1, 28, 12, 6, centerX, centerZ, direction);
-		setSpawnPoint(spawnPos, 2, 28, 16, 6, centerX, centerZ, direction);
-		
-		setSpawnPoint(spawnPos, 3, 43, 8, 6, centerX, centerZ, direction);
-		setSpawnPoint(spawnPos, 4, 43, 12, 6, centerX, centerZ, direction);
-		
-		setSpawnPoint(spawnPos, 5, 18, 4, 9, centerX, centerZ, direction);
-		setSpawnPoint(spawnPos, 6, 18, 1, 9, centerX, centerZ, direction);
-		
-		setSpawnPoint(spawnPos, 7, 43, 4, 9, centerX, centerZ, direction);
-		setSpawnPoint(spawnPos, 8, 39, 1, 9, centerX, centerZ, direction);
-		
-		TileEntity t = world.getTileEntity(posX+pos[0], posY+8, posZ+pos[1]);
-		if (t!=null && t instanceof CampFlagTileEnt){
-			CampFlagTileEnt flag = (CampFlagTileEnt) t;
-			flag.init(54, 21, 24, 8, 9, spawnPos, airCraftCarrierSpawns, 9);
-		}*/
-		
-		//world.setBlock(, TGBlocks.basicMachine, 7, 2);
 	}
-
-	/*private static void setSpawnPoint(int[] spawnPos, int index, int x, int y, int z, int cx, int cz, int direction){
-		int ind = index*3;
-				
-		int pos[] = Structure.rotatePoint(x, z, direction, cx, cz);
-		
-		spawnPos[ind]=pos[0];
-		spawnPos[ind+1]=y;
-		spawnPos[ind+2]=pos[1];
-	}*/
 }

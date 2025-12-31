@@ -156,7 +156,7 @@ public class ExplosiveChargeTileEnt extends BasicOwnedTileEnt implements ITickab
 					world.setBlockToAir(coords);
 		
 					if (world.rand.nextFloat()>0.5f){
-						TGPackets.network.sendToAllAround(new PacketSpawnParticle("MiningChargeBlockExplosion", coords.getX()+0.5d, coords.getY()+0.5d, coords.getZ()+0.5d), TGPackets.targetPointAroundBlockPos(this.world.provider.getDimension(),coords,50));
+						TGPackets.wrapper.sendToAllAround(new PacketSpawnParticle("MiningChargeBlockExplosion", coords.getX()+0.5d, coords.getY()+0.5d, coords.getZ()+0.5d), TGPackets.targetPointAroundBlockPos(this.world.provider.getDimension(),coords,50));
 					}
 					
 					return false;

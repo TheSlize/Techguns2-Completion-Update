@@ -3,6 +3,7 @@ package techguns.entities.npcs;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -12,8 +13,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import techguns.TGSounds;
 import techguns.TGuns;
 import techguns.Techguns;
+import techguns.api.npc.factions.ITGNpcTeam;
 import techguns.damagesystem.TGDamageSource;
 
 public class SuperMutantBasic extends GenericNPC {
@@ -123,21 +128,21 @@ public class SuperMutantBasic extends GenericNPC {
 
 	@Override
 	public SoundEvent getAmbientSound() {
-		return techguns.TGSounds.CYBERDEMON_IDLE;
+		return TGSounds.CYBERDEMON_IDLE;
 	}
 
 	@Override
-	public SoundEvent getHurtSound(DamageSource damageSourceIn) {
-		return techguns.TGSounds.CYBERDEMON_HURT;
+	public @NotNull SoundEvent getHurtSound(@NotNull DamageSource damageSourceIn) {
+		return TGSounds.CYBERDEMON_HURT;
 	}
 
 	@Override
-	public SoundEvent getDeathSound() {
-		return techguns.TGSounds.CYBERDEMON_DEATH;
+	public @NotNull SoundEvent getDeathSound() {
+		return TGSounds.CYBERDEMON_DEATH;
 	}
 
 	public SoundEvent getStepSound() {
-		return techguns.TGSounds.CYBERDEMON_STEP;
+		return TGSounds.CYBERDEMON_STEP;
 	}
 	
 	@Override
@@ -151,4 +156,39 @@ public class SuperMutantBasic extends GenericNPC {
 	protected ResourceLocation getLootTable() {
 		return LOOT;
 	}
+
+    @Override
+    public boolean attackEntityFrom(@NotNull DamageSource source, float amount) {
+        if (this.isFriendlyDamage(source)) {
+            return false;
+        }
+        return super.attackEntityFrom(source, amount);
+    }
+
+    private boolean isFriendlyDamage(DamageSource source) {
+        return this.isFriendlyEntity(source.getTrueSource()) || this.isFriendlyEntity(source.getImmediateSource());
+    }
+
+    private boolean isFriendlyEntity(@Nullable Entity entity) {
+        if (entity == null) {
+            return false;
+        }
+        if (entity == this) {
+            return true;
+        }
+        if (entity instanceof ITGNpcTeam) {
+            return ((ITGNpcTeam) entity).getTGFaction() == this.getTGFaction();
+        }
+        return false;
+    }
+
+    @Override
+    public int getMaxFallHeight() {
+        return 1;
+    }
+
+    @Override
+    protected boolean useTargetOffsetPathing() {
+        return true;
+    }
 }

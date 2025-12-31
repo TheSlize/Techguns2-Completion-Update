@@ -19,7 +19,7 @@ import techguns.util.InventoryUtil;
 
 public class BasicInventoryTileEnt extends BasicTGTileEntity {
 
-	protected ItemStackHandlerPlus inventory;
+	public ItemStackHandlerPlus inventory;
 
 	protected boolean contentsChanged=true;
 	

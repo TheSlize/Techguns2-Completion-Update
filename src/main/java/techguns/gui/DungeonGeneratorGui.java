@@ -110,7 +110,7 @@ public static final ResourceLocation texture = new ResourceLocation(Techguns.MOD
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		if(textInput.length()>0 && (guibutton.id== DungeonGeneratorTileEnt.BUTTON_ID_GENERATE)) {
-			TGPackets.network.sendToServer(new PacketGuiButtonClick(this.ownedTile,guibutton.id,textInput));
+			TGPackets.wrapper.sendToServer(new PacketGuiButtonClick(this.ownedTile,guibutton.id,textInput));
 			
 		} else {
 		

@@ -1,6 +1,8 @@
 package techguns;
 
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -9,47 +11,9 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.registries.IForgeRegistry;
 import techguns.api.guns.GunHandType;
-import techguns.entities.projectiles.AdvancedBulletProjectile;
-import techguns.entities.projectiles.BioGunProjectile;
-import techguns.entities.projectiles.BlasterProjectile;
-import techguns.entities.projectiles.ChainsawProjectile;
-import techguns.entities.projectiles.CyberdemonBlasterProjectile;
-import techguns.entities.projectiles.DeatomizerProjectile;
-import techguns.entities.projectiles.FlamethrowerProjectile;
-import techguns.entities.projectiles.FragGrenadeProjectile;
-import techguns.entities.projectiles.GaussProjectile;
-import techguns.entities.projectiles.GenericProjectile;
-import techguns.entities.projectiles.GenericProjectileExplosive;
-import techguns.entities.projectiles.GenericProjectileIncendiary;
-import techguns.entities.projectiles.Grenade40mmProjectile;
-import techguns.entities.projectiles.GrenadeProjectile;
-import techguns.entities.projectiles.GuidedMissileProjectile;
-import techguns.entities.projectiles.GuidedMissileProjectileHV;
-import techguns.entities.projectiles.LaserProjectile;
-import techguns.entities.projectiles.NDRProjectile;
-import techguns.entities.projectiles.PowerHammerProjectile;
-import techguns.entities.projectiles.RocketProjectile;
-import techguns.entities.projectiles.RocketProjectileHV;
-import techguns.entities.projectiles.RocketProjectileNuke;
-import techguns.entities.projectiles.SonicShotgunProjectile;
-import techguns.entities.projectiles.StoneBulletProjectile;
-import techguns.entities.projectiles.TFGProjectile;
-import techguns.entities.projectiles.TeslaProjectile;
+import techguns.entities.projectiles.*;
 import techguns.init.ITGInitializer;
-import techguns.items.guns.Chainsaw;
-import techguns.items.guns.ChargedProjectileSelector;
-import techguns.items.guns.EnumCrosshairStyle;
-import techguns.items.guns.GenericGrenade;
-import techguns.items.guns.GenericGun;
-import techguns.items.guns.GenericGunCharge;
-import techguns.items.guns.GuidedMissileLauncher;
-import techguns.items.guns.IProjectileFactory;
-import techguns.items.guns.MiningDrill;
-import techguns.items.guns.PowerHammer;
-import techguns.items.guns.ProjectileSelector;
-import techguns.items.guns.RangeTooltipType;
-import techguns.items.guns.Shishkebap;
-import techguns.items.guns.SonicShotgun;
+import techguns.items.guns.*;
 import techguns.items.guns.ammo.AmmoTypes;
 import techguns.tools.ItemJsonCreator;
 
@@ -201,7 +165,7 @@ public class TGuns implements ITGInitializer {
 		IProjectileFactory[] GENERIC_BULLET = {GENERIC_PROJECTILE, INCENDIARY_ROUNDS};
 		IProjectileFactory[] SNIPER_ROUNDS = {GENERIC_PROJECTILE, INCENDIARY_ROUNDS, new GenericProjectileExplosive.Factory()};
 		
-		SHOTGUN_PROJECTILES = new ProjectileSelector<GenericProjectile>(AmmoTypes.SHOTGUN_ROUNDS, GENERIC_PROJECTILE, new GenericProjectileIncendiary.Factory(true));
+		SHOTGUN_PROJECTILES = new ProjectileSelector<>(AmmoTypes.SHOTGUN_ROUNDS, GENERIC_PROJECTILE, new GenericProjectileIncendiary.Factory(true));
 		
 		PISTOL_PROJECTILES = new ProjectileSelector<GenericProjectile>(AmmoTypes.PISTOL_ROUNDS, GENERIC_BULLET);
 		ASSAULTRIFLE_MAG_PROJECTILES = new ProjectileSelector<GenericProjectile>(AmmoTypes.ASSAULT_RIFLE_MAGAZINE, GENERIC_BULLET);
@@ -210,30 +174,30 @@ public class TGuns implements ITGInitializer {
 		LMG_MAG_PROJECTILES = new ProjectileSelector<GenericProjectile>(AmmoTypes.LMG_MAGAZINE, GENERIC_BULLET);
 		RIFLE_PROJECTILES = new ProjectileSelector<GenericProjectile>(AmmoTypes.RIFLE_ROUNDS, GENERIC_BULLET);
 		SNIPER_MAG_PROJECTILES = new ProjectileSelector<GenericProjectile>(AmmoTypes.AS50_MAGAZINE, SNIPER_ROUNDS);
-		ADVANCED_MAG_PROJECTILES = new ProjectileSelector<AdvancedBulletProjectile>(AmmoTypes.ADVANCED_MAGAZINE, new AdvancedBulletProjectile.Factory());
+		ADVANCED_MAG_PROJECTILES = new ProjectileSelector<>(AmmoTypes.ADVANCED_MAGAZINE, new AdvancedBulletProjectile.Factory());
 		MINIGUN_MAG_PROJECTILES = new ProjectileSelector<GenericProjectile>(AmmoTypes.MINIGUN_AMMO_DRUM, GENERIC_BULLET);
-		BLASTER_ENERGYCELL_PROJECTILES = new ProjectileSelector<BlasterProjectile>(AmmoTypes.ENERGY_CELL, new BlasterProjectile.Factory());
+		BLASTER_ENERGYCELL_PROJECTILES = new ProjectileSelector<>(AmmoTypes.ENERGY_CELL, new BlasterProjectile.Factory());
 		
-		LASERGUN_PROJECTILES = new ProjectileSelector<LaserProjectile>(AmmoTypes.ENERGY_CELL, new LaserProjectile.Factory());
-		LASERPISTOL_PROJECTILES = new ProjectileSelector<LaserProjectile>(AmmoTypes.REDSTONE_BATTERY, new LaserProjectile.Factory());
-		TESLAGUN_PROJECTILES = new ProjectileSelector<TeslaProjectile>(AmmoTypes.ENERGY_CELL, new TeslaProjectile.Factory());
-		FLAMETHROWER_PROJECTILES = new ProjectileSelector<FlamethrowerProjectile>(AmmoTypes.FUEL_TANK, new FlamethrowerProjectile.Factory());
-		DEATOMIZER_PROJECTILES = new ProjectileSelector<DeatomizerProjectile>(AmmoTypes.ENERGY_CELL, new DeatomizerProjectile.Factory());
-		NETHERBLASTER_PROJECTILES = new ProjectileSelector<CyberdemonBlasterProjectile>(AmmoTypes.NETHER_CHARGE, new CyberdemonBlasterProjectile.Factory());
-		GAUSS_PROJECTILES = new ProjectileSelector<GaussProjectile>(AmmoTypes.AMMO_GAUSS_RIFLE, new GaussProjectile.Factory());
-		NDR_PROJECTILES = new ProjectileSelector<NDRProjectile>(AmmoTypes.NUCLEAR_POWER_CELL, new NDRProjectile.Factory());
-		GRENADE40MM_PROJECTILES = new ProjectileSelector<Grenade40mmProjectile>(AmmoTypes.GRENADES_40MM, new Grenade40mmProjectile.Factory());
+		LASERGUN_PROJECTILES = new ProjectileSelector<>(AmmoTypes.ENERGY_CELL, new LaserProjectile.Factory());
+		LASERPISTOL_PROJECTILES = new ProjectileSelector<>(AmmoTypes.REDSTONE_BATTERY, new LaserProjectile.Factory());
+		TESLAGUN_PROJECTILES = new ProjectileSelector<>(AmmoTypes.ENERGY_CELL, new TeslaProjectile.Factory());
+		FLAMETHROWER_PROJECTILES = new ProjectileSelector<>(AmmoTypes.FUEL_TANK, new FlamethrowerProjectile.Factory());
+		DEATOMIZER_PROJECTILES = new ProjectileSelector<>(AmmoTypes.ENERGY_CELL, new DeatomizerProjectile.Factory());
+		NETHERBLASTER_PROJECTILES = new ProjectileSelector<>(AmmoTypes.NETHER_CHARGE, new CyberdemonBlasterProjectile.Factory());
+		GAUSS_PROJECTILES = new ProjectileSelector<>(AmmoTypes.AMMO_GAUSS_RIFLE, new GaussProjectile.Factory());
+		NDR_PROJECTILES = new ProjectileSelector<>(AmmoTypes.NUCLEAR_POWER_CELL, new NDRProjectile.Factory());
+		GRENADE40MM_PROJECTILES = new ProjectileSelector<>(AmmoTypes.GRENADES_40MM, new Grenade40mmProjectile.Factory());
 		ROCKET_PROJECTILES = new ProjectileSelector(AmmoTypes.ROCKETS, new RocketProjectile.Factory(), new RocketProjectileNuke.Factory(), new RocketProjectileHV.Factory());
 		
-		SONIC_SHOTGUN_PROJECTILES = new ProjectileSelector<SonicShotgunProjectile>(AmmoTypes.ENERGY_CELL, new SonicShotgunProjectile.Factory());
+		SONIC_SHOTGUN_PROJECTILES = new ProjectileSelector<>(AmmoTypes.ENERGY_CELL, new SonicShotgunProjectile.Factory());
 		
-		POWERHAMMER_PROJECTILES = new ChargedProjectileSelector<PowerHammerProjectile>(AmmoTypes.COMPRESSED_AIR_TANK, new PowerHammerProjectile.Factory());
-		BIOGUN_PROJECTILES = new ChargedProjectileSelector<BioGunProjectile>(AmmoTypes.BIO_TANK, new BioGunProjectile.Factory());
-		CHAINSAW_PROJECTILES = new ChargedProjectileSelector<ChainsawProjectile>(AmmoTypes.FUEL_TANK, new ChainsawProjectile.Factory());
+		POWERHAMMER_PROJECTILES = new ChargedProjectileSelector<>(AmmoTypes.COMPRESSED_AIR_TANK, new PowerHammerProjectile.Factory());
+		BIOGUN_PROJECTILES = new ChargedProjectileSelector<>(AmmoTypes.BIO_TANK, new BioGunProjectile.Factory());
+		CHAINSAW_PROJECTILES = new ChargedProjectileSelector<>(AmmoTypes.FUEL_TANK, new ChainsawProjectile.Factory());
 		GUIDED_MISSILE_PROJECTILES = new ChargedProjectileSelector(AmmoTypes.ROCKETS_NO_NUKES, new GuidedMissileProjectile.Factory(), new GuidedMissileProjectileHV.Factory());
-		TFG_PROJECTILES = new ChargedProjectileSelector<TFGProjectile>(AmmoTypes.NUCLEAR_POWER_CELL, new TFGProjectile.Factory());
+		TFG_PROJECTILES = new ChargedProjectileSelector<>(AmmoTypes.NUCLEAR_POWER_CELL, new TFGProjectile.Factory());
 		
-		handcannon = new GenericGun("handcannon", new ProjectileSelector<StoneBulletProjectile>(AmmoTypes.STONE_BULLETS, new StoneBulletProjectile.Factory()), true, 12,1,40, 11.0f, TGSounds.HANDGUN_FIRE, TGSounds.HANDGUN_RELOAD,25,0.035f).setBulletSpeed(1f).setGravity(0.015d).setDamageDrop(10, 25, 7.0f).setAIStats(RANGE_CLOSE, 60, 0, 0).setTexture("textures/guns/handgun").setRecoiltime(12).setCrossHair(EnumCrosshairStyle.QUAD_NO_CORNERS);//.setMuzzleParticle(2,0.2f);
+		handcannon = new GenericGun("handcannon", new ProjectileSelector<>(AmmoTypes.STONE_BULLETS, new StoneBulletProjectile.Factory()), true, 12,1,40, 11.0f, TGSounds.HANDGUN_FIRE, TGSounds.HANDGUN_RELOAD,25,0.035f).setBulletSpeed(1f).setGravity(0.015d).setDamageDrop(10, 25, 7.0f).setAIStats(RANGE_CLOSE, 60, 0, 0).setTexture("textures/guns/handgun").setRecoiltime(12).setCrossHair(EnumCrosshairStyle.QUAD_NO_CORNERS);//.setMuzzleParticle(2,0.2f);
 		
 		sawedoff = new GenericGun("sawedoff",SHOTGUN_PROJECTILES, true, 4, 2, 28, 4.0f, TGSounds.SAWEDOFF_FIRE, TGSounds.SAWEDOFF_RELOAD,10, 0.01f).setAmmoCount(2).setShotgunSpread(7,0.2f,false).setDamageDrop(1, 4, 1.5f).setAIStats(RANGE_CLOSE, 60, 2, 20).setTexture("textures/guns/sawedoff").setBulletSpeed(1.5f).setCrossHair(EnumCrosshairStyle.FOUR_PARTS); //.setMuzzleParticle(2,0.1f);
 	 	
@@ -286,12 +250,12 @@ public class TGuns implements ITGInitializer {
 		sonicshotgun = new SonicShotgun("sonicshotgun",SONIC_SHOTGUN_PROJECTILES,true, 12, 8, 40, 50.0f, TGSounds.SONIC_SHOTGUN_FIRE, TGSounds.SONIC_SHOTGUN_RELOAD,20,0.0f).setDamageDrop(5, 15, 35.0f).setPenetration(PENETRATION_MED).setAIStats(RANGE_SHORT, 40, 0, 0).setTexture("textures/guns/sonicshotgun").setCrossHair(EnumCrosshairStyle.QUAD_NO_CORNERS);
 		chainsaw = new Chainsaw("chainsaw", CHAINSAW_PROJECTILES, false, 3, 300, 45, 24.0f, TGSounds.CHAINSAW_LOOP, TGSounds.POWERHAMMER_RELOAD, 2, 0.0f,1f,1).setMeleeDmg(24.0f, 2.0f).setTool("axe", 3).setDigSpeed(18.0f).setTexture("textures/guns/chainsaw").setRecoiltime(5).setShootWithLeftClick(false).setFiresoundStart(TGSounds.CHAINSAW_LOOP_START).setMaxLoopDelay(10).setPenetration(PENETRATION_MED).setAIStats(RANGE_MELEE, 10, 0, 0).setTurretPosOffset(0, -0.47f, -0.08f).setNoMuzzleLight().setCrossHair(EnumCrosshairStyle.VANILLA); //.setTurretPosOffset(0, 0.50f, 0);
 		scatterbeamrifle = new GenericGun("scatterbeamrifle", BLASTER_ENERGYCELL_PROJECTILES, false, 7, 40, 45, 6.0f, TGSounds.LASERGUN_FIRE, TGSounds.LASERGUN_RELOAD, 30/*TODO?Lasergun.LIFETIME*/, 0.1f).setShotgunSpread(4,0.15f,false).setBulletSpeed(1.5f).setZoom(0.75f, true,0.75f,false).setBulletSpeed(2.0f).setAIStats(RANGE_SHORT, 30, 0, 0).setTexture("textures/guns/lasergunnew").setMuzzleLight(0.9f, 0.3f, 0.1f).setCrossHair(EnumCrosshairStyle.FOUR_PARTS);
-		nucleardeathray = new GenericGun("nucleardeathray", NDR_PROJECTILES, false, 5, 40, 50, 17.0f, TGSounds.BEAMGUN_FIRE, TGSounds.LASERGUN_RELOAD, MAX_RANGE_SNIPER/* TODO? Beamgun.LIFETIME*/, 0.0f).setFiresoundStart(TGSounds.BEAMGUN_START).setMaxLoopDelay(10).setRecoiltime(10).setCheckRecoil().setBulletSpeed(100.0f).setAIStats(RANGE_MEDIUM, 40, 5, 5).setTexture("textures/guns/ndr").setPenetration(PENETRATION_MED).setDamageDrop(20, 40, 17.0f).setHandType(GunHandType.TWO_HANDED).setTurretPosOffset(0, 0.04f, -0.19f).setCrossHair(EnumCrosshairStyle.TRI);//.setCheckRecoil();
+		nucleardeathray = new GenericGun("nucleardeathray", NDR_PROJECTILES, false, 5, 30, 50, 12.0f, TGSounds.BEAMGUN_FIRE, TGSounds.LASERGUN_RELOAD, MAX_RANGE_SNIPER/* TODO? Beamgun.LIFETIME*/, 0.0f).setFiresoundStart(TGSounds.BEAMGUN_START).setMaxLoopDelay(10).setRecoiltime(10).setCheckRecoil().setBulletSpeed(100.0f).setAIStats(RANGE_MEDIUM, 40, 5, 5).setTexture("textures/guns/ndr").setPenetration(PENETRATION_MED).setDamageDrop(11, 11, 17.0f).setHandType(GunHandType.TWO_HANDED).setTurretPosOffset(0, 0.04f, -0.19f).setCrossHair(EnumCrosshairStyle.TRI);//.setCheckRecoil();
 		 
 		mac10 = new GenericGun("mac10",SMG_MAG_PROJECTILES, false, 2, 32,40,9.0f, TGSounds.MAC10_FIRE, TGSounds.M4_RELOAD,MAX_RANGE_PISTOL,0.05f).setDamageDrop(15, 24, 6.0f).setAIStats(RANGE_SHORT, 35, 3, 2).setTexture("textures/guns/mac10texture").setRecoiltime(2).setMuzzleFlashTime(3).setBulletSpeed(2.5f).setHandType(GunHandType.ONE_POINT_FIVE_HANDED).setTurretPosOffset(0, 0, -0.07f);
 		mibgun = new GenericGun("mibgun", DEATOMIZER_PROJECTILES, true, 8, 20, 45, 16.0f, TGSounds.MIBGUN_FIRE, TGSounds.MIBGUN_RELOAD, MAX_RANGE_PISTOL, 0.035f).setAIStats(RANGE_MEDIUM, 60, 0, 0).setTexture("textures/guns/mibgun").setDamageDrop(20, 30, 8.0f).setBulletSpeed(1.5f).setPenetration(PENETRATION_MED).setHandType(GunHandType.ONE_HANDED).setTurretPosOffset(0, -0.04f, 0f).setMuzzleLight(0.3333f, 0.9f, 1f).setCrossHair(EnumCrosshairStyle.HORIZONTAL_TWO_PART);
 		scar = new GenericGun("scar", ASSAULTRIFLE_MAG_PROJECTILES, false, 4, 20,45,16.0f, TGSounds.SCAR_FIRE, TGSounds.SCAR_RELOAD, MAX_RANGE_RIFLE_LONG, 0.015f).setZoom(0.65f, true,0.5f,true).setDamageDrop(35, 60, 14.0f).setAIStats(RANGE_MEDIUM, 30, 5, 2).setTextures("textures/guns/scar_texture", 2).setPenetration(PENETRATION_MED).setBulletSpeed(4.0f).setMuzzleFlashTime(5).setTurretPosOffset(0, 0.02f, 0.09f);
-		vector = new GenericGun("vector",SMG_MAG_PROJECTILES, false, 2, 25,40,10.0f, TGSounds.VECTOR_FIRE, TGSounds.VECTOR_RELOAD,MAX_RANGE_PISTOL,0.05f).setZoom(0.75f, true,0.35f,false).setDamageDrop(17, 25, 8.0f).setBulletSpeed(2.0f).setAIStats(RANGE_SHORT, 35, 3, 2).setTextures("textures/guns/vector_texture",2).setRecoiltime(2).setMuzzleFlashTime(3).setPenetration(PENETRATION_LOW).setTurretPosOffset(0, -0.1f, 0.15f);
+		vector = new GenericGun("vector",SMG_MAG_PROJECTILES, false, 1, 25,40,10.0f, TGSounds.VECTOR_FIRE, TGSounds.VECTOR_RELOAD,MAX_RANGE_PISTOL,0.05f).setZoom(0.75f, true,0.35f,false).setDamageDrop(17, 25, 8.0f).setBulletSpeed(2.0f).setAIStats(RANGE_SHORT, 35, 3, 2).setTextures("textures/guns/vector_texture",2).setRecoiltime(2).setMuzzleFlashTime(3).setPenetration(PENETRATION_LOW).setTurretPosOffset(0, -0.1f, 0.15f);
 		
 		gaussrifle = new GenericGun("gaussrifle", GAUSS_PROJECTILES, true, 30, 8, 60, 80.0f, TGSounds.GAUSS_RIFLE_FIRE, TGSounds.GAUSS_RIFLE_RELOAD, MAX_RANGE_SNIPER, 0.025f).setZoom(0.35f, true,0.0f,true).setBulletSpeed(5.0f).setAIStats(RANGE_FAR, 30, 0, 0).setRechamberSound(TGSounds.GAUSS_RIFLE_RECHAMBER).setRecoiltime(8).setTexture("textures/guns/gaussrifle").setTurretPosOffset(0, -0.02f, 0.12f).setMuzzleLight(0f, 0.8f, 1.0f).setForwardOffset(0.45f).setPenetration(PENETRATION_MED_HIGH).setCrossHair(EnumCrosshairStyle.HORIZONTAL_TWO_PART_LARGE);//
 		 
@@ -305,17 +269,19 @@ public class TGuns implements ITGInitializer {
 		 
 		shishkebap = new Shishkebap("shishkebap", CHAINSAW_PROJECTILES, false, 3, 300, 50, 12.0f, TGSounds.SHISHKEBAP_SWING, TGSounds.SHISHKEBAP_RELOAD, 2, 0.0f,1f,1).setMeleeDmg(14.0f, 2.0f).setTool("sword", 3).setDigSpeed(4.0f).setTextures("textures/guns/shishkebab_texture",3).setRecoiltime(5).setShootWithLeftClick(false).setPenetration(PENETRATION_MED).setAIStats(RANGE_MELEE, 10, 0, 0).setTurretPosOffset(0, -0.47f, -0.08f).setNoMuzzleLight().setHandType(GunHandType.ONE_HANDED).setHasAmbient().setCrossHair(EnumCrosshairStyle.VANILLA); //.setTurretPosOffset(0, 0.50f, 0);
 		 
-		stielgranate = new GenericGrenade("stielgranate", 16, 72000, new GrenadeProjectile.Factory()).setDamageAndRadius(16, 5.0f, 5, 8.0f);
+		stielgranate = new GenericGrenade("stielgranate", 16, 72000, new GrenadeProjectile.Factory()).setDamageAndRadius(16, 2.0f, 5, 4.0f);
 		 
-		fraggrenade = new GenericGrenade("fraggrenade", 16, 72000, new FragGrenadeProjectile.Factory()).setStartSound(TGSounds.GRENADE_PIN).setDamageAndRadius(20, 6.0f, 8, 11.0f);
+		fraggrenade = new GenericGrenade("fraggrenade", 16, 72000, new FragGrenadeProjectile.Factory()).setStartSound(TGSounds.GRENADE_PIN).setDamageAndRadius(20, 3.0f, 8, 5.0f);
 		 
 		 if(TGItems.WRITE_ITEM_JSON && event.getSide()==Side.CLIENT){
-			GenericGun.guns.forEach(g -> ItemJsonCreator.writeJsonFilesForGun(g));
+			GenericGun.guns.forEach(ItemJsonCreator::writeJsonFilesForGun);
 		 }
 	}
 
 	@SideOnly(Side.CLIENT)
     public static void initModels() {
+		GenericGun.guns.forEach(g -> ModelLoader.setCustomModelResourceLocation(g, 0, new ModelResourceLocation(g.getRegistryName(), "inventory")));
+		GenericGrenade.grenades.forEach(g -> ModelLoader.setCustomModelResourceLocation(g, 0, new ModelResourceLocation(g.getRegistryName(), "inventory")));
     }
 	
 	@Override

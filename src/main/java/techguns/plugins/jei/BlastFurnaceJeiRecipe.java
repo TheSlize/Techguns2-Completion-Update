@@ -1,18 +1,13 @@
 package techguns.plugins.jei;
 
-import techguns.gui.PoweredTileEntGui;
+import org.jetbrains.annotations.NotNull;
 import techguns.gui.TGBaseGui;
 import techguns.tileentities.operation.BlastFurnaceRecipes;
 import techguns.tileentities.operation.BlastFurnaceRecipes.BlastFurnaceRecipe;
 import techguns.util.TextUtil;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import mezz.jei.api.IJeiHelpers;
-import mezz.jei.api.recipe.IStackHelper;
-import techguns.tileentities.operation.IMachineRecipe;
 
 public class BlastFurnaceJeiRecipe extends BasicRecipeWrapper {
 
@@ -33,10 +28,9 @@ public class BlastFurnaceJeiRecipe extends BasicRecipeWrapper {
 		return recipe.powerPerTick;
 	}
 
-	public static List<BlastFurnaceJeiRecipe> getRecipes(IJeiHelpers helpers) {
-		IStackHelper stackHelper = helpers.getStackHelper();
-	
-		List<BlastFurnaceJeiRecipe> recipes = new ArrayList<BlastFurnaceJeiRecipe>();
+	public static List<BlastFurnaceJeiRecipe> getRecipes() {
+
+        List<BlastFurnaceJeiRecipe> recipes = new ArrayList<>();
 		
 		ArrayList<BlastFurnaceRecipe> m_recipes = BlastFurnaceRecipes.getRecipes();
 		m_recipes.forEach(r -> recipes.add(new BlastFurnaceJeiRecipe(r)));
@@ -45,7 +39,7 @@ public class BlastFurnaceJeiRecipe extends BasicRecipeWrapper {
 	}
 	
 	@Override
-	public List<String> getTooltipStrings(int mouseX, int mouseY) {
+	public @NotNull List<String> getTooltipStrings(int mouseX, int mouseY) {
 
 		if (TGBaseGui.isInRect(mouseX, mouseY, 22+BasicRecipeCategory.JEI_OFFSET_X, 54+BasicRecipeCategory.JEI_OFFSET_Y, 102, 12)) {
 			

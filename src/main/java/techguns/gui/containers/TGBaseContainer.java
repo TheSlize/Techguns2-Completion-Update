@@ -32,19 +32,26 @@ public class TGBaseContainer extends Container {
 				return 3;
 		}
 	}
-	
-	public void addPlayerInventorySlots(InventoryPlayer player) {
-		int i;
 
-		for (i = 0; i < 3; ++i) {
-			for (int j = 0; j < 9; ++j) {
-				this.addSlotToContainer(new Slot(player, j + i * 9 + 9,
-						8 + j * 18, 84 + i * 18));
+	public void addDefaultPlayerInventorySlots(InventoryPlayer player){
+		playerInv(player, 8, 84);
+	}
+
+	/** Standard player inventory with default hotbar offset */
+	public void playerInv(InventoryPlayer invPlayer, int playerInvX, int playerInvY) {
+		playerInv(invPlayer, playerInvX, playerInvY, playerInvY + 58);
+	}
+
+	/** Used to quickly set up the player inventory */
+	public void playerInv(InventoryPlayer invPlayer, int playerInvX, int playerInvY, int playerHotbarY) {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 9; j++) {
+				this.addSlotToContainer(new Slot(invPlayer, j + i * 9 + 9, playerInvX + j * 18, playerInvY + i * 18));
 			}
 		}
 
-		for (i = 0; i < 9; ++i) {
-			this.addSlotToContainer(new Slot(player, i, 8 + i * 18, 142));
+		for (int i = 0; i < 9; i++) {
+			this.addSlotToContainer(new Slot(invPlayer, i, playerInvX + i * 18, playerHotbarY));
 		}
 	}
 	

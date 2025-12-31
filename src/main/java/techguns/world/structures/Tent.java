@@ -38,21 +38,6 @@ public class Tent extends WorldgenStructure {
 		//
 		}
 		
-		//BiomeColorType biometype = BlockUtils.getBiomeType(world, posX, posZ);
-		int camoMeta;
-		switch (colorType) {
-		case DESERT:
-			camoMeta = 2;
-			break;
-		case SNOW:
-			camoMeta = 1;
-			break;
-		case WOODLAND:
-		default:
-			camoMeta = 0;
-			break;	
-		}
-		
 		
 		MutableBlockPos p = new MutableBlockPos();
 		//Tent walls and roof;

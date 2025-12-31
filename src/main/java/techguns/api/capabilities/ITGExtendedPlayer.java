@@ -2,6 +2,7 @@ package techguns.api.capabilities;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 
@@ -19,4 +20,6 @@ public interface ITGExtendedPlayer extends ITGShooterValues {
 	
 	public void saveToNBT(final NBTTagCompound tags);
 	public void loadFromNBT(final NBTTagCompound tags);
+    public boolean hasFabricatorRecipeUnlocked(ItemStack output);
+    public boolean unlockFabricatorRecipe(ItemStack output);
 }

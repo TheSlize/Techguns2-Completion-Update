@@ -95,7 +95,7 @@ public class BioBlobTileEnt extends TileEntity implements ITGTileEntSecurity, IT
 	public void needUpdate(){
 		if(!this.world.isRemote) {	
 			this.world.markBlockRangeForRenderUpdate(getPos(), getPos());
-			ChunkPos cp = this.world.getChunkFromBlockCoords(getPos()).getPos();
+			ChunkPos cp = this.world.getChunk(getPos()).getPos();
 			PlayerChunkMapEntry entry = ((WorldServer)this.world).getPlayerChunkMap().getEntry(cp.x, cp.z);
 			if (entry!=null) {
 				entry.sendPacket(this.getUpdatePacket());
@@ -171,7 +171,7 @@ public class BioBlobTileEnt extends TileEntity implements ITGTileEntSecurity, IT
 				this.world.playSound((EntityPlayer)null, this.pos, TGSounds.DEATH_BIO, SoundCategory.BLOCKS, 4.0F, 1.0F);   
 				
 				if(!this.world.isRemote){
-					TGPackets.network.sendToAllAround(new PacketSpawnParticle("bioblobExplosion", this.pos.getX()+0.5,this.pos.getY()+0.5, this.pos.getZ()+0.5), new TargetPoint(this.world.provider.getDimension(), this.pos.getX()+0.5,this.pos.getY()+0.5, this.pos.getZ()+0.5, 50.0D));
+					TGPackets.wrapper.sendToAllAround(new PacketSpawnParticle("bioblobExplosion", this.pos.getX()+0.5,this.pos.getY()+0.5, this.pos.getZ()+0.5), new TargetPoint(this.world.provider.getDimension(), this.pos.getX()+0.5,this.pos.getY()+0.5, this.pos.getZ()+0.5, 50.0D));
 				}
 				
 			}

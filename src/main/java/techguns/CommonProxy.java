@@ -58,7 +58,7 @@ public abstract class CommonProxy implements ITGInitializer {
 
 	@SubscribeEvent
 	public static void RecipeRegistryEvent(RegistryEvent.Register<IRecipe> event) {
-		TGFluids.RecipeInit();
+		TGFluids.recipeInit();
 		TGMachineRecipes.addRecipes();
 		Techguns.orecluster.RecipeInit();
 	}
@@ -73,9 +73,9 @@ public abstract class CommonProxy implements ITGInitializer {
 	public static void registerItems(RegistryEvent.Register<Item> event) {
 		Techguns.instance.blocks.registerItems(event);
 		Techguns.instance.fluids.registerItems(event);
-		Techguns.instance.items.registerItems(event);
-		Techguns.instance.armors.registerItems(event);
-		Techguns.instance.guns.registerItems(event);
+		TGItems.registerItems(event);
+		TGArmors.registerItems(event);
+		TGuns.registerItems(event);
 	}
 	
 	@SubscribeEvent
@@ -117,11 +117,11 @@ public abstract class CommonProxy implements ITGInitializer {
 		TGSounds.registerSounds(event);
 	}
 
-	protected void registerItemRenderers(){};
-	
-	protected void registerEntityRenderers(){};
-	
-	public void registerCapabilities(){
+	protected void registerItemRenderers(){}
+
+    protected void registerEntityRenderers(){}
+
+    public void registerCapabilities(){
 		CapabilityManager.INSTANCE.register(ITGExtendedPlayer.class, new TGExtendedPlayerStorage(), () -> new TGExtendedPlayer(null));
 		CapabilityManager.INSTANCE.register(ITGShooterValues.class, new TGShooterValuesStorage(), TGShooterValues::new);
 		CapabilityManager.INSTANCE.register(TGSpawnerNPCData.class, new TGSpawnerNPCDataStorage(), TGSpawnerNPCData::new);
@@ -180,36 +180,32 @@ public abstract class CommonProxy implements ITGInitializer {
 
 	}
 	
-	public void createFXOnEntityWithOffset(String name, Entity ent, float offsetX, float offsetY, float offsetZ, boolean attachToHead, EntityCondition condition) {};
-	
-	public void createLightPulse(double x, double y, double z, int lifetime, float rad_start, float rad_end, float r, float g, float b) {};
-	
-	public void createLightPulse(double x, double y, double z, int fadeIn, int fadeOut, float rad_large, float rad_small, float r, float g, float b) {};
-	
-    public void setHasStepassist(boolean value){};
-    
-    public void setHasNightvision(boolean value){};
-    
-    public void setFlySpeed(float value){};
-    
+	public void createFXOnEntityWithOffset(String name, Entity ent, float offsetX, float offsetY, float offsetZ, boolean attachToHead, EntityCondition condition) {}
+
+    public void createLightPulse(double x, double y, double z, int lifetime, float rad_start, float rad_end, float r, float g, float b) {}
+
+    public void createLightPulse(double x, double y, double z, int fadeIn, int fadeOut, float rad_large, float rad_small, float r, float g, float b) {}
+
+    public void setHasStepassist(boolean value){}
+
+    public void setHasNightvision(boolean value){}
+
+    public void setFlySpeed(float value){}
+
     public boolean getHasStepassist(){
     	return false;
-    };
-    
+    }
+
     public boolean getHasNightvision(){
     	return false;
-    };
-    
+    }
+
     public boolean isClientPlayerAndIn1stPerson(EntityLivingBase ent) {
 		return false;
 	}
-    
-    public boolean clientInRangeSquared(double posX, double posZ, double distSq) {
-		return false;
-	}
-    
-    public void registerFluidModelsForFluidBlock(Block b) {};
-    
+
+    public void registerFluidModelsForFluidBlock(Block b) {}
+
     public abstract GuiHandlerRegister getGuihandlers();
     
     public void clearItemParticleSystemsHand(EntityLivingBase entity, EnumHand hand) {

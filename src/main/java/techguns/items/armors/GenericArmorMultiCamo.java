@@ -39,35 +39,9 @@ public class GenericArmorMultiCamo extends GenericArmor implements ICamoChangeab
 			this.camoNameSuffix=s+".";
 			return this;
 		}
-		
-		/*@Override
-		public String getArmorTexture(ItemStack stack, Entity entity, int slot,
-				String type) {
-			NBTTagCompound tags = stack.getTagCompound();
-			byte camoID=0;
-			if (tags!=null){
-				if (tags.hasKey("camo")){
-					camoID=tags.getByte("camo");
-				}
-			}
-			
-			if (this.hasDoubleTexture()) {
-				return Techguns.MODID + ":textures/armor/" + this.textureNames[camoID] + "_" + (this.armorType == EntityEquipmentSlot.LEGS ? "2" : "1") + ".png";
-			} else { //USE SINGLE TEXTURE
-				return Techguns.MODID + ":textures/armor/" + this.textureNames[camoID] + ".png";
-			}
-		}*/
-
-
 
 		@Override
 		public void addInformation(ItemStack item, World worldIn, List<String> list, ITooltipFlag flagIn) {
-			
-			/*NBTTagCompound tags = item.getTagCompound();
-			byte camoID=0;
-			if (tags!=null && tags.hasKey("camo")){
-				camoID=tags.getByte("camo");
-			}*/
 			super.addInformation(item, worldIn, list, flagIn);
 			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)){	
 				list.add(TextUtil.trans(Techguns.MODID+".tooltip.currentcamo")+": "+getCurrentCamoName(item));
@@ -81,16 +55,12 @@ public class GenericArmorMultiCamo extends GenericArmor implements ICamoChangeab
 				
 				ItemStack item = player.getHeldItem(handIn);
 				
-				//int camoID=switchCamo(item);
-				//this.setTextureName(this.textureNames[camoID]);
-				//System.out.println("Switched Camo to:"+camoID);
-				
 				this.switchCamo(item);
 				if (world.isRemote){
 					player.sendMessage(new TextComponentString(TextUtil.trans("techguns.message.camoswitch")+" "+getCurrentCamoName(item)));
 				}
 		
-				return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, item);
+				return new ActionResult<>(EnumActionResult.SUCCESS, item);
 			} else {
 				return super.onItemRightClick(world, player, handIn);
 			}

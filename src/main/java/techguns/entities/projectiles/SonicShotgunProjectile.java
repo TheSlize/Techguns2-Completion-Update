@@ -66,7 +66,7 @@ public class SonicShotgunProjectile extends GenericProjectile implements IEntity
 	protected void doImpactEffects(Material mat, RayTraceResult rayTraceResult, SoundType sound) {
 		if (mainProjectile) {
 			if (!this.world.isRemote){
-    			TGPackets.network.sendToAllAround(new PacketSpawnParticle("SonicShotgunImpact", this.posX,this.posY,this.posZ), TGPackets.targetPointAroundEnt(this, 50.0f));
+    			TGPackets.wrapper.sendToAllAround(new PacketSpawnParticle("SonicShotgunImpact", this.posX,this.posY,this.posZ), TGPackets.targetPointAroundEnt(this, 50.0f));
     		}
 		}
 	}

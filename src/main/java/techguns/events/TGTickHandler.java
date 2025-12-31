@@ -3,7 +3,6 @@ package techguns.events;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Iterator;
-import java.util.List;
 import java.util.UUID;
 
 import com.google.common.base.Predicate;
@@ -32,7 +31,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.RenderTickEvent;
-import net.minecraftforge.fml.relauncher.ReflectionHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import techguns.TGConfig;
@@ -52,7 +50,6 @@ import techguns.client.audio.TGSoundCategory;
 import techguns.client.particle.LightPulse;
 import techguns.damagesystem.TGDamageSource;
 import techguns.deatheffects.EntityDeathUtils.DeathType;
-import techguns.entities.npcs.GenericNPC;
 import techguns.gui.player.TGPlayerInventory;
 import techguns.items.additionalslots.ItemGasMask;
 import techguns.items.armors.GenericArmor;
@@ -107,10 +104,10 @@ public class TGTickHandler {
 							IGenericGun gun = (IGenericGun) stack.getItem();
 							if (props.getFireDelay(EnumHand.MAIN_HAND) <= 0) {
 								if (gun instanceof GenericGunCharge && ((GenericGunCharge)gun).getLockOnTicks() > 0 && props.lockOnEntity != null && props.lockOnTicks > ((GenericGunCharge)gun).getLockOnTicks()) {
-									TGPackets.network.sendToServer(new PacketShootGunTarget(gun.isZooming(),EnumHand.MAIN_HAND, props.lockOnEntity));
+									TGPackets.wrapper.sendToServer(new PacketShootGunTarget(gun.isZooming(),EnumHand.MAIN_HAND, props.lockOnEntity));
 									gun.shootGunPrimary(stack, event.player.world, event.player, gun.isZooming(), EnumHand.MAIN_HAND, props.lockOnEntity);
 								}else {
-									TGPackets.network.sendToServer(new PacketShootGun(gun.isZooming(),EnumHand.MAIN_HAND));
+									TGPackets.wrapper.sendToServer(new PacketShootGun(gun.isZooming(),EnumHand.MAIN_HAND));
 									gun.shootGunPrimary(stack, event.player.world, event.player, gun.isZooming(), EnumHand.MAIN_HAND, null);
 								}
 								
@@ -130,7 +127,7 @@ public class TGTickHandler {
 							IGenericGun gun = (IGenericGun) stackOff.getItem();
 							if (props.getFireDelay(EnumHand.OFF_HAND) <= 0) {
 
-								TGPackets.network.sendToServer(new PacketShootGun(gun.isZooming(),EnumHand.OFF_HAND));
+								TGPackets.wrapper.sendToServer(new PacketShootGun(gun.isZooming(),EnumHand.OFF_HAND));
 								gun.shootGunPrimary(stackOff, event.player.world, event.player, gun.isZooming(), EnumHand.OFF_HAND, null);
 							}
 							if (gun.isSemiAuto()) {
@@ -258,10 +255,14 @@ public class TGTickHandler {
 					 speed += GenericArmor.getArmorBonusForPlayer(event.player, TGArmorBonus.SPEED_WATER,false);
 				 }
 				 
-				 if ((speed) >0.0f){
+				 if ((speed) != 0.0f){
 					 //event.player.addPotionEffect(new PotionEffect(Potion.moveSpeed.id,2,0,true));
 					 if(event.player.isSprinting()){
-						 speed=speed*2.0f;
+						 if(speed > 0.0f){
+							 speed = speed*2.0f;
+						 } else {
+							speed = speed / 2.0f;
+						 }
 					 }
 					 
 					 /*if(!event.player.getActiveItemStack().isEmpty()){
@@ -342,7 +343,7 @@ public class TGTickHandler {
 						 if (event.player.world.isRemote) {
 							 Techguns.proxy.createFXOnEntity("AntiGravRing", event.player);
 						 } else {
-							 TGPackets.network.sendToAllAround(new PacketPlaySound(TGSounds.ANTI_GRAV_START, event.player, 1.0f, 1.0f, false, true, false, true, TGSoundCategory.PLAYER_EFFECT), TGPackets.targetPointAroundEnt(event.player,50.0f));
+							 TGPackets.wrapper.sendToAllAround(new PacketPlaySound(TGSounds.ANTI_GRAV_START, event.player, 1.0f, 1.0f, false, true, false, true, TGSoundCategory.PLAYER_EFFECT), TGPackets.targetPointAroundEnt(event.player,50.0f));
 						 }
 						 
 					 } 
@@ -399,7 +400,7 @@ public class TGTickHandler {
 							 props.foodleft-=needed;
 						 }
 						 if (!event.player.world.isRemote){
-							 TGPackets.network.sendTo(new PacketTGExtendedPlayerSync(event.player,props,true), (EntityPlayerMP) event.player);
+							 TGPackets.wrapper.sendTo(new PacketTGExtendedPlayerSync(event.player,props,true), (EntityPlayerMP) event.player);
 						 }
 					 } else {
 						 ItemStack stack = InventoryUtil.consumeFood(props.tg_inventory.inventory, props.tg_inventory.SLOTS_AUTOFOOD_START, props.tg_inventory.SLOTS_AUTOFOOD_END+1);
@@ -433,7 +434,7 @@ public class TGTickHandler {
 								 props.lastSaturation=0.0f;
 							 }
 							 if (!event.player.world.isRemote){
-								 TGPackets.network.sendTo(new PacketTGExtendedPlayerSync(event.player,props,true), (EntityPlayerMP) event.player);
+								 TGPackets.wrapper.sendTo(new PacketTGExtendedPlayerSync(event.player,props,true), (EntityPlayerMP) event.player);
 							 }
 						 }
 					 }
@@ -517,7 +518,7 @@ public class TGTickHandler {
 				 }
 				 
 				 if (!gunOH.isEmpty() && props.gunMainHand==gunOH || !gunMH.isEmpty() && props.gunOffHand==gunMH ) {
-					 TGPackets.network.sendToAllAround(new PacketSwapWeapon(event.player), TGPackets.targetPointAroundEnt(event.player, 50.0f));
+					 TGPackets.wrapper.sendToAllAround(new PacketSwapWeapon(event.player), TGPackets.targetPointAroundEnt(event.player, 50.0f));
 					 
 					 int i = props.fireDelayMainhand;
 					 props.fireDelayMainhand=props.fireDelayOffhand;

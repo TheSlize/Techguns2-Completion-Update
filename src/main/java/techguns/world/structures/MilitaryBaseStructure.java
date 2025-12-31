@@ -15,7 +15,6 @@ public class MilitaryBaseStructure extends WorldgenStructure {
 
 	@Override
 	public void setBlocks(World world, int posX, int posY, int posZ, int sizeX, int sizeY, int sizeZ, int direction, BiomeColorType colorType, Random rnd) {
-		//NOT NEEDED, DUMMY
 	}
 
 	@Override
@@ -31,29 +30,17 @@ public class MilitaryBaseStructure extends WorldgenStructure {
 		
 		int y = BlockUtils.getValidSpawnYArea(world, x, z, sizeX, sizeZ,5,getStep());
 		
-		if(  y>0){
-		
+		if(y > 0){
 			BlockUtils.removeJunkInArea(world, x-1, z-1, sizeX+2, sizeZ+2);
-			//BlockUtils.flattenArea(world, x-1, z-1, sizeX+2, sizeZ+2, 0);
-			//BlockUtils.apply2DHeightmapFilter(world, x-1, z-1, sizeX+2, sizeZ+2, BlockUtils.FILTER_GAUSSIAN_5x5);
-			
+
 			MilitaryCamp camp = new MilitaryCamp(4,rnd);
 		    camp.init(x, y, z, sizeX, sizeZ);
 		    camp.setBlocks(world,rnd);
-			
-			
-			//building.setBlocks(world, x,BlockUtils.getHeightValueNoTrees(world, x, z)-1, z, sizeX, sizeY, sizeZ, random.nextInt(4), BiomeColorType.WOODLAND);
-		
 		} else {
 			if(sizeX>=32 && sizeZ>=32){
-				//generateSurface(world, rnd, x,z, sizeX-16, sizeZ-16, true);
 				this.spawnStructureWorldgen(world, chunkX, chunkZ, sizeX-16, sizeY, sizeZ-16, rnd, biome);
-				
 			}
-			
-			
 		}
-		
 	}
 
 	@Override

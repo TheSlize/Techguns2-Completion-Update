@@ -26,6 +26,9 @@
     },
 	"type=oil": {
       "model": "techguns:ore_cluster_oil"
+    },
+    "type=universal": {
+      "model": "techguns:ore_cluster_universal"
     }
   }
 }

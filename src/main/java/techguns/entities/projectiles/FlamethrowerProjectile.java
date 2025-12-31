@@ -18,7 +18,6 @@ import techguns.damagesystem.TGDamageSource;
 import techguns.deatheffects.EntityDeathUtils.DeathType;
 import techguns.items.guns.GenericGun;
 import techguns.items.guns.IProjectileFactory;
-import techguns.packets.PacketSpawnParticle;
 import techguns.packets.PacketSpawnParticleOnEntity;
 import techguns.util.MathUtil;
 
@@ -36,7 +35,9 @@ public class FlamethrowerProjectile extends GenericProjectile implements ILightP
 	
 	public FlamethrowerProjectile(World worldIn) {
 		super(worldIn);
-		ClientProxy.get().createFXOnEntity("FlamethrowerTrail", this);
+		if (worldIn.isRemote) {
+			ClientProxy.get().createFXOnEntity("FlamethrowerTrail", this);
+		}
 	}
 
 	public FlamethrowerProjectile(World worldIn, double posX, double posY, double posZ, float yaw, float pitch, float damage, float speed, int TTL, float spread, float dmgDropStart,
@@ -112,7 +113,7 @@ public class FlamethrowerProjectile extends GenericProjectile implements ILightP
 			else if (firePos == EnumBulletFirePos.LEFT) offsetX = 0.15f;			
 			float offsetY = -0.05f;
 			float offsetZ = 0.5f;
-			TGPackets.network.sendToAllAround(new PacketSpawnParticleOnEntity("FlamethrowerFireFX", p, offsetX, offsetY, offsetZ, true), TGPackets.targetPointAroundEnt(p, 25.0f));
+			TGPackets.wrapper.sendToAllAround(new PacketSpawnParticleOnEntity("FlamethrowerFireFX", p, offsetX, offsetY, offsetZ, true), TGPackets.targetPointAroundEnt(p, 25.0f));
 			
 			return new FlamethrowerProjectile(world,p,damage,speed,TTL,spread,dmgDropStart,dmgDropEnd,dmgMin,penetration,blockdamage,firePos,gravity);
 		}

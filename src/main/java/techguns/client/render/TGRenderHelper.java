@@ -12,16 +12,6 @@ public class TGRenderHelper {
 	
 	protected static int lastBlendFuncSrc=0;
 	protected static int lastBlendFuncDest=0;
-	
-	/*private static int lastBlendSrc=0;
-	private static int lastBlendDst=0;
-	private static void snapshotBlendFunc() {
-		lastBlendSrc=GL11.glGetInteger(GL11.GL_BLEND_SRC);
-		lastBlendDst=GL11.glGetInteger(GL11.GL_BLEND_DST);
-	}
-	private static void restoreBlendFunc() {
-		GL11.glBlendFunc(lastBlendSrc, lastBlendDst);
-	}*/
 
 	public static void enableFXLighting()
     {
@@ -53,7 +43,7 @@ public class TGRenderHelper {
     }
 
     public enum RenderType {
-    	ALPHA, ADDITIVE, SOLID, ALPHA_SHADED, NO_Z_TEST;
+    	ALPHA, ADDITIVE, SOLID, ALPHA_SHADED, NO_Z_TEST
     }
 	
     /**

@@ -53,7 +53,7 @@ public class GenericShield extends ItemShield implements ICamoChangeable {
 		setMaxStackSize(1);
 		setCreativeTab(Techguns.tabTechgun);
 		setRegistryName(name);
-		setUnlocalizedName(modid+"."+name);
+		setTranslationKey(modid+"."+name);
 		this.camocount=Math.max(camocount,1);
 		this.setMaxDamage(durability);
 		if(addToList) {
@@ -112,7 +112,7 @@ public class GenericShield extends ItemShield implements ICamoChangeable {
 	public String getItemStackDisplayName(ItemStack stack)
     {
 		//same as in Item
-		return I18n.translateToLocal(this.getUnlocalizedNameInefficiently(stack) + ".name").trim();
+		return I18n.translateToLocal(this.getTranslationKey(stack) + ".name").trim();
     }
 
 	@SideOnly(Side.CLIENT)
@@ -138,7 +138,7 @@ public class GenericShield extends ItemShield implements ICamoChangeable {
 			camoID=tags.getByte("camo");
 		}
 		if(camoID>0){
-			return TextUtil.trans(this.getUnlocalizedName()+".camoname."+camoID);
+			return TextUtil.trans(this.getTranslationKey()+".camoname."+camoID);
 		} else {
 			return TextUtil.trans("techguns.item.defaultcamo");
 		}

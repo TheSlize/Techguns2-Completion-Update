@@ -8,18 +8,15 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import techguns.TGBlocks;
-import techguns.Techguns;
 import techguns.blocks.EnumMonsterSpawnerType;
 import techguns.blocks.EnumOreClusterType;
 import techguns.blocks.EnumOreType;
 import techguns.entities.npcs.AlienBug;
-import techguns.entities.npcs.ZombieMiner;
 import techguns.util.BlockUtils;
 import techguns.util.MBlock;
 import techguns.util.MBlockOreClusterTypeOre;
 import techguns.util.MBlockOreclusterType;
 import techguns.util.MultiMBlock;
-import techguns.util.MultiMMBlock;
 import techguns.world.dungeon.presets.specialblocks.MBlockTGSpawner;
 
 public class OreClusterSpike extends WorldgenStructure {
@@ -78,7 +75,7 @@ public class OreClusterSpike extends WorldgenStructure {
 		
 		int indexRoll=rollBlockIndex(rnd, totalweight, clusterWeights);
 		
-		BlockUtils.cleanUpwards(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 0, 6);
+		BlockUtils.cleanUpwards(world, blocks, posX, posY, posZ, centerX, centerZ, direction, 6);
 		BlockUtils.placeScannedStructure(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 0,this.lootTier,colorType,indexRoll,rnd);
 		BlockUtils.placeScannedStructure(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 1,this.lootTier,colorType);
 	}

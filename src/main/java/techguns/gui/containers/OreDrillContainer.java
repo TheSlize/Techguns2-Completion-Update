@@ -3,6 +3,7 @@ package techguns.gui.containers;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.IContainerListener;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
@@ -13,13 +14,8 @@ import techguns.TGPackets;
 import techguns.gui.widgets.SlotDrill;
 import techguns.gui.widgets.SlotFurnaceFuelTG;
 import techguns.gui.widgets.SlotItemHandlerOutput;
-import techguns.gui.widgets.SlotMachineInput;
-import techguns.gui.widgets.SlotRCFocus;
-import techguns.gui.widgets.SlotTG;
 import techguns.packets.PacketUpdateTileEntTanks;
-import techguns.tileentities.BasicMachineTileEnt;
 import techguns.tileentities.OreDrillTileEntMaster;
-import techguns.tileentities.ReactionChamberTileEntMaster;
 import techguns.tileentities.operation.ItemStackHandlerPlus;
 
 public class OreDrillContainer extends BasicMachineContainer {
@@ -59,7 +55,7 @@ public class OreDrillContainer extends BasicMachineContainer {
 		}
 		
 		
-		this.addPlayerInventorySlots(player);
+		this.addDefaultPlayerInventorySlots(player);
 	}
 
 	@Override
@@ -79,7 +75,7 @@ public class OreDrillContainer extends BasicMachineContainer {
 
 			if (listener instanceof EntityPlayerMP) {
 				EntityPlayerMP player = (EntityPlayerMP) listener;
-				TGPackets.network.sendTo(new PacketUpdateTileEntTanks(this.tile, this.tile.getPos()), player);
+				TGPackets.wrapper.sendTo(new PacketUpdateTileEntTanks(this.tile, this.tile.getPos()), player);
 			}
 		
             
@@ -124,7 +120,7 @@ public class OreDrillContainer extends BasicMachineContainer {
 						
 						//PRESSED IN MACHINE GUI 2-10 output, 1 fuelinput
 						if (!this.mergeItemStack(stack1, machine_inventory_end, machine_inventory_end+36, false)) {
-							return null;
+							return ItemStack.EMPTY;
 						}
 						slot.onSlotChange(stack1, stack);
 					} else if (id >=machine_inventory_end && id <machine_inventory_end+36){
@@ -151,7 +147,7 @@ public class OreDrillContainer extends BasicMachineContainer {
 					}
 
 					if (stack1.getCount() == stack.getCount()) {
-						return null;
+						return ItemStack.EMPTY;
 					}
 
 					slot.onTake(ply, stack1);
@@ -160,6 +156,17 @@ public class OreDrillContainer extends BasicMachineContainer {
 			}
 		
 			return stack;
+	}
+
+	@Override
+	public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, EntityPlayer player) {
+		if (slotId >= 0 && slotId < this.inventorySlots.size()) {
+			Slot slot = this.inventorySlots.get(slotId);
+			if (slot instanceof SlotDrill && !slot.canTakeStack(player)) {
+				return ItemStack.EMPTY;
+			}
+		}
+		return super.slotClick(slotId, dragType, clickTypeIn, player);
 	}
 
 	

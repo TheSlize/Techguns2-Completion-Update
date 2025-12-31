@@ -4,29 +4,23 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import techguns.TGBlocks;
 import techguns.Techguns;
 import techguns.blocks.EnumMonsterSpawnerType;
 import techguns.entities.npcs.ZombieFarmer;
 import techguns.entities.npcs.ZombieMiner;
-import techguns.entities.npcs.ZombiePoliceman;
 import techguns.entities.npcs.ZombieSoldier;
 import techguns.util.BlockUtils;
 import techguns.util.MBlock;
 import techguns.world.dungeon.presets.specialblocks.MBlockChestLoottable;
-import techguns.world.dungeon.presets.specialblocks.MBlockItemFrame;
 import techguns.world.dungeon.presets.specialblocks.MBlockTGSpawner;
-import techguns.world.structures.WorldgenStructure.BiomeColorType;
 
 public class GasStation extends WorldgenStructure {
 
 private static final ResourceLocation CHEST_LOOT = new ResourceLocation(Techguns.MODID,"chests/gasstation");
 	
-	static ArrayList<MBlock> blockList = new ArrayList<MBlock>();
+	static ArrayList<MBlock> blockList = new ArrayList<>();
 	static short[][] blocks;
 	static {
 		blockList.add(new MBlock("techguns:concrete", 3));
@@ -78,7 +72,7 @@ private static final ResourceLocation CHEST_LOOT = new ResourceLocation(Techguns
 			centerX = (int) (sizeX/2.0f);
 			centerZ = (int) (sizeZ/2.0f);
 		}
-		BlockUtils.cleanUpwards(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 0, 7);
+		BlockUtils.cleanUpwards(world, blocks, posX, posY, posZ, centerX, centerZ, direction, 7);
 		BlockUtils.placeFoundation(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 0,3);
 		BlockUtils.placeScannedStructure(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 0,this.lootTier,colorType);
 		BlockUtils.placeScannedStructure(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 1,this.lootTier,colorType);

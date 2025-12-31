@@ -5,18 +5,14 @@ import java.util.ArrayList;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.EnumHand;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
@@ -24,7 +20,6 @@ import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.FluidTankPropertiesWrapper;
 import net.minecraftforge.fluids.capability.IFluidHandler;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.fml.relauncher.Side;
@@ -42,13 +37,10 @@ import techguns.blocks.BlockOreCluster;
 import techguns.blocks.EnumOreClusterType;
 import techguns.blocks.machines.multiblocks.OreDrillDefinition;
 import techguns.client.audio.TGSoundCategory;
-import techguns.tileentities.ChemLabTileEnt.ChemLabFluidHandler;
 import techguns.tileentities.operation.FluidTankPlus;
 import techguns.tileentities.operation.ITileEntityFluidTanks;
 import techguns.tileentities.operation.ItemStackHandlerPlus;
-import techguns.tileentities.operation.MachineOperation;
 import techguns.util.InventoryUtil;
-import techguns.items.GenericItemShared;
 import techguns.packets.PacketPlaySound;
 
 public class OreDrillTileEntMaster extends MultiBlockMachineTileEntMaster implements ITileEntityFluidTanks{
@@ -257,7 +249,7 @@ public class OreDrillTileEntMaster extends MultiBlockMachineTileEntMaster implem
 	public void readClientDataFromNBT(NBTTagCompound tags) {
 		super.readClientDataFromNBT(tags);
 		if(this.formed) {
-			this.drill_direction=EnumFacing.getFront(tags.getByte("drill_direction"));
+			this.drill_direction=EnumFacing.byIndex(tags.getByte("drill_direction"));
 			this.engines= tags.getByte("engines");
 			this.rods =tags.getByte("rods");
 			this.radius = tags.getByte("radius");
@@ -634,20 +626,20 @@ public class OreDrillTileEntMaster extends MultiBlockMachineTileEntMaster implem
 			if (this.radius == 0) {
 				//world.playSound(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ(), TGSounds.ORE_DRILL_WORK_SMALL, SoundCategory.BLOCKS, SOUND_VOLUME, 1.0F, true );		
 				//worldplaySound(this.xCoord, this.yCoord, this.zCoord, "techguns:machines.oredrillSmallWork", 1.5F, 1.0F, true );
-				TGPackets.network.sendToAllTracking(new PacketPlaySound(TGSounds.ORE_DRILL_WORK_SMALL, soundPos.getX(), soundPos.getY(), soundPos.getZ(), SOUND_VOLUME, 1.0f, false, TGSoundCategory.MACHINE), new TargetPoint(this.world.provider.getDimension(),soundPos.getX()+0.5,soundPos.getY()+0.5,soundPos.getZ()+0.5,32.0f));
+				TGPackets.wrapper.sendToAllTracking(new PacketPlaySound(TGSounds.ORE_DRILL_WORK_SMALL, soundPos.getX(), soundPos.getY(), soundPos.getZ(), SOUND_VOLUME, 1.0f, false, TGSoundCategory.MACHINE), new TargetPoint(this.world.provider.getDimension(),soundPos.getX()+0.5,soundPos.getY()+0.5,soundPos.getZ()+0.5,32.0f));
 				soundLoopDelay = 61; //62 ticks = 3.1 sec
 				
 			}else if (this.radius <= 2) {
 				//world.playSound(this.xCoord, this.yCoord, this.zCoord, "techguns:machines.oredrillMediumWork", 2.25F, 1.0F, true );
 				//world.playSound(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ(), TGSounds.ORE_DRILL_WORK_MEDIUM, SoundCategory.BLOCKS, SOUND_VOLUME, 1.0F, true );
 				
-				TGPackets.network.sendToAllTracking(new PacketPlaySound(TGSounds.ORE_DRILL_WORK_MEDIUM, soundPos.getX(), soundPos.getY(), soundPos.getZ(), SOUND_VOLUME, 1.0f, false, TGSoundCategory.MACHINE), new TargetPoint(this.world.provider.getDimension(),soundPos.getX()+0.5,soundPos.getY()+0.5,soundPos.getZ()+0.5,32.0f));
+				TGPackets.wrapper.sendToAllTracking(new PacketPlaySound(TGSounds.ORE_DRILL_WORK_MEDIUM, soundPos.getX(), soundPos.getY(), soundPos.getZ(), SOUND_VOLUME, 1.0f, false, TGSoundCategory.MACHINE), new TargetPoint(this.world.provider.getDimension(),soundPos.getX()+0.5,soundPos.getY()+0.5,soundPos.getZ()+0.5,32.0f));
 				soundLoopDelay = 61; //62 ticks = 3.1 sec
 			}else {
 				//world.playSound(this.xCoord, this.yCoord, this.zCoord, "techguns:machines.oredrillLargeWork", 3.0F, 1.0F, true );
 				//world.playSound(this.getPos().getX(), this.getPos().getY(), this.getPos().getZ(), TGSounds.ORE_DRILL_WORK_LARGE, SoundCategory.BLOCKS, SOUND_VOLUME, 1.0F, true );		
 	
-				TGPackets.network.sendToAllTracking(new PacketPlaySound(TGSounds.ORE_DRILL_WORK_LARGE, soundPos.getX(), soundPos.getY(), soundPos.getZ(), SOUND_VOLUME, 1.0f, false, TGSoundCategory.MACHINE), new TargetPoint(this.world.provider.getDimension(),soundPos.getX()+0.5,soundPos.getY()+0.5,soundPos.getZ()+0.5,32.0f));
+				TGPackets.wrapper.sendToAllTracking(new PacketPlaySound(TGSounds.ORE_DRILL_WORK_LARGE, soundPos.getX(), soundPos.getY(), soundPos.getZ(), SOUND_VOLUME, 1.0f, false, TGSoundCategory.MACHINE), new TargetPoint(this.world.provider.getDimension(),soundPos.getX()+0.5,soundPos.getY()+0.5,soundPos.getZ()+0.5,32.0f));
 				soundLoopDelay = 61; //62 ticks = 3.1 sec
 			}
 		}

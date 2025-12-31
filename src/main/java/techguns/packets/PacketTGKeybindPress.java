@@ -11,10 +11,7 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
-import net.minecraftforge.server.permission.PermissionAPI;
-import techguns.TGConfig;
 import techguns.TGPackets;
-import techguns.TGPermissions;
 import techguns.TGSounds;
 import techguns.Techguns;
 import techguns.capabilities.TGExtendedPlayer;
@@ -93,35 +90,35 @@ public class PacketTGKeybindPress implements IMessage {
 					
 				}
 				if(message.showMsg) {
-					TGPackets.network.sendTo(new PacketShowKeybindConfirmMessage(message.buttonID, props.enableNightVision), (EntityPlayerMP)ply);
+					TGPackets.wrapper.sendTo(new PacketShowKeybindConfirmMessage(message.buttonID, props.enableNightVision), (EntityPlayerMP)ply);
 				}
-				TGPackets.network.sendTo(new PacketTGExtendedPlayerSync(ply,props, true), (EntityPlayerMP)ply);
+				TGPackets.wrapper.sendTo(new PacketTGExtendedPlayerSync(ply,props, true), (EntityPlayerMP)ply);
 				
 			} 
 			else if (message.buttonID==TGKeybindsID.TOGGLE_SAFEMODE){
 				
 				props.enableSafemode=!props.enableSafemode;
 				
-				if (!props.enableSafemode && !Techguns.instance.permissions.canUseUnsafeMode(ply)) {
+				if (!props.enableSafemode && Techguns.instance.permissions.canUseUnsafeMode(ply)) {
 					props.enableSafemode=true;
 				} 
 				if(message.showMsg) {
-					TGPackets.network.sendTo(new PacketShowKeybindConfirmMessage(message.buttonID, props.enableSafemode), (EntityPlayerMP)ply);
+					TGPackets.wrapper.sendTo(new PacketShowKeybindConfirmMessage(message.buttonID, props.enableSafemode), (EntityPlayerMP)ply);
 				}
-				TGPackets.network.sendTo(new PacketTGExtendedPlayerSync(ply,props, true), (EntityPlayerMP)ply);
+				TGPackets.wrapper.sendTo(new PacketTGExtendedPlayerSync(ply,props, true), (EntityPlayerMP)ply);
 			}	
 			else if (message.buttonID==TGKeybindsID.TOGGLE_JETPACK){
 								
 				if (!props.isJumpkeyPressed()){
 					props.enableJetpack=!props.enableJetpack;
-					TGPackets.network.sendTo(new PacketTGPlayerFieldSync(ply,PacketTGPlayerFieldSync.FIELD_ENABLEJETPACK, props.enableJetpack), (EntityPlayerMP)ply);
+					TGPackets.wrapper.sendTo(new PacketTGPlayerFieldSync(ply,PacketTGPlayerFieldSync.FIELD_ENABLEJETPACK, props.enableJetpack), (EntityPlayerMP)ply);
 					if(message.showMsg) {
-						TGPackets.network.sendTo(new PacketShowKeybindConfirmMessage(message.buttonID, props.enableJetpack), (EntityPlayerMP)ply);
+						TGPackets.wrapper.sendTo(new PacketShowKeybindConfirmMessage(message.buttonID, props.enableJetpack), (EntityPlayerMP)ply);
 					}
 					
 					if (!props.enableJetpack && props.isJumpkeyPressed()){
 						props.setJumpkeyPressed(false);
-						TGPackets.network.sendToDimension(new PacketTGPlayerFieldSync(ply, PacketTGPlayerFieldSync.FIELD_JUMPBUTTONPRESSED, false), ply.world.provider.getDimension());
+						TGPackets.wrapper.sendToDimension(new PacketTGPlayerFieldSync(ply, PacketTGPlayerFieldSync.FIELD_JUMPBUTTONPRESSED, false), ply.world.provider.getDimension());
 					}
 				}
 				
@@ -131,14 +128,14 @@ public class PacketTGKeybindPress implements IMessage {
 				props.setJumpkeyPressed(true);
 				
 				//send change to other player
-				TGPackets.network.sendToDimension(new PacketTGPlayerFieldSync(ply, PacketTGPlayerFieldSync.FIELD_JUMPBUTTONPRESSED, true), ply.world.provider.getDimension());
+				TGPackets.wrapper.sendToDimension(new PacketTGPlayerFieldSync(ply, PacketTGPlayerFieldSync.FIELD_JUMPBUTTONPRESSED, true), ply.world.provider.getDimension());
 				
 				
 			}
 			else if (message.buttonID==TGKeybindsID.JETPACK_BOOST_STOP){
 				
 				props.setJumpkeyPressed(false);
-				TGPackets.network.sendToDimension(new PacketTGPlayerFieldSync(ply, PacketTGPlayerFieldSync.FIELD_JUMPBUTTONPRESSED, false), ply.world.provider.getDimension());
+				TGPackets.wrapper.sendToDimension(new PacketTGPlayerFieldSync(ply, PacketTGPlayerFieldSync.FIELD_JUMPBUTTONPRESSED, false), ply.world.provider.getDimension());
 				
 			}
 			else if (message.buttonID==TGKeybindsID.JETPACK_FORWARD_START){
@@ -162,14 +159,14 @@ public class PacketTGKeybindPress implements IMessage {
 			} else if (message.buttonID == TGKeybindsID.TOGGLE_HUD){
 				props.showTGHudElements=!props.showTGHudElements;
 				
-				TGPackets.network.sendTo(new PacketTGExtendedPlayerSync(ply,props, true), (EntityPlayerMP)ply);
+				TGPackets.wrapper.sendTo(new PacketTGExtendedPlayerSync(ply,props, true), (EntityPlayerMP)ply);
 				
 			} else if (message.buttonID == TGKeybindsID.TOGGLE_STEP_ASSIST){
 				props.enableStepAssist=!props.enableStepAssist;
 				if(message.showMsg) {
-					TGPackets.network.sendTo(new PacketShowKeybindConfirmMessage(message.buttonID, props.enableStepAssist), (EntityPlayerMP)ply);
+					TGPackets.wrapper.sendTo(new PacketShowKeybindConfirmMessage(message.buttonID, props.enableStepAssist), (EntityPlayerMP)ply);
 				}
-				TGPackets.network.sendTo(new PacketTGExtendedPlayerSync(ply,props, true), (EntityPlayerMP)ply);
+				TGPackets.wrapper.sendTo(new PacketTGExtendedPlayerSync(ply,props, true), (EntityPlayerMP)ply);
 			}
 			else if(message.buttonID==TGKeybindsID.TOGGLE_AMMO_TYPE) {
 				ItemStack item = ply.getHeldItem(message.hand);

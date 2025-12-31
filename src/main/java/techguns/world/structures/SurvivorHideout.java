@@ -12,12 +12,8 @@ import techguns.TGuns;
 import techguns.Techguns;
 import techguns.blocks.EnumMonsterSpawnerType;
 import techguns.entities.npcs.Bandit;
-import techguns.entities.npcs.ZombieFarmer;
-import techguns.entities.npcs.ZombieMiner;
-import techguns.entities.npcs.ZombieSoldier;
 import techguns.util.BlockUtils;
 import techguns.util.MBlock;
-import techguns.util.MBlockCamoNetTop;
 import techguns.util.MultiMMBlockIndexRoll;
 import techguns.world.dungeon.presets.specialblocks.MBlockChestLoottable;
 import techguns.world.dungeon.presets.specialblocks.MBlockTGSpawner;
@@ -82,7 +78,7 @@ private static final ResourceLocation CHEST_LOOT = new ResourceLocation(Techguns
 		
 		int indexroll = rnd.nextInt(4);
 		
-		BlockUtils.cleanUpwards(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 0, 7);
+		BlockUtils.cleanUpwards(world, blocks, posX, posY, posZ, centerX, centerZ, direction, 7);
 		BlockUtils.placeFoundation(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 0,3);
 		BlockUtils.placeScannedStructure(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 0,this.lootTier,colorType, indexroll, rnd);
 		BlockUtils.placeScannedStructure(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 1,this.lootTier,colorType);

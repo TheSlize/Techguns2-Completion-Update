@@ -3,18 +3,14 @@ package techguns.gui;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.FluidTankInfo;
 import techguns.TGConfig;
 import techguns.Techguns;
 import techguns.gui.containers.OreDrillContainer;
-import techguns.tileentities.BasicPoweredTileEnt;
-import techguns.tileentities.FabricatorTileEntMaster;
 import techguns.tileentities.OreDrillTileEntMaster;
 import techguns.util.TextUtil;
 
@@ -34,7 +30,7 @@ public class OreDrillGui extends PoweredTileEntGui {
 		super(new OreDrillContainer(ply, tileent), tileent);
 		this.tex=texture;
 		this.tile=tileent;
-		this.hasUpgradeSlot=false;
+		this.showUpgradeSlot =false;
 	}
 
 	@Override

@@ -1,8 +1,5 @@
 package techguns.items.guns;
 
-import java.util.List;
-
-import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -15,7 +12,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import techguns.TGPackets;
 import techguns.TGSounds;
-import techguns.Techguns;
 import techguns.api.damagesystem.DamageType;
 import techguns.damagesystem.TGDamageSource;
 import techguns.deatheffects.EntityDeathUtils.DeathType;
@@ -54,7 +50,7 @@ public class Shishkebap extends GenericGunMeleeCharge {
 	@Override
 	protected void spawnSweepParticle(World w, double x, double y, double z, double motionX, double motionY,
 			double motionZ) {
-		TGPackets.network.sendToAllAround(new PacketSpawnParticle("PowerhammerImpact",x,y,z), new TargetPoint(w.provider.getDimension(), x, y, z, 32.0f));
+		TGPackets.wrapper.sendToAllAround(new PacketSpawnParticle("PowerhammerImpact",x,y,z), new TargetPoint(w.provider.getDimension(), x, y, z, 32.0f));
 	}
 	
 	
@@ -64,7 +60,7 @@ public class Shishkebap extends GenericGunMeleeCharge {
 		boolean empty = this.getAmmoLeft(stack)<=0;
 		super.consumeAmmoOnMeleeHit(elb,stack);
 		if(!elb.world.isRemote && !empty && this.getAmmoLeft(stack)<=0) {
-			TGPackets.network.sendToDimension(new PacketNotifyAmbientEffectChange(elb, EnumHand.MAIN_HAND), elb.world.provider.getDimension());
+			TGPackets.wrapper.sendToDimension(new PacketNotifyAmbientEffectChange(elb, EnumHand.MAIN_HAND), elb.world.provider.getDimension());
 		}
 	}
 

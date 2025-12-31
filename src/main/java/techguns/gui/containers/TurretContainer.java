@@ -67,7 +67,7 @@ public class TurretContainer extends RedstoneTileContainer {
 			this.addSlotToContainer(new SlotTurretArmor(handler, 19, 85, 42));
 		}
 		
-		this.addPlayerInventorySlots(player);
+		this.addDefaultPlayerInventorySlots(player);
 	}
 
 

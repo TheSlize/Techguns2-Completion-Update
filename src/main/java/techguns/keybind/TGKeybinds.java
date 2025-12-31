@@ -54,13 +54,13 @@ public class TGKeybinds {
     public void onKeyInput(InputEvent.KeyInputEvent event) {
     	
         if(KEY_TOGGLE_NIGHTVISION.isPressed()){
-        	TGPackets.network.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_NIGHTVISION,true));
+        	TGPackets.wrapper.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_NIGHTVISION,true));
         } else if(KEY_TOGGLE_SAFEMODE.isPressed()){
-        	TGPackets.network.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_SAFEMODE,true));
+        	TGPackets.wrapper.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_SAFEMODE,true));
         } else if(KEY_TOGGLE_JETPACK.isPressed()){
-        	TGPackets.network.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_JETPACK,true));
+        	TGPackets.wrapper.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_JETPACK,true));
         } else if(KEY_TOGGLE_STEPASSIST.isPressed()){
-        	TGPackets.network.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_STEP_ASSIST,true));
+        	TGPackets.wrapper.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_STEP_ASSIST,true));
         } else if (KEY_TOGGLE_AMMO_TYPE.isPressed()) {
 			EntityPlayer ply = Minecraft.getMinecraft().player;
 			TGExtendedPlayer props = TGExtendedPlayer.get(Minecraft.getMinecraft().player);
@@ -72,7 +72,7 @@ public class TGKeybinds {
 				ItemStack gunToReload = stack_main;
 				double ammoPercent = 0;
 				double ammoPercent_off = 0;
-				Techguns.LOGGER.debug("Mainhand: {}, Offhand: {}", stack_main, stack_off);
+				Techguns.logger.debug("Mainhand: {}, Offhand: {}", stack_main, stack_off);
 				if(stack_main.getItem() instanceof GenericGun){
 					GenericGun gunMain = (GenericGun) stack_main.getItem();
 					ammoPercent = gunMain.getPercentAmmoLeft(stack_main);
@@ -86,10 +86,10 @@ public class TGKeybinds {
 					}
 				}
 				boolean isAGun = gunToReload.getItem() instanceof GenericGun;
-				Techguns.LOGGER.debug("GunToReload: {}, GunToReloadItem: {}, is a gun: {}", gunToReload, gunToReload.getItem(), isAGun);
+				Techguns.logger.debug("GunToReload: {}, GunToReloadItem: {}, is a gun: {}", gunToReload, gunToReload.getItem(), isAGun);
 				if(isAGun){
 					((GenericGun)gunToReload.getItem()).toggleAmmoType(gunToReload, ply.world,ply, hand);
-					TGPackets.network.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_AMMO_TYPE, true));
+					TGPackets.wrapper.sendToServer(new PacketTGKeybindPress(TGKeybindsID.TOGGLE_AMMO_TYPE, true));
 				}
 			}
 		} else if (KEY_FORCE_RELOAD.isKeyDown()){
@@ -132,7 +132,7 @@ public class TGKeybinds {
 	        			
 	        		}
 	        		
-	        		TGPackets.network.sendToServer(new PacketTGKeybindPress(TGKeybindsID.FORCE_RELOAD,hand));
+	        		TGPackets.wrapper.sendToServer(new PacketTGKeybindPress(TGKeybindsID.FORCE_RELOAD,hand));
 	        		((GenericGun)gunToReload.getItem()).tryForcedReload(gunToReload, ply.world,ply, hand);
 	        		
 	        	}

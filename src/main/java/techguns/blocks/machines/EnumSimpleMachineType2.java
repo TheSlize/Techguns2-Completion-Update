@@ -14,6 +14,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.NotNull;
 import techguns.Techguns;
 import techguns.api.machines.IMachineType;
 import techguns.tileentities.GrinderTileEnt;
@@ -23,18 +24,18 @@ public enum EnumSimpleMachineType2 implements IStringSerializable, IMachineType<
 	GRINDER(0, GrinderTileEnt.class,true,EnumBlockRenderType.MODEL),
 	ARMOR_BENCH(1, UpgradeBenchTileEnt.class, false, EnumBlockRenderType.MODEL);
 	
-	private int id;
-	private String name;
-	private Class<? extends TileEntity> tile;
-	private boolean isFullCube;
-	private EnumBlockRenderType renderType;
-	private BlockRenderLayer renderLayer;
+	private final int id;
+	private final String name;
+	private final Class<? extends TileEntity> tile;
+	private final boolean isFullCube;
+	private final EnumBlockRenderType renderType;
+	private final BlockRenderLayer renderLayer;
 	
-	private EnumSimpleMachineType2(int id, Class<? extends TileEntity> tile, boolean isFullCube, EnumBlockRenderType renderType) {
+	EnumSimpleMachineType2(int id, Class<? extends TileEntity> tile, boolean isFullCube, EnumBlockRenderType renderType) {
 		this(id,tile,isFullCube,renderType, BlockRenderLayer.SOLID);
 	}
 	
-	private EnumSimpleMachineType2(int id, Class<? extends TileEntity> tile, boolean isFullCube, EnumBlockRenderType renderType, BlockRenderLayer layer) {
+	EnumSimpleMachineType2(int id, Class<? extends TileEntity> tile, boolean isFullCube, EnumBlockRenderType renderType, BlockRenderLayer layer) {
 		this.id=id;
 		this.name=this.name().toLowerCase();
 		this.tile = tile;
@@ -48,25 +49,23 @@ public enum EnumSimpleMachineType2 implements IStringSerializable, IMachineType<
 	}
 	
 	@Override
-	public String getName() {
+	public @NotNull String getName() {
 		return this.name;
 	}
 
 	@Override
 	public int getMaxMachineIndex() {
-		return this.values().length;
+		return values().length;
 	}
 
 	@Override
 	public TileEntity getTile() {
 		try {
 			return this.tile.newInstance();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (InstantiationException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
-		return null;
+        return null;
 	}
 	
 	@Override
@@ -102,7 +101,7 @@ public enum EnumSimpleMachineType2 implements IStringSerializable, IMachineType<
 	@SideOnly(Side.CLIENT)
 	@Override
 	public void setCustomModelLocation(Item itemblock, int meta, ResourceLocation registryName, IBlockState state) {
-		ResourceLocation loc = new ResourceLocation(Techguns.MODID, registryName.getResourcePath()+"_"+this.name().toLowerCase()+"_inv");
+		ResourceLocation loc = new ResourceLocation(Techguns.MODID, registryName.getPath()+"_"+this.name().toLowerCase()+"_inv");
 		ModelLoader.setCustomModelResourceLocation(itemblock, meta, new ModelResourceLocation(loc, "inventory"));
 	}
 

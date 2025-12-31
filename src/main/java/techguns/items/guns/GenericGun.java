@@ -5,7 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.util.*;
+import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.input.Keyboard;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
@@ -36,10 +40,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
-import techguns.TGItems;
-import techguns.TGPackets;
-import techguns.TGSounds;
-import techguns.Techguns;
+import techguns.*;
 import techguns.api.damagesystem.DamageType;
 import techguns.api.guns.GunHandType;
 import techguns.api.guns.IGenericGun;
@@ -48,7 +49,6 @@ import techguns.capabilities.TGExtendedPlayer;
 import techguns.client.ClientProxy;
 import techguns.client.ShooterValues;
 import techguns.client.audio.TGSoundCategory;
-import techguns.core.TechgunsASMTransformer;
 import techguns.damagesystem.TGDamageSource;
 import techguns.deatheffects.EntityDeathUtils.DeathType;
 import techguns.entities.ai.EntityAIRangedAttack;
@@ -136,13 +136,10 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 	EnumCrosshairStyle crossHairStyle = EnumCrosshairStyle.GUN_DYNAMIC;
 	
 	public ArrayList<ResourceLocation> textures;
-	
-	//protected IProjectileFactory projectile;
+
 	protected ProjectileSelector projectile_selector; 
 	
-	GunHandType handType = GunHandType.TWO_HANDED; 
-	//Ammount of bullets the gun gets per bullet item
-	//protected float shotsPerBullet;
+	GunHandType handType = GunHandType.TWO_HANDED;
 	
 	int miningAmmoConsumption = 1;
 	
@@ -191,7 +188,6 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 		super(name,false);
 		this.setMaxStackSize(1);
 		this.setNoRepair();
-		//TGuns.ITEMREGISTRY.register(this);
 	}
 
 	public GenericGun(String name, ProjectileSelector projectileSelector, boolean semiAuto, int minFiretime, int clipsize, int reloadtime, float damage, SoundEvent firesound, SoundEvent reloadsound, int TTL, float accuracy){
@@ -230,11 +226,6 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 	
 	public boolean hasAmbientEffect() {
 		return this.hasAmbientEffect;
-	}
-	
-	public GenericGun setNoCustomTexture() {
-		this.hasCustomTexture=false;
-		return this;
 	}
 	
 	public GenericGun setNoBowAnim() {
@@ -284,7 +275,6 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 	
 	public GenericGun setAmmoCount(int count) {
 		this.ammoCount=count;
-		//this.shotsPerBullet=(this.clipsize*1.0f)/(this.ammoCount*1.0f);
 		return this;
 	}
 
@@ -382,10 +372,6 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 		return lockOnTicks;
 	}
 
-	public int getLockOnPersistTicks() {
-		return lockOnPersistTicks;
-	}
-
 	/**
 	 * Called only clientside!, requires packets for actions other than zoom (clientside
 	 * @param player
@@ -402,7 +388,7 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 			}
 			return true;
     	}
-		return false; //(this.getGunHandType() == GunHandType.TWO_HANDED); //Block the mouse click if two-handed gun
+		return false;
 	}
 
 	@Override
@@ -420,19 +406,6 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World worldIn, EntityPlayer playerIn, EnumHand handIn) {
-		/*if(this.getGunHandType() == GunHandType.TWO_HANDED) {
-			if (this.canClickBlock(worldIn, playerIn, handIn)) {
-				System.out.println("PASS!");
-				return new ActionResult<ItemStack>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
-			} else {
-				return new ActionResult<ItemStack>(EnumActionResult.SUCCESS, playerIn.getHeldItem(handIn));
-			}
-		} else {
-			return new ActionResult<ItemStack>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
-		}*/
-		/*if (this.gunSecondaryAction(playerIn, playerIn.getHeldItem(handIn))) {
-			return new ActionResult<ItemStack>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
-		}*/
 		this.gunSecondaryAction(playerIn, playerIn.getHeldItem(handIn));
 		return new ActionResult<ItemStack>(EnumActionResult.PASS, playerIn.getHeldItem(handIn));
 	}
@@ -461,19 +434,8 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 			return clipsize;
 		}
 	}
-	
-	public int getAmmoLeftCount(int mags){
-		int count=(this.clipsize/this.ammoCount) * mags; 
-		if(this.burst){
-			return count*(this.bulletcount+1);
-		} else {
-			return count;
-		}
-	}
 
 	protected void spawnProjectile(final World world, final EntityLivingBase player, final ItemStack itemstack, float spread, float offset, float damagebonus, EnumBulletFirePos firePos, Entity target) {
-		/*GenericProjectile proj = new GenericProjectile(world, player, damage * damagebonus, speed, this.getScaledTTL(), spread, this.damageDropStart, this.damageDropEnd,
-				this.damageMin * damagebonus, this.penetration, getDoBlockDamage(player), leftGun);*/
 				
 		IProjectileFactory<GenericProjectile> projectile = this.projectile_selector.getFactoryForType(this.getCurrentAmmoVariantKey(itemstack));
 		
@@ -531,10 +493,7 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 
 	@Override
 	public void shootGunPrimary(ItemStack stack, World world, EntityPlayer player, boolean zooming, EnumHand hand, Entity target) {
-	
     		int ammo = this.getCurrentAmmo(stack);
-    	
-    		//System.out.println("Shoot gun:"+stack+" Hand:"+hand);
     		
     		byte ATTACK_TYPE = 0;
     		TGExtendedPlayer extendedPlayer = TGExtendedPlayer.get(player);
@@ -636,7 +595,6 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 		        	}
 			        
 		    	} else {
-		    		//System.out.println(Thread.currentThread().toString()+": Skip shot, can't fire yet");
 		    	}
 		    	
     		} else {
@@ -696,17 +654,13 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
     					//send pakets to clients
     					
 				    	int msg_reloadtime = ((int)(((float)reloadtime/20.0f)*1000.0f));
-				    	TGPackets.network.sendToAllAround(new ReloadStartedMessage(player,hand,msg_reloadtime,ATTACK_TYPE), TGPackets.targetPointAroundEnt(player, 100.0));
+				    	TGPackets.wrapper.sendToAllAround(new ReloadStartedMessage(player,hand,msg_reloadtime,ATTACK_TYPE), TGPackets.targetPointAroundEnt(player, 100.0));
     			    	//
     				}
 
     			} else {
-    			
-    				
-    				if (!world.isRemote)
-			        {
+    				if (!world.isRemote) {
     					//TODO emptySound
-	    				//world.playSoundAtEntity(player, "mob.villager.idle", 1.0F, 1.0F );
 			        }
     			}
     		}
@@ -763,13 +717,11 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 
 	protected void shootGun(World world, EntityLivingBase player,ItemStack itemstack,float accuracybonus,float damagebonus, int attackType, EnumHand hand, EnumBulletFirePos firePos, Entity target){
 		
-		//boolean leftGun = (hand == EnumHand.OFF_HAND) != (player.getPrimaryHand() == EnumHandSide.LEFT);
-		
 		//send pakets to clients
 		if (!world.isRemote){
 	    	int msg_recoiltime = ((int)(((float)recoiltime/20.0f)*1000.0f));
 	    	int msg_muzzleflashtime = ((int)(((float)muzzleFlashtime/20.0f)*1000.0f));
-	    	TGPackets.network.sendToAllAround(new GunFiredMessage(player,msg_recoiltime,msg_muzzleflashtime,attackType,checkRecoil,hand==EnumHand.OFF_HAND), TGPackets.targetPointAroundEnt(player, 100.0f));
+	    	TGPackets.wrapper.sendToAllAround(new GunFiredMessage(player,msg_recoiltime,msg_muzzleflashtime,attackType,checkRecoil,hand==EnumHand.OFF_HAND), TGPackets.targetPointAroundEnt(player, 100.0f));
 		}
     	//
 		spawnProjectile(world, player,itemstack, accuracy*accuracybonus, projectileForwardOffset,damagebonus, firePos, target);
@@ -788,7 +740,6 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 		
 	@Override
 	public void onCreated(ItemStack stack, World world, EntityPlayer player) {
-		//super.onCreated(stack, world, player);
 		NBTTagCompound tags = stack.getTagCompound();
 		if(tags==null){
 			tags=new NBTTagCompound();
@@ -860,11 +811,11 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 				if (this.projectile_selector == ROCKET_PROJECTILES || this.projectile_selector == GUIDED_MISSILE_PROJECTILES) {
 					int ammoCount = this.getCurrentAmmo(item);
 					this.useAmmo(item, oldAmmo);
-					Techguns.LOGGER.debug("Ammo count: {}", ammoCount);
+					Techguns.logger.debug("Ammo count: {}", ammoCount);
 					for (int i = 0; i < ammoCount; i++) {
-						Techguns.LOGGER.debug("I: {}", i);
+						Techguns.logger.debug("I: {}", i);
 						int amount = InventoryUtil.addAmmoToPlayerInventory(player, TGItems.newStack(this.getAmmoType().getBullet(currentVariant)[0], 1));
-						Techguns.LOGGER.debug("Amount: {}", amount);
+						Techguns.logger.debug("Amount: {}", amount);
 						if (amount > 0 && !world.isRemote) {
 							player.world.spawnEntity(new EntityItem(player.world, player.posX, player.posY, player.posZ, TGItems.newStack(this.ammoType.getBullet(currentVariant)[0], amount)));
 						}
@@ -923,7 +874,7 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 						client_startReload();
 					} else {
 						int msg_reloadtime = 0;
-						TGPackets.network.sendToAllAround(new ReloadStartedMessage(player, hand, msg_reloadtime, 0), new TargetPoint(player.dimension, player.posX, player.posY, player.posZ, 100.0f));
+						TGPackets.wrapper.sendToAllAround(new ReloadStartedMessage(player, hand, msg_reloadtime, 0), new TargetPoint(player.dimension, player.posX, player.posY, player.posZ, 100.0f));
 					}
 				} else {
 					// TODO: "can't reload" sound
@@ -990,12 +941,7 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 
 	@Override
 	public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
-		
-		return slotChanged || !oldStack.isItemEqual(newStack); 
-		/*if (!b && oldStack!=newStack) {
-			Techguns.proxy.fixReequipAnim(oldStack, newStack);
-		}*/
-		//return b;
+		return slotChanged || !oldStack.isItemEqual(newStack);
 	}
 	
 	public GenericGun setDamageDrop(float start, float end, float minDamage){
@@ -1031,41 +977,38 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 	}
 
 	protected String getTooltipTextDmg(ItemStack stack, boolean expanded) {
-		
 		DamageModifier mod = this.projectile_selector.getFactoryForType(this.getCurrentAmmoVariantKey(stack)).getDamageModifier();
 		float dmg = mod.getDamage(this.damage);
-		if(dmg==this.damage) {
-			return ""+this.damage+(this.damageMin<this.damage?"-"+this.damageMin:"");
+		if (dmg == this.damage) {
+			return "" + this.damage + (this.damageMin != this.damage ? "-" + this.damageMin : "");
 		} else {
 			float dmgmin = mod.getDamage(this.damageMin);
-			ChatFormatting prefix=ChatFormatting.GREEN;
-			String sgn="+";
-			if(dmg<this.damage) {
+			ChatFormatting prefix = ChatFormatting.GREEN;
+			String sgn = "+";
+			if (dmg < this.damage) {
 				prefix = ChatFormatting.RED;
-				sgn="-";
+				sgn = "-";
 			}
-			
 
-			String suffix="";
+			String suffix = "";
 
-			if(expanded) {
-				if(mod.getDmgMul()!=1f) {
-					float f = mod.getDmgMul()-1f;
-					String x = String.format("%.0f", f*100f);
-					suffix += " ("+sgn+x+"%)";
+			if (expanded) {
+				if (mod.getDmgMul() != 1f) {
+					float f = mod.getDmgMul() - 1f;
+					String x = String.format("%.0f", f * 100f);
+					suffix += " (" + sgn + x + "%)";
 				}
-				if(mod.getDmgAdd()!=0f) {
+				if (mod.getDmgAdd() != 0f) {
 					float add = mod.getDmgAdd();
-					suffix += " ("+(add>0?"+":"")+String.format("%.1f", add)+")";
+					suffix += " (" + (add > 0 ? "+" : "") + String.format("%.1f", add) + ")";
 				}
 			}
-			
+
 			String sd = String.format("%.1f", dmg);
 			String sm = String.format("%.1f", dmgmin);
-			
-			return prefix+""+sd+(dmgmin<dmg?"-"+sm:"")+suffix;
+
+			return prefix + sd + (dmgmin != dmg ? "-" + sm : "") + suffix;
 		}
-		
 	}
 	
 	protected String getTooltipTextRange(ItemStack stack) {
@@ -1157,7 +1100,7 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 			
 			ItemStack[] ammo = this.ammoType.getAmmo(this.getCurrentAmmoVariant(stack));
 			for(int i=0;i< ammo.length;i++) {
-				list.add(TextUtil.trans("techguns.gun.tooltip.ammo")+": "+(this.ammoCount>1 ? this.ammoCount+"x " : "")+ChatFormatting.WHITE+TextUtil.trans(ammo[i].getUnlocalizedName()+".name"));
+				list.add(TextUtil.trans("techguns.gun.tooltip.ammo")+": "+(this.ammoCount>1 ? this.ammoCount+"x " : "")+ChatFormatting.WHITE+TextUtil.trans(ammo[i].getTranslationKey()+".name"));
 			}
 			this.addMiningTooltip(stack, worldIn, list, flagIn, true);
 			list.add(TextUtil.trans("techguns.gun.tooltip.damageType")+": "+this.getDamageType(stack).toString());
@@ -1179,7 +1122,7 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 		} else {
 			ItemStack[] ammo = this.ammoType.getAmmo(this.getCurrentAmmoVariant(stack));
 			for(int i=0;i< ammo.length;i++) {
-				list.add(TextUtil.trans("techguns.gun.tooltip.ammo")+": "+(this.ammoCount>1 ? this.ammoCount+"x " : "")+ChatFormatting.WHITE+TextUtil.trans(ammo[i].getUnlocalizedName()+".name"));
+				list.add(TextUtil.trans("techguns.gun.tooltip.ammo")+": "+(this.ammoCount>1 ? this.ammoCount+"x " : "")+ChatFormatting.WHITE+TextUtil.trans(ammo[i].getTranslationKey()+".name"));
 			}
 			this.addMiningTooltip(stack, worldIn, list, flagIn, false);
 			list.add(TextUtil.trans("techguns.gun.tooltip.damage")+(this.shotgun ? ("(x"+ (this.bulletcount+1)+")") : "" )+": "+getTooltipTextDmg(stack,false));
@@ -1207,7 +1150,7 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 			camoID=tags.getByte("camo");
 		}
 		if(camoID>0){
-			return TextUtil.trans(this.getUnlocalizedName()+".camoname."+camoID);
+			return TextUtil.trans(this.getTranslationKey()+".camoname."+camoID);
 		} else {
 			return TextUtil.trans("techguns.item.defaultcamo");
 		}
@@ -1236,7 +1179,6 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 			if (player.world.isRemote) {
 
 				int time = (int) (((float) this.recoiltime / 20.0f) * 1000);
-				//ClientProxy.get().setplayerRecoiltime(player, System.currentTimeMillis() + time, time, (byte) 0);
 				ShooterValues.setRecoiltime(player, false, System.currentTimeMillis() + time, time, (byte) 0);
 			}
 
@@ -1532,33 +1474,8 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
     	EnumBulletFirePos firePos = EnumBulletFirePos.RIGHT;
     	
     	if (shooter instanceof NPCTurret){
-    		//dmgscale=1.0f;
-    		//accscale=1.0f;
     		firePos=EnumBulletFirePos.CENTER;
     	}
-    	/*} else {
-	    	
-	    	/*EnumDifficulty difficulty = shooter.world.getDifficulty();
-	    	
-	    	switch(difficulty){
-	    		case EASY:
-	    			dmg=0.5f;
-	    			acc=1.3f;
-	    			break;
-	    		case NORMAL:
-	    			dmg = 0.6f;
-	    			acc = 1.15f;
-	    			break;
-	    		case HARD:
-	    			dmg = 0.75f;
-	    			acc = 1.0f;
-	    			break;
-	    		case PEACEFUL:
-	    			dmg = 0.0f;
-	    			acc = 1.3f;
-	    			break;
-	    	}*/
-    	//}
     	
     	if (!shooter.world.isRemote){
     		this.shootGun(shooter.world, shooter, shooter.getHeldItemMainhand(), this.zoombonus*accscale,dmgscale,0, EnumHand.MAIN_HAND, firePos, null);
@@ -1653,7 +1570,6 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 				}
 				
 				extendedPlayer.setFireDelay(hand, this.reloadtime-this.minFiretime);
-    			//System.out.println(Thread.currentThread().toString()+": reloadtime:"+reloadtime);
 						    			
     			if (ammoCount >1) {
     				int i =1;
@@ -1680,17 +1596,11 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 					//send pakets to clients
 					
 			    	int msg_reloadtime = ((int)(((float)reloadtime/20.0f)*1000.0f));
-			    	TGPackets.network.sendToAllAround(new ReloadStartedMessage(player,hand, msg_reloadtime,0), new TargetPoint(player.dimension, player.posX, player.posY, player.posZ, 100.0f));
+			    	TGPackets.wrapper.sendToAllAround(new ReloadStartedMessage(player,hand, msg_reloadtime,0), new TargetPoint(player.dimension, player.posX, player.posY, player.posZ, 100.0f));
 			    	//
 				}
 
 			} else {
-
-				//TODO: "can't reload" sound
-				/*if (!world.isRemote)
-		        {
-    				world.playSoundAtEntity(player, "mob.villager.idle", 1.0F, 1.0F );
-		        }*/
 			}
 
 			
@@ -1717,17 +1627,6 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 	@Override
 	public boolean doesSneakBypassUse(ItemStack stack, IBlockAccess world, BlockPos pos, EntityPlayer player) {
 		return !(this.handType == GunHandType.TWO_HANDED);
-	}
-
-	public boolean canClickBlock(World world, EntityPlayer player, EnumHand hand) {
-		 //ItemStack itemstack = player.getHeldItem(hand);
-	     RayTraceResult raytraceresult = this.rayTrace(world, player, false);
-	    
-	     if (raytraceresult==null || raytraceresult.typeOfHit!=RayTraceResult.Type.BLOCK) {
-	    	 return false;
-	     }
-	    
-	     return true;
 	}
 	
 	public boolean setGunStat(EnumGunStat stat, float value) {
@@ -1780,5 +1679,11 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 	public GenericGun setCrossHair(EnumCrosshairStyle crosshair) {
 		this.crossHairStyle = crosshair;
 		return this;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void initModel() {
+		ModelLoader.setCustomMeshDefinition(this, stack -> new ModelResourceLocation(getModelLocation(), "inventory"));
 	}
 }

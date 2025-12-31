@@ -15,7 +15,7 @@ public class SlotMachineUpgrade extends SlotMachineInput {
 	
 	@Override
 	public boolean isItemValid(ItemStack item) {
-		return (!item.isEmpty() && item.getItem()==TGItems.SHARED_ITEM && item.getItemDamage()==TGItems.MACHINE_UPGRADE_STACK.getItemDamage());
+		return TGItems.isMachineUpgrade(item) || TGItems.isSteamUpgrade(item);
 	}
 
 	@Override

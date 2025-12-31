@@ -8,6 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
+import org.jetbrains.annotations.NotNull;
 import techguns.gui.widgets.SlotAmmoPressInput;
 import techguns.gui.widgets.SlotFabricator;
 import techguns.gui.widgets.SlotItemHandlerOutput;
@@ -51,20 +52,18 @@ public class AmmoPressContainer extends BasicMachineContainer {
 			this.addSlotToContainer(new SlotMachineUpgrade(handler, AmmoPressTileEnt.SLOT_UPGRADE, SLOT_UPGRADE_X, SLOTS_OUTPUT_Y));
 		}
 		
-		this.addPlayerInventorySlots(player);
+		this.playerInv(player, 8, 116);
 		
 	}
 
 	@Override
 	public void detectAndSendChanges() {
 		super.detectAndSendChanges();
-		for (int j = 0; j < this.listeners.size(); ++j) {
-			IContainerListener listener = this.listeners.get(j);
-			
-			if (this.lastBuildPlan!=this.tile.buildPlan) {
+		for (IContainerListener listener : this.listeners) {
+			if (this.lastBuildPlan != this.tile.buildPlan) {
 				listener.sendWindowProperty(this, FIELD_SYNC_ID_POWER_BUILDPLAN, this.tile.buildPlan);
 			}
-			
+
 		}
 		this.lastBuildPlan=this.tile.buildPlan;
 	}
@@ -79,7 +78,7 @@ public class AmmoPressContainer extends BasicMachineContainer {
 	}
 
 	@Override
-	public ItemStack transferStackInSlot(EntityPlayer ply, int id) {
+	public @NotNull ItemStack transferStackInSlot(@NotNull EntityPlayer ply, int id) {
 		ItemStack stack = ItemStack.EMPTY;
 		Slot slot =this.inventorySlots.get(id);
 
@@ -88,13 +87,13 @@ public class AmmoPressContainer extends BasicMachineContainer {
 				stack=stack1.copy();
 				if (!stack.isEmpty()){
 					
-					if (id >=0 && id<=AmmoPressTileEnt.SLOT_UPGRADE){
+					if (id<=AmmoPressTileEnt.SLOT_UPGRADE){
 						//PRESSED IN MACHINE GUI
 						if (!this.mergeItemStack(stack1, AmmoPressTileEnt.SLOT_UPGRADE+1, AmmoPressTileEnt.SLOT_UPGRADE+37, false)) {
 							return ItemStack.EMPTY;
 						}
 						slot.onSlotChange(stack1, stack);
-					} else if (id >AmmoPressTileEnt.SLOT_UPGRADE && id <AmmoPressTileEnt.SLOT_UPGRADE+37){
+					} else if (id <AmmoPressTileEnt.SLOT_UPGRADE+37){
 						
 						int validslot = AmmoPressTileEnt.getValidSlotForItemInMachine(stack1);
 						//System.out.println("put it in slot"+validslot);

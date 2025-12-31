@@ -17,6 +17,7 @@ public class TGCraftTweakerIntegration {
 		CraftTweakerAPI.registerClass(OreClusterTweaker.class);
 		CraftTweakerAPI.registerClass(BlastFurnaceTweaker.class);
 		CraftTweakerAPI.registerClass(GrinderTweaker.class);
+		CraftTweakerAPI.registerClass(GunBenchTweaker.class);
 		//CraftTweakerAPI.registerClass(DeathEffectTweaker.class);
 	}
 

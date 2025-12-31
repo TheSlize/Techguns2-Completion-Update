@@ -32,7 +32,7 @@ public class Bunker extends WorldgenStructure {
 	 MBlock lantern = new MBlock(Blocks.GLOWSTONE,0);//new MBlock(TGBlocks.LAMP_0, 12);
 	 MBlock lamps = new MBlock(TGBlocks.LAMP_0, 0);
 	 
-	 int type = 0;
+	 int type;
 	
 	public Bunker(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, int type) {
 		super(minX, minY, minZ, maxX, maxY, maxZ);
@@ -105,8 +105,8 @@ public class Bunker extends WorldgenStructure {
 								world.setBlockState(p.setPos(posX+x, posY+y, posZ+z), wallBlock.getState(), 2);
 							}				
 						}else {
-							if (((x== 0 || x == sizeX-1) && (z==0 || z == sizeZ-1 || z % 3 == 0)) ||
-									((x== 0 || x == sizeX-1 || x % 3 == 0) && (z==0 || z == sizeZ-1 ))) {
+							if (((x== 0 || x == sizeX-1) && (z == sizeZ - 1 || z % 3 == 0)) ||
+									((x == sizeX - 1 || x % 3 == 0) && (z==0 || z == sizeZ-1 ))) {
 								//setBlocks wallblock 
 								world.setBlockState(p.setPos(posX+x, posY+y, posZ+z), wallBlock.getState(), 2);
 							}
@@ -159,36 +159,36 @@ public class Bunker extends WorldgenStructure {
 		
 		//Door
 		world.setBlockToAir(p.setPos(posX+xoffset, posY+1, posZ+zoffset));
-		world.setBlockToAir(p.setPos(posX+xoffset, posY+0, posZ+zoffset));
+		world.setBlockToAir(p.setPos(posX+xoffset, posY, posZ+zoffset));
 		
 		//ItemDoor.placeDoorBlock(world, posX+xoffset, posY+0, posZ+zoffset, BlockUtils.getBlockDirMeta(BlockType.DOOR, direction), TGBlocks.door01);
-		ItemTGDoor2x1.placeDoor(world, p.setPos(posX+xoffset, posY+0, posZ+zoffset), facing, TGBlocks.BUNKER_DOOR, true);
+		ItemTGDoor2x1.placeDoor(world, p.setPos(posX+xoffset, posY, posZ+zoffset), facing, TGBlocks.BUNKER_DOOR, true);
 		
 		//Doorway
-		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? 1 : 0), posY+0, posZ+zoffset+((dz == 0) ? 1 : 0)), wallBlock.getState(), 2);
+		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? 1 : 0), posY, posZ+zoffset+((dz == 0) ? 1 : 0)), wallBlock.getState(), 2);
 		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? 1 : 0), posY+1, posZ+zoffset+((dz == 0) ? 1 : 0)), wallBlock.getState(), 2);
-		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? -1 : 0), posY+0, posZ+zoffset+((dz == 0) ? -1 : 0)), wallBlock.getState(), 2);
+		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? -1 : 0), posY, posZ+zoffset+((dz == 0) ? -1 : 0)), wallBlock.getState(), 2);
 		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? -1 : 0), posY+1, posZ+zoffset+((dz == 0) ? -1 : 0)), wallBlock.getState(), 2);
 		
 		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? 1 : dx), posY-1, posZ+zoffset+((dz == 0) ? 1 : dz)), wallBlock.getState(), 2);
 		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? -1 : dx), posY-1, posZ+zoffset+((dz == 0) ? -1 : dz)), wallBlock.getState(), 2);
 		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? 1 : dx*2), posY-1, posZ+zoffset+((dz == 0) ? 1 : dz*2)), wallBlock.getState(), 2);
 		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? -1 : dx*2), posY-1, posZ+zoffset+((dz == 0) ? -1 : dz*2)), wallBlock.getState(), 2);		
-		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? 1 : dx), posY+0, posZ+zoffset+((dz == 0) ? 1 : dz)), wallBlock.getState(), 2);
-		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? -1 : dx), posY+0, posZ+zoffset+((dz == 0) ? -1 : dz)), wallBlock.getState(), 2);
-		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? 1 : dx*2), posY+0, posZ+zoffset+((dz == 0) ? 1 : dz*2)), wallBlock.getState(), 2);
-		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? -1 : dx*2), posY+0, posZ+zoffset+((dz == 0) ? -1 : dz*2)), wallBlock.getState(), 2);
+		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? 1 : dx), posY, posZ+zoffset+((dz == 0) ? 1 : dz)), wallBlock.getState(), 2);
+		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? -1 : dx), posY, posZ+zoffset+((dz == 0) ? -1 : dz)), wallBlock.getState(), 2);
+		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? 1 : dx*2), posY, posZ+zoffset+((dz == 0) ? 1 : dz*2)), wallBlock.getState(), 2);
+		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? -1 : dx*2), posY, posZ+zoffset+((dz == 0) ? -1 : dz*2)), wallBlock.getState(), 2);
 		
 		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? 1 : dx), posY+2, posZ+zoffset+((dz == 0) ? 1 : dz)), BlockRotator.getWithFacing(lamps.getState(), facing.getOpposite()), 2);
 		world.setBlockState(p.setPos(posX+xoffset+((dx == 0) ? -1 : dx), posY+2, posZ+zoffset+((dz == 0) ? -1 : dz)),BlockRotator.getWithFacing(lamps.getState(), facing.getOpposite()), 2);
 		
 		world.setBlockState(p.setPos(posX+xoffset, posY-1, posZ+zoffset), groundBlock.getState(), 2);
 		world.setBlockState(p.setPos(posX+xoffset+dx, posY-1, posZ+zoffset+dz), groundBlock.getState(), 2);
-		world.setBlockToAir(p.setPos(posX+xoffset+dx, posY+0, posZ+zoffset+dz));
+		world.setBlockToAir(p.setPos(posX+xoffset+dx, posY, posZ+zoffset+dz));
 		world.setBlockToAir(p.setPos(posX+xoffset+dx, posY+1, posZ+zoffset+dz));
 		
 		//Stairs
-		world.setBlockState(p.setPos(posX+xoffset+dx*2, posY+0, posZ+zoffset+dz*2), BlockRotator.getWithFacing(stairsblock.getState(), facing), 2);
+		world.setBlockState(p.setPos(posX+xoffset+dx*2, posY, posZ+zoffset+dz*2), BlockRotator.getWithFacing(stairsblock.getState(), facing), 2);
 		world.setBlockToAir(p.setPos(posX+xoffset+dx*2, posY+1, posZ+zoffset+dz*2));
 		
 		
@@ -214,36 +214,30 @@ public class Bunker extends WorldgenStructure {
 		
 		//Ladder
 		if (type == 1 || type == 3) {
-			int meta = 0;
-			EnumFacing ladderFacing=EnumFacing.NORTH;
+            EnumFacing ladderFacing=EnumFacing.NORTH;
 			switch (direction) {
 				case 0: //-X
 					xoffset = sizeX-2;
 					zoffset = sizeZ-2;
-					dx = 1; dz=0;
-					meta = 2;
-					ladderFacing=EnumFacing.WEST;
+					dx = 1;
+                    ladderFacing=EnumFacing.WEST;
 					break;
 				case 1: //-Z
 					zoffset = sizeZ-2;
 					xoffset = 1;
-					dx = 0; dz = 1;
-					meta = 0;
-					ladderFacing=EnumFacing.NORTH;
-					break;
+                    dz = 1;
+                    break;
 				case 2: //+X
 					xoffset = 1;
 					zoffset = 1;
-					dx = -1; dz = 0;
-					meta = 3;
-					ladderFacing=EnumFacing.EAST;
+					dx = -1;
+                    ladderFacing=EnumFacing.EAST;
 					break;
 				case 3: //+Z
 					xoffset = sizeX-2;
 					zoffset = 1;
-					dx = 0; dz = -1;
-					meta = 1;
-					ladderFacing=EnumFacing.SOUTH;
+                    dz = -1;
+                    ladderFacing=EnumFacing.SOUTH;
 					break;
 			}
 			//meta = (meta+2) % 4;
@@ -254,7 +248,7 @@ public class Bunker extends WorldgenStructure {
 			/*world.setBlockState(p.setPos(posX+xoffset, posY+0, posZ+zoffset), ladder.block, ladder.meta+meta, 2);
 			world.setBlockState(p.setPos(posX+xoffset, posY+1, posZ+zoffset), ladder.block, ladder.meta+meta, 2);
 			world.setBlockState(p.setPos(posX+xoffset, posY+2, posZ+zoffset), ladder.block, ladder.meta+meta, 2);*/
-			world.setBlockState(p.setPos(posX+xoffset, posY+0, posZ+zoffset), BlockRotator.getWithFacing(ladder.getState(),ladderFacing), 2);
+			world.setBlockState(p.setPos(posX+xoffset, posY, posZ+zoffset), BlockRotator.getWithFacing(ladder.getState(),ladderFacing), 2);
 			world.setBlockState(p.setPos(posX+xoffset, posY+1, posZ+zoffset), BlockRotator.getWithFacing(ladder.getState(),ladderFacing), 2);
 			world.setBlockState(p.setPos(posX+xoffset, posY+2, posZ+zoffset), BlockRotator.getWithFacing(ladder.getState(),ladderFacing), 2);
 		}
@@ -295,7 +289,7 @@ public class Bunker extends WorldgenStructure {
 					world.setBlockState(p.setPos(posX+x, posY, posZ+z), BlockRotator.getRotatedHorizontal(chest.getDefaultState(),meta));
 					
 					TileEntity tile = world.getTileEntity(p);
-					if(tile !=null && tile instanceof TileEntityChest) {
+					if(tile instanceof TileEntityChest) {
 						((TileEntityChest)tile).setLootTable(CHEST_LOOT, world.rand.nextLong());
 					}
 					//TGChest.setBlock(world, posX+x, posY, posZ+z, 0, this.lootTier);

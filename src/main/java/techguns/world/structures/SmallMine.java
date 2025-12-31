@@ -84,7 +84,7 @@ public class SmallMine extends WorldgenStructure {
 		
 				int indexRoll=rollBlockIndex(rnd, totalweight, clusterWeights);
 		
-				BlockUtils.cleanUpwards(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 0, 4);
+				BlockUtils.cleanUpwards(world, blocks, posX, posY, posZ, centerX, centerZ, direction, 4);
 				//BlockUtils.placeFoundation(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 0,1);
 				BlockUtils.placeScannedStructure(world, blocks, blockList, posX, posY-5, posZ, centerX, centerZ, direction, 0,this.lootTier,colorType,indexRoll,rnd);
 				BlockUtils.placeScannedStructure(world, blocks, blockList, posX, posY-5, posZ, centerX, centerZ, direction, 1,this.lootTier,colorType);

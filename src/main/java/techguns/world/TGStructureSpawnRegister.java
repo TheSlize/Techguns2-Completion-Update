@@ -7,37 +7,15 @@ import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeDictionary;
 import techguns.TGConfig;
 import techguns.TGFluids;
-import techguns.world.structures.AircraftCarrier;
-import techguns.world.structures.AlienBugNestStructure;
-import techguns.world.structures.CastleStructure;
-import techguns.world.structures.DesertOilCluster;
-import techguns.world.structures.FactoryHouseSmall;
-import techguns.world.structures.GasStation;
-import techguns.world.structures.MilitaryBaseStructure;
-import techguns.world.structures.NetherAcidHole;
-import techguns.world.structures.NetherAltarMedium;
-import techguns.world.structures.NetherAltarSmall;
-import techguns.world.structures.NetherDungeonStructure;
-import techguns.world.structures.NetherGhastSpawner;
-import techguns.world.structures.NetherLoot01;
-import techguns.world.structures.NetherOreClusterCastle;
-import techguns.world.structures.NetherOreClusterSmall;
-import techguns.world.structures.NetherSoulPlatform;
-import techguns.world.structures.OreClusterMeteorBasis;
-import techguns.world.structures.OreClusterSpike;
-import techguns.world.structures.PoliceStation;
-import techguns.world.structures.SmallMine;
-import techguns.world.structures.SmallTrainstation;
-import techguns.world.structures.SurvivorHideout;
-import techguns.world.structures.WorldgenStructure;
+import techguns.world.structures.*;
 
 public class TGStructureSpawnRegister {
-	protected static ArrayList<TGStructureSpawn> spawns_small = new ArrayList<TGStructureSpawn>();
-	protected static ArrayList<TGStructureSpawn> spawns_big = new ArrayList<TGStructureSpawn>();
-	protected static ArrayList<TGStructureSpawn> spawns_medium = new ArrayList<TGStructureSpawn>();
+	protected static ArrayList<TGStructureSpawn> spawns_small = new ArrayList<>();
+	protected static ArrayList<TGStructureSpawn> spawns_big = new ArrayList<>();
+	protected static ArrayList<TGStructureSpawn> spawns_medium = new ArrayList<>();
 	
-	protected static ArrayList<Integer> OVERWORLD = new ArrayList<Integer>(1);
-	protected static ArrayList<Integer> NETHER = new ArrayList<Integer>(1);
+	protected static ArrayList<Integer> OVERWORLD = new ArrayList<>(1);
+	protected static ArrayList<Integer> NETHER = new ArrayList<>(1);
 	
 	protected static ArrayList<StructureLandType> LAND = new ArrayList<>(1);
 	protected static ArrayList<StructureLandType> WATER = new ArrayList<>(1);
@@ -55,14 +33,15 @@ public class TGStructureSpawnRegister {
 		DESERTS_ONLY.add(BiomeDictionary.Type.WASTELAND);
 		
 		spawns_small.add(new TGStructureSpawn(new FactoryHouseSmall(8,0,7,9,5,10).setXZSize(11, 10),10,null,OVERWORLD,LAND,StructureSize.SMALL));
+		spawns_small.add(new TGStructureSpawn(new FactoryHouseBig(23,0,14,23,9,14).setXYZSize(23, 9, 14),10,null,OVERWORLD,LAND,StructureSize.SMALL));
 	    spawns_small.add(new TGStructureSpawn(new SmallTrainstation(0, 0, 0, 0, 0, 0).setXZSize(11, 12),10,null,OVERWORLD,LAND,StructureSize.SMALL));
 	    spawns_small.add(new TGStructureSpawn(new SmallMine().setXZSize(17, 11),10,null,OVERWORLD,LAND,StructureSize.SMALL));
 	    spawns_small.add(new TGStructureSpawn(new GasStation(),10,null,OVERWORLD,LAND,StructureSize.SMALL));
 
-		//spawns_medium.add(new TGStructureSpawn(new HouseMedium(16, 12, 16, 16, 12, 16).setXZSize(16, 16),1,null,OVERWORLD,LAND,StructureSize.MEDIUM));	
 		spawns_medium.add(new TGStructureSpawn(new AlienBugNestStructure().setXZSize(4, 4),20,DESERTS_ONLY,OVERWORLD,LAND,StructureSize.MEDIUM));
 		
 		spawns_medium.add(new TGStructureSpawn(new PoliceStation(),10,null,OVERWORLD,LAND,StructureSize.MEDIUM));
+        spawns_medium.add(new TGStructureSpawn(new FactoryBig(20, 0, 43, 20, 15, 43).setXYZSize(20, 15, 43), 10, null, OVERWORLD, LAND, StructureSize.MEDIUM));
 		
 		spawns_medium.add(new TGStructureSpawn(new SurvivorHideout(),10,null,OVERWORLD,LAND,StructureSize.MEDIUM));
 		
@@ -80,7 +59,7 @@ public class TGStructureSpawnRegister {
 		spawns_big.add(new TGStructureSpawn(new MilitaryBaseStructure(0, 0, 0, 0, 0, 0),1,null,OVERWORLD,LAND,StructureSize.BIG));
 		
 		spawns_big.add(new TGStructureSpawn(new CastleStructure(), 1, null, OVERWORLD, LAND, StructureSize.BIG));
-		
+
 		spawns_big.add(new TGStructureSpawn(new AircraftCarrier(54,24,21,54,24,21).setXZSize(54, 21),1,null, OVERWORLD, WATER, StructureSize.BIG));
 		
 		
@@ -126,31 +105,24 @@ public class TGStructureSpawnRegister {
 		} else {
 			spawns=spawns_small;
 		}
-		
-		
-		for(int i=0;i<spawns.size();i++){	
-			totalweight+=spawns.get(i).getWeightForBiome(biome,size,type, dimension);
-		}
+
+
+        for (TGStructureSpawn spawn : spawns) {
+            totalweight += spawn.getWeightForBiome(biome, size, type, dimension);
+        }
 		
 		if (totalweight>0){
 		
 			int roll = rnd.nextInt(totalweight)+1;
-			//System.out.println("Totalweight:"+totalweight+" , rolled:"+roll);
-			
+
 			int weight=0;
-			for(int i=0; i<spawns.size();i++){
-				weight += spawns.get(i).getWeightForBiome(biome,size,type, dimension);
-				if (roll<=weight) {
-				//	System.out.println("Chosen:"+weight);
-					//System.out.println("Chosen:"+spawns.get(i).structure.getClass());
-					return spawns.get(i).structure;
-				} else {	
-					
-				}
-				
-			}
-		} else {
-			//System.out.println("SPAWNWEIGHT IS NULL type:"+size);
+            for (TGStructureSpawn spawn : spawns) {
+                weight += spawn.getWeightForBiome(biome, size, type, dimension);
+                if (roll <= weight) {
+                    return spawn.structure;
+                }
+
+            }
 		}
 		return null;
 	}

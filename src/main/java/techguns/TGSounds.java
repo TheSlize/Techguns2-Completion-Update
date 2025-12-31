@@ -234,11 +234,13 @@ public class TGSounds {
 	public static SoundEvent TECHDOOR_OPEN = createSoundEvent("blocks.techdoor.open");
 	public static SoundEvent TECHDOOR_CLOSE = createSoundEvent("blocks.techdoor.close");
 	public static SoundEvent TECHDOOR_STATE_FINISHED = createSoundEvent("blocks.techdoor.statefinished");
-	
+
+	public static SoundEvent BLUEPRINT_UNLOCK = createSoundEvent("items.blueprint");
+
 	public static void registerSounds(RegistryEvent.Register<SoundEvent> event){
 		IForgeRegistry<SoundEvent> reg = event.getRegistry();
 		
-		events.forEach(ev -> reg.register(ev));
+		events.forEach(reg::register);
 		
 		//can be deleted afterwards
 		events = null;

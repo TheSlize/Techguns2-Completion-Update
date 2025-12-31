@@ -10,16 +10,13 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-import techguns.TGPackets;
 import techguns.TGRadiationSystem;
 import techguns.Techguns;
 import techguns.api.damagesystem.DamageType;
-import techguns.client.ClientProxy;
 import techguns.damagesystem.TGDamageSource;
 import techguns.deatheffects.EntityDeathUtils.DeathType;
 import techguns.items.guns.GenericGun;
 import techguns.items.guns.IProjectileFactory;
-import techguns.packets.PacketSpawnParticle;
 import techguns.util.MathUtil;
 
 public class NDRProjectile extends AbstractBeamProjectile {

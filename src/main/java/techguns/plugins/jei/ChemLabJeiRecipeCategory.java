@@ -1,57 +1,78 @@
 package techguns.plugins.jei;
 
-import static techguns.gui.containers.ChemLabContainer.SLOTS_ROW1_Y;
-import static techguns.gui.containers.ChemLabContainer.SLOTS_ROW2_Y;
-import static techguns.gui.containers.ChemLabContainer.SLOT_INPUT1_X;
-import static techguns.gui.containers.ChemLabContainer.SLOT_INPUT2_X;
-import static techguns.gui.containers.ChemLabContainer.SLOT_OUTPUT_X;
-
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawableAnimated;
-import mezz.jei.api.gui.IDrawableStatic;
-import mezz.jei.api.gui.IGuiFluidStackGroup;
 import mezz.jei.api.gui.IGuiItemStackGroup;
 import mezz.jei.api.gui.IRecipeLayout;
 import mezz.jei.api.ingredients.IIngredients;
 import net.minecraft.client.Minecraft;
-import techguns.gui.ChemLabGui;
-import techguns.tileentities.ChemLabTileEnt;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
+import techguns.TGItems;
+import techguns.Techguns;
+import techguns.gui.AmmoPressGui;
 
 public class ChemLabJeiRecipeCategory extends BasicRecipeCategory<ChemLabJeiRecipe> {
 
-	
-	protected IDrawableStatic tank_overlay;
-	protected IDrawableAnimated progress;
-	
-	public ChemLabJeiRecipeCategory(IGuiHelper guiHelper) {
-		super(guiHelper, ChemLabGui.texture, "chemlab", TGJeiPlugin.CHEM_LAB);
-		tank_overlay = guiHelper.createDrawable(ChemLabGui.texture, 177, 32, 10, 50);
-		progress = new ProgressBarChemLab(guiHelper, 54, 31);
-	}
+    public static final ResourceLocation TEXTURE = new ResourceLocation(Techguns.MODID, "textures/gui/jei/chem_lab.png");
 
-	@Override
-	public void setRecipe(IRecipeLayout recipeLayout, ChemLabJeiRecipe recipeWrapper, IIngredients ingredients) {
-		IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
-		IGuiFluidStackGroup guiFluidStacks = recipeLayout.getFluidStacks();
-		
-		guiItemStacks.init(ChemLabTileEnt.SLOT_INPUT1,true,SLOT_INPUT1_X+JEI_OFFSET_X,SLOTS_ROW1_Y+JEI_OFFSET_Y);
-		guiItemStacks.init(ChemLabTileEnt.SLOT_INPUT2,true,SLOT_INPUT2_X+JEI_OFFSET_X,SLOTS_ROW1_Y+JEI_OFFSET_Y);
-		guiItemStacks.init(ChemLabTileEnt.SLOT_BOTTLE,true,SLOT_INPUT1_X+JEI_OFFSET_X,SLOTS_ROW2_Y+JEI_OFFSET_Y);
-		
-		guiItemStacks.init(ChemLabTileEnt.SLOT_OUTPUT, false, SLOT_OUTPUT_X+JEI_OFFSET_X, SLOTS_ROW1_Y+JEI_OFFSET_Y);
-	
-		guiFluidStacks.init(0, true, ChemLabGui.INPUT_TANK_X+2+JEI_OFFSET_X, ChemLabGui.TANK_Y+1+JEI_OFFSET_Y, ChemLabGui.TANK_W, ChemLabGui.TANK_H, ChemLabTileEnt.CAPACITY_INPUT_TANK, false, tank_overlay);
-		guiFluidStacks.init(1, false, ChemLabGui.OUTPUT_TANK_X+2+JEI_OFFSET_X, ChemLabGui.TANK_Y+1+JEI_OFFSET_Y, ChemLabGui.TANK_W, ChemLabGui.TANK_H, ChemLabTileEnt.CAPACITY_OUTPUT_TANK, false, tank_overlay);
-		
-		guiItemStacks.set(ingredients);
-		guiFluidStacks.set(ingredients);
-	}
-	
-	@Override
-	public void drawExtras(Minecraft minecraft) {
-		super.drawExtras(minecraft);
-		this.powerbar.draw(minecraft, 8+JEI_OFFSET_X, 17+JEI_OFFSET_Y);
-		this.progress.draw(minecraft, 82+JEI_OFFSET_X, 18+JEI_OFFSET_Y);
-	}
+    private static final int BG_U = 4;
+    private static final int BG_V = 10;
 
+    private static final int SLOT_IN1 = 0;
+    private static final int SLOT_IN2 = 1;
+    private static final int SLOT_IN3 = 2;
+    private static final int SLOT_OUT = 3;
+    private static final int SLOT_STEAM = 4;
+
+    private static final int SLOT_IN1_X = 39 - BG_U;
+    private static final int SLOT_IN1_Y = 15 - BG_V;
+
+    private static final int SLOT_IN2_X = 39 - BG_U;
+    private static final int SLOT_IN2_Y = 36 - BG_V;
+
+    private static final int SLOT_IN3_X = 39 - BG_U;
+    private static final int SLOT_IN3_Y = 57 - BG_V;
+
+    private static final int SLOT_OUT_X = 135 - BG_U;
+    private static final int SLOT_OUT_Y = 36 - BG_V;
+
+    private static final int SLOT_STEAM_X = 135 - BG_U;
+    private static final int SLOT_STEAM_Y = 57 - BG_V;
+
+    public ChemLabJeiRecipeCategory(IGuiHelper guiHelper) {
+        super(guiHelper, TEXTURE, "chemlab", TGJeiPlugin.CHEM_LAB);
+        this.background = guiHelper.createDrawable(TEXTURE, 4, 10, 174, 69);
+
+        this.powerbar_static = guiHelper.createDrawable(AmmoPressGui.texture, 251, 1, 4, 48);
+        this.powerbar = guiHelper.createAnimatedDrawable(powerbar_static, 100, IDrawableAnimated.StartDirection.TOP, true);
+    }
+
+    @Override
+    public void setRecipe(IRecipeLayout recipeLayout, @NotNull ChemLabJeiRecipe recipeWrapper, @NotNull IIngredients ingredients) {
+        IGuiItemStackGroup guiItemStacks = recipeLayout.getItemStacks();
+
+        guiItemStacks.init(SLOT_IN1, true, SLOT_IN1_X, SLOT_IN1_Y);
+        guiItemStacks.init(SLOT_IN2, true, SLOT_IN2_X, SLOT_IN2_Y);
+        guiItemStacks.init(SLOT_IN3, true, SLOT_IN3_X, SLOT_IN3_Y);
+
+        guiItemStacks.init(SLOT_OUT, false, SLOT_OUT_X, SLOT_OUT_Y);
+
+        if (recipeWrapper.recipe.reqSteamUpgrade) {
+            guiItemStacks.init(SLOT_STEAM, true, SLOT_STEAM_X, SLOT_STEAM_Y);
+        }
+
+        guiItemStacks.set(ingredients);
+
+        if (recipeWrapper.recipe.reqSteamUpgrade) {
+            ItemStack s = new ItemStack(TGItems.SHARED_ITEM, 1, TGItems.MACHINE_UPGRADE_STEAM.getItemDamage());
+            guiItemStacks.set(SLOT_STEAM, s);
+        }
+    }
+
+    @Override
+    public void drawExtras(@NotNull Minecraft minecraft) {
+        this.powerbar.draw(minecraft, 8 - BG_U, 17 - BG_V);
+    }
 }

@@ -3,6 +3,7 @@ package techguns.entities.npcs;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
@@ -14,9 +15,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import techguns.TGArmors;
 import techguns.TGuns;
 import techguns.Techguns;
+import techguns.api.npc.factions.ITGNpcTeam;
 
 public class ZombieSoldier extends GenericNPCUndead {
 
@@ -77,12 +81,12 @@ public class ZombieSoldier extends GenericNPCUndead {
 	}
 
 	@Override
-	public SoundEvent getHurtSound(DamageSource damageSourceIn) {
+	public @NotNull SoundEvent getHurtSound(@NotNull DamageSource damageSourceIn) {
 		return SoundEvents.ENTITY_ZOMBIE_HURT;
 	}
 
 	@Override
-	public SoundEvent getDeathSound() {
+	public @NotNull SoundEvent getDeathSound() {
 		return SoundEvents.ENTITY_ZOMBIE_DEATH;
 	}
 
@@ -105,48 +109,39 @@ public class ZombieSoldier extends GenericNPCUndead {
 	protected boolean shouldBurnInDay() {
 		return false;
 	}
-	
-	/*@Override
-	protected ItemStack getRandomItemFromLoottable() {
-		if (TGConfig.reducedLoottables){
-			return this.reducedLoottable();
-		}
-		
-		int x = this.rand.nextInt(5);
-		float y = this.rand.nextFloat();
-		switch (x){
-			case 0:
-				return TGItems.newStack(TGItems.heavyCloth, 1);
-			case 1:
-				return new ItemStack(Items.iron_ingot,1);
-			case 2:
-				return new ItemStack(Items.gunpowder,1);
-			case 3:
-				return TGItems.newStack(TGItems.shotgunShell,1+Math.round(7*y));
-			case 4:
-				return TGItems.newStack(TGItems.bullets9mm,1+Math.round(2*y));
-		}
-		return null;
-	}
 
-	protected ItemStack reducedLoottable(){
-		int x = this.rand.nextInt(11);
-		float y = this.rand.nextFloat();
-		switch (x){
-			case 0:
-				return TGItems.newStack(TGItems.heavyCloth, 1);
-			case 1:
-				return new ItemStack(Items.gunpowder,1);
-			case 3:
-			case 4:
-				return new ItemStack(Items.rotten_flesh,1);
-			case 5:
-				return TGItems.newStack(TGItems.shotgunShell,1+Math.round(7*y));
-			case 6:
-				return TGItems.newStack(TGItems.bullets9mm,1+Math.round(2*y));
-			default:
-				return null;
-		}
-		//return null;
-	}*/
+    @Override
+    public boolean attackEntityFrom(@NotNull DamageSource source, float amount) {
+        if (this.isFriendlyDamage(source)) {
+            return false;
+        }
+        return super.attackEntityFrom(source, amount);
+    }
+
+    private boolean isFriendlyDamage(DamageSource source) {
+        return this.isFriendlyEntity(source.getTrueSource()) || this.isFriendlyEntity(source.getImmediateSource());
+    }
+
+    private boolean isFriendlyEntity(@Nullable Entity entity) {
+        if (entity == null) {
+            return false;
+        }
+        if (entity == this) {
+            return true;
+        }
+        if (entity instanceof ITGNpcTeam) {
+            return ((ITGNpcTeam) entity).getTGFaction() == this.getTGFaction();
+        }
+        return false;
+    }
+
+    @Override
+    public int getMaxFallHeight() {
+        return 1;
+    }
+
+    @Override
+    protected boolean useTargetOffsetPathing() {
+        return true;
+    }
 }

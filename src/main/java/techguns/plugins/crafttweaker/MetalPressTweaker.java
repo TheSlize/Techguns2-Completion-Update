@@ -20,7 +20,7 @@ public class MetalPressTweaker {
 	
 	@ZenMethod
 	public static void addRecipe(IItemStack input1,IItemStack input2, IItemStack output, boolean allowSwap){
-		CraftTweakerAPI.apply(new addInputAction(TGCraftTweakerHelper.toItemStackOreDict(input1),TGCraftTweakerHelper.toItemStackOreDict(input2),allowSwap,output));
+		CraftTweakerAPI.apply(new addInputAction(TGCraftTweakerHelper.toItemStackOreDict(input1),TGCraftTweakerHelper.toItemStackOreDict(input2),allowSwap,output, TGCraftTweakerHelper.toItemStackOreDict(input1).item.getCount(), TGCraftTweakerHelper.toItemStackOreDict(input2).item.getCount()));
 	}
 	@ZenMethod
 	public static void addRecipe(String input1,IItemStack input2, IItemStack output, boolean allowSwap){
@@ -33,6 +33,10 @@ public class MetalPressTweaker {
 	@ZenMethod
 	public static void addRecipe(String input1,String input2, IItemStack output, boolean allowSwap){
 		CraftTweakerAPI.apply(new addInputAction(TGCraftTweakerHelper.toItemStackOreDict(input1),TGCraftTweakerHelper.toItemStackOreDict(input2),allowSwap,output));
+	}
+	@ZenMethod
+	public static void addRecipe(IItemStack input1,IItemStack input2, IItemStack output, boolean allowSwap, int input1Count, int input2Count){
+		CraftTweakerAPI.apply(new addInputAction(TGCraftTweakerHelper.toItemStackOreDict(input1),TGCraftTweakerHelper.toItemStackOreDict(input2),allowSwap,output,input1Count,input2Count));
 	}
 	
 	
@@ -64,6 +68,8 @@ public class MetalPressTweaker {
 
 		ItemStackOreDict input1;
 		ItemStackOreDict input2;
+		int input1Count;
+		int input2Count;
 		boolean swap;
 		ItemStack output;
 		
@@ -73,11 +79,24 @@ public class MetalPressTweaker {
 			this.input2 = input2;
 			this.swap = swap;
 			this.output = CraftTweakerMC.getItemStack(output);
+			this.input1Count = 1;
+			this.input2Count = 1;
+		}
+
+		public addInputAction(ItemStackOreDict input1, ItemStackOreDict input2, boolean swap, IItemStack output, int input1Count, int input2Count) {
+			super();
+			this.input1 = input1;
+			this.input2 = input2;
+			this.swap = swap;
+			this.output = CraftTweakerMC.getItemStack(output);
+			this.input1Count = input1Count;
+			this.input2Count = input2Count;
 		}
 		
 		@Override
 		public void apply() {
-			MetalPressRecipes.getRecipes().add(new MetalPressRecipe(input1, input2, swap, output));
+			if(!(input1Count == 1 && input2Count == 1)) MetalPressRecipes.getRecipes().add(new MetalPressRecipe(input1, input2, swap, output, input1.item.getCount(), input2.item.getCount()));
+			else MetalPressRecipes.getRecipes().add(new MetalPressRecipe(input1, input2, swap, output));
 		}
 		
 		@Override

@@ -3,19 +3,15 @@ package techguns.world.structures;
 import java.util.ArrayList;
 import java.util.Random;
 
-import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import techguns.TGBlocks;
 import techguns.Techguns;
 import techguns.blocks.EnumMonsterSpawnerType;
-import techguns.entities.npcs.ZombieMiner;
 import techguns.entities.npcs.ZombiePoliceman;
-import techguns.entities.npcs.ZombieSoldier;
 import techguns.util.BlockUtils;
 import techguns.util.MBlock;
-import techguns.util.MultiMBlock;
 import techguns.world.dungeon.presets.specialblocks.MBlockChestLoottable;
 import techguns.world.dungeon.presets.specialblocks.MBlockTGSpawner;
 
@@ -69,7 +65,7 @@ public class PoliceStation extends WorldgenStructure {
 		int centerX, centerZ;
 		
 		if (((sizeX < this.minX) && (sizeZ > this.minX) && (sizeX >= this.minZ))
-		   ||((sizeZ < this.minZ) && (sizeX > this.minZ) && (sizeZ >= this.minX)))
+		   || ((sizeZ < this.minZ) && (sizeX > this.minZ) && (sizeZ >= this.minX)))
 		{
 			direction = (direction+1) % 4;
 			centerZ = (int) (sizeX/2.0f);
@@ -78,7 +74,7 @@ public class PoliceStation extends WorldgenStructure {
 			centerX = (int) (sizeX/2.0f);
 			centerZ = (int) (sizeZ/2.0f);
 		}
-		BlockUtils.cleanUpwards(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 0, 7);
+		BlockUtils.cleanUpwards(world, blocks, posX, posY, posZ, centerX, centerZ, direction, 7);
 		BlockUtils.placeFoundation(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 0,3);
 		BlockUtils.placeScannedStructure(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 0,this.lootTier,colorType);
 		BlockUtils.placeScannedStructure(world, blocks, blockList, posX, posY, posZ, centerX, centerZ, direction, 1,this.lootTier,colorType);

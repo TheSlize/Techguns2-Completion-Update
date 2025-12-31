@@ -39,19 +39,6 @@ public class ExplosiveChargeGui extends TGBaseGui {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
 		super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-		
-		int radius = tileent.getBlastradius();
-		int blastlength = tileent.getBlastlength();
-		int fusetime = tileent.getFusetime();
-
-		int color = 4210752;
-		
-		String sradius = "Radius: " + radius;
-		this.fontRenderer.drawString(sradius, 37, 40, color);
-		String slength = "Length: " + blastlength;
-		this.fontRenderer.drawString(slength, 37, 50, color);
-		String sfusetime = "Delay: " + fusetime / 20 + "s";
-		this.fontRenderer.drawString(sfusetime, 37, 60, color);
 	}
 
 
@@ -60,22 +47,12 @@ public class ExplosiveChargeGui extends TGBaseGui {
 	public void initGui() {
 		super.initGui();
 		int buttonid=FIRST_BUTTON_ID;
-		this.buttonList.add(new GuiButtonExt(buttonid++, this.guiLeft+57, this.guiTop+73, 60, 20, "Detonate"));
-		
-		int left=120;
-		this.buttonList.add(new GuiButtonExt(buttonid++, this.guiLeft+left, this.guiTop+40, 10, 10, "+"));
-		this.buttonList.add(new GuiButtonExt(buttonid++, this.guiLeft+left+10, this.guiTop+40, 10, 10, "-"));
-		
-		this.buttonList.add(new GuiButtonExt(buttonid++, this.guiLeft+left, this.guiTop+50, 10, 10, "+"));
-		this.buttonList.add(new GuiButtonExt(buttonid++, this.guiLeft+left+10, this.guiTop+50, 10, 10, "-"));
-		
-		this.buttonList.add(new GuiButtonExt(buttonid++, this.guiLeft+left, this.guiTop+60, 10, 10, "+"));
-		this.buttonList.add(new GuiButtonExt(buttonid++, this.guiLeft+left+10, this.guiTop+60, 10, 10, "-"));
+		this.buttonList.add(new GuiButtonExt(buttonid++, this.guiLeft+57, this.guiTop+73, 60, 20, "Взорвать"));
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
-		TGPackets.network.sendToServer(new PacketGuiButtonClick(this.tileent,guibutton.id));
+		TGPackets.wrapper.sendToServer(new PacketGuiButtonClick(this.tileent,guibutton.id));
 		if(guibutton.id==FIRST_BUTTON_ID){
 			Minecraft.getMinecraft().player.closeScreen();
 		}

@@ -3,7 +3,6 @@ package techguns.tileentities.operation;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -14,68 +13,37 @@ import techguns.util.ItemUtil;
 
 public class ChemLabRecipes {
 	
-	private static ArrayList<ChemLabRecipe> recipes = new ArrayList<ChemLabRecipe>();
+	private static final ArrayList<ChemLabRecipe> recipes = new ArrayList<>();
 	
-	private static ArrayList<ItemStack> bottleItems = new ArrayList<>();
+	private static final ArrayList<ItemStack> bottleItems = new ArrayList<>();
 	
 	public static MachineOperation getOutputFor(ChemLabTileEnt tile){
 		ItemStack slot1 = tile.input1.get();
 		ItemStack slot2 = tile.input2.get();
 		ItemStack slot3 = tile.input_bottle.get();
 		FluidStack fluidIn = tile.getCurrentInputFluid();
-		
-		for (int i=0; i < recipes.size(); i++){
-			ChemLabRecipe recipe = recipes.get(i);
-			ChemRecipeType t  = recipe.isValidInput(slot1, slot2,slot3,fluidIn);
-			if ( t != ChemRecipeType.INVALID) {
-				return recipe.getOperationFor(tile,t);
-			}
-		}
+
+        for (ChemLabRecipe recipe : recipes) {
+            if (recipe.reqSteamUpgrade && !tile.hasSteamUpgrade()) return null;
+            ChemRecipeType t = recipe.isValidInput(slot1, slot2, slot3, fluidIn);
+            if (t != ChemRecipeType.INVALID) {
+                return recipe.getOperationFor(tile, t);
+            }
+        }
 		return null;		
 	}
 	
 	public static ArrayList<ChemLabRecipe> getRecipes() {
 		return recipes;
 	}
-	
-	public static int getTotalPower(int recipeIndex){
-		return recipes.get(recipeIndex).powerPerTick*100;
-	}
-	
-	public static ChemLabRecipe getRecipe(int index){
-		return recipes.get(index);
-	}
-	
-	public static ArrayList<ChemLabRecipe> getRecipesUsing(ItemStack input){
-		ArrayList<ChemLabRecipe> ret = new ArrayList<ChemLabRecipe>();
-		
-		for (ChemLabRecipe r : recipes){
-			
-			if (r.isItemPartOfRecipe(input)){
-				ret.add(r);
-			}
-			
-		}
-		
-		return ret;
-	}
-	
-	public static ChemLabRecipe getRecipesFor(ItemStack output){
-		for (ChemLabRecipe r: recipes){
-			if (ItemUtil.isItemEqual(r.output,output)){
-				return r;
-			}
-		}
-		return null;
-	}
-	
-	protected static void addToFlaskSlot(ItemStack item){
+
+    protected static void addToFlaskSlot(ItemStack item){
 		if(!item.isEmpty()) {
-			for(int i =0; i<bottleItems.size(); i++) {
-				if(item.areItemsEqual(item, bottleItems.get(i))) {
-					return;
-				}
-			}
+            for (ItemStack bottleItem : bottleItems) {
+                if (ItemStack.areItemsEqual(item, bottleItem)) {
+                    return;
+                }
+            }
 			ItemStack s = item.copy();
 			s.setCount(1);
 			bottleItems.add(s);
@@ -84,30 +52,30 @@ public class ChemLabRecipes {
 	
 	public static boolean allowInFlaskSlot(ItemStack item){
 		if(!item.isEmpty()) {
-			for(int i =0; i<bottleItems.size(); i++) {
-				if(item.areItemsEqual(item, bottleItems.get(i))) {
-					return true;
-				}
-			}
+            for (ItemStack bottleItem : bottleItems) {
+                if (ItemStack.areItemsEqual(item, bottleItem)) {
+                    return true;
+                }
+            }
 		}
 		return false;
 	}
 	
 	public static boolean hasRecipeUsing(ItemStack item){
-		for(int i=0;i<recipes.size();i++){
-			if(recipes.get(i).isItemPartOfRecipe(item)){
-				return true;
-			}
-		}
+        for (ChemLabRecipe recipe : recipes) {
+            if (recipe.isItemPartOfRecipe(item)) {
+                return true;
+            }
+        }
 		return false;
 	}
 	
 	public static boolean allowAsInput2(ItemStack slot1,ItemStack item){
-		for(int i=0;i<recipes.size();i++){
-			if(recipes.get(i).isValidInputSlot1_2(slot1, item)){
-				return true;
-			}
-		}
+        for (ChemLabRecipe recipe : recipes) {
+            if (recipe.isValidInputSlot1_2(slot1, item)) {
+                return true;
+            }
+        }
 		return false;
 	}
 	
@@ -128,6 +96,10 @@ public class ChemLabRecipes {
 		recipes.add(new ChemLabRecipe(input1,amount1,input2,amount2,bottle,amount3,fluidIn,swap,output,fluidOut,power));
 	}
 
+	public static void addSteamRecipe(ItemStackOreDict input1,int amount1, ItemStackOreDict input2,int amount2, ItemStack bottle,int amount3, FluidStack fluidIn, FluidStack fluidOut, ItemStack output,boolean swap,int power){
+		recipes.add(new ChemLabRecipe(input1,amount1,input2,amount2,bottle,amount3,fluidIn,swap,output,fluidOut,power).needSteam());
+	}
+
 	public static class ChemLabRecipe implements IMachineRecipe {
 		public ItemStackOreDict slot1;
 		public ItemStackOreDict slot2;
@@ -137,7 +109,8 @@ public class ChemLabRecipes {
 		public boolean allowSwap;
 		public ItemStack output;
 		public int[] amounts=new int[4];
-		public int powerPerTick=5;
+		public int powerPerTick;
+		public boolean reqSteamUpgrade;
 		
 		
 		public boolean isItemPartOfRecipe(ItemStack item){
@@ -167,12 +140,17 @@ public class ChemLabRecipes {
 			
 			addToFlaskSlot(this.slot3);
 		}
+
+		public ChemLabRecipe needSteam(){
+			this.reqSteamUpgrade = true;
+			return this;
+		}
 		
-		public static enum ChemRecipeType {
+		public enum ChemRecipeType {
 			INVALID,
 			VALID,
-			VALID_SWAPPED;
-		}
+			VALID_SWAPPED
+        }
 		
 		//Returns if this contents are a valid input for this recipe;
 		public ChemRecipeType isValidInput(ItemStack slot1, ItemStack slot2, ItemStack slot3, FluidStack fluidIn){
@@ -194,11 +172,8 @@ public class ChemLabRecipes {
 			if (this.slot1.isEqualWithOreDict(slot1) && this.slot2.isEqualWithOreDict(slot2)) {
 				return true;
 			}
-			if (allowSwap && (this.slot1.isEqualWithOreDict(slot2) && this.slot2.isEqualWithOreDict(slot1))){
-				return true;
-			}
-			return false;
-		}
+            return allowSwap && (this.slot1.isEqualWithOreDict(slot2) && this.slot2.isEqualWithOreDict(slot1));
+        }
 		
 		
 		private boolean isEnoughOrNull(ItemStack item, int amount){
@@ -234,10 +209,10 @@ public class ChemLabRecipes {
 		}
 		
 		public MachineOperation getOperationFor(ChemLabTileEnt tile, ChemRecipeType t) {
-			ArrayList<ItemStack> inputs = new ArrayList<ItemStack>(3);
+			ArrayList<ItemStack> inputs = new ArrayList<>(3);
 			
 			ItemStack input1, input2;
-			if (t==t.VALID_SWAPPED) {
+			if (t== ChemRecipeType.VALID_SWAPPED) {
 				input1 = tile.input2.get().copy();
 				input1.setCount(this.amounts[1]);
 				
@@ -258,18 +233,18 @@ public class ChemLabRecipes {
 			inputs.add(input2);
 			inputs.add(bottle);
 			
-			ArrayList<FluidStack> fluidsIn = new ArrayList<FluidStack>(1);
+			ArrayList<FluidStack> fluidsIn = new ArrayList<>(1);
 			if(this.fluidIn!=null) {
 				FluidStack fluidin = this.fluidIn.copy();
 				fluidin.amount = this.amounts[3];
 				fluidsIn.add(fluidin);
 			}
 			
-			ArrayList<ItemStack> outputs = new ArrayList<ItemStack>(1);
+			ArrayList<ItemStack> outputs = new ArrayList<>(1);
 			ItemStack output = this.output.copy();
 			outputs.add(output);
 			
-			ArrayList<FluidStack> fluidsOut = new ArrayList<FluidStack>(1);
+			ArrayList<FluidStack> fluidsOut = new ArrayList<>(1);
 			if(this.fluidOutput!=null) {
 				FluidStack fluidout = this.fluidOutput.copy();
 				fluidsOut.add(fluidout);

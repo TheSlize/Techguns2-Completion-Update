@@ -53,8 +53,8 @@ public class ItemTGDoor3x3<T extends Enum<T> & IStringSerializable> extends Gene
 	}
 
 	@Override
-	public String getUnlocalizedName(ItemStack stack) {
-		return super.getUnlocalizedName(stack)+(stack.getItemDamage()>0?"_"+stack.getItemDamage():"");
+	public String getTranslationKey(ItemStack stack) {
+		return super.getTranslationKey(stack)+(stack.getItemDamage()>0?"_"+stack.getItemDamage():"");
 	}
 
 	
@@ -90,8 +90,8 @@ public class ItemTGDoor3x3<T extends Enum<T> & IStringSerializable> extends Gene
             
             if (player.canPlayerEdit(pos, facing, itemstack) && this.block.canPlaceDoor(worldIn, pos, enumfacing))
             {
-                //int i = enumfacing.getFrontOffsetX();
-                //int j = enumfacing.getFrontOffsetZ();
+                //int i = enumfacing.byIndexOffsetX();
+                //int j = enumfacing.byIndexOffsetZ();
               //  boolean flag = i < 0 && hitZ < 0.5F || i > 0 && hitZ > 0.5F || j < 0 && hitX > 0.5F || j > 0 && hitX < 0.5F;
                 placeDoor(worldIn, pos, enumfacing, itemstack.getMetadata(), player);
                 SoundType soundtype = worldIn.getBlockState(pos).getBlock().getSoundType(worldIn.getBlockState(pos), worldIn, pos, player);

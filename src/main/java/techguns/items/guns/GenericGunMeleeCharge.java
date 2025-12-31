@@ -181,7 +181,7 @@ public class GenericGunMeleeCharge extends GenericGunCharge implements IGenericG
 	@SideOnly(Side.CLIENT)
 	public String getCurrentMiningHeadForTooltip(ItemStack stack) {
 		if(this.miningHeads!=null && this.getMiningHeadLevel(stack)>0) {
-			return this.miningHeads[this.getMiningHeadLevel(stack)-1].getUnlocalizedName()+".name";
+			return this.miningHeads[this.getMiningHeadLevel(stack)-1].getTranslationKey()+".name";
 		}
 		return Techguns.MODID+".default";
 	}
@@ -232,7 +232,7 @@ public class GenericGunMeleeCharge extends GenericGunCharge implements IGenericG
 				//server side:;
 				//SoundUtil.playSoundOnEntityGunPosition(entityLiving.worldObj, entityLiving, "techguns:guns.powerhammerSwing", SOUND_DISTANCE, 1.0F, false, false);	
 				if(!openingContainer && sendSound){
-					TGPackets.network.sendToAllAround(new PacketPlaySound(getSwingSound(), entityLiving, melee_sound_volume, 1.0f, false, false, true, true,TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(entityLiving, 32.0f));
+					TGPackets.wrapper.sendToAllAround(new PacketPlaySound(getSwingSound(), entityLiving, melee_sound_volume, 1.0f, false, false, true, true,TGSoundCategory.GUN_FIRE), TGPackets.targetPointAroundEnt(entityLiving, 32.0f));
 				}
 				
 				return this.hasCustomAnim;
@@ -350,7 +350,7 @@ public class GenericGunMeleeCharge extends GenericGunCharge implements IGenericG
 									itemstack.onBlockDestroyed(w, state, b, player);
 								}*/
 								if(block.removedByPlayer(state, w, b, player, true)){
-									block.onBlockDestroyedByPlayer(w, b, state);
+									block.onPlayerDestroy(w, b, state);
 									if(!player.capabilities.isCreativeMode) {
 										block.harvestBlock(w, player, pos, state, tile, itemstack);
 										block.dropXpOnBlockBreak(w, b, xpAmount);

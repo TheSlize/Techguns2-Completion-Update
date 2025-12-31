@@ -3,22 +3,15 @@ package techguns.world.structures;
 import java.util.ArrayList;
 import java.util.Random;
 
-import net.minecraft.block.BlockDoor.EnumDoorHalf;
-import net.minecraft.block.BlockDoor.EnumHingePosition;
 import net.minecraft.init.Blocks;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.world.World;
 import techguns.TGBlocks;
-import techguns.blocks.EnumMonsterSpawnerType;
-import techguns.entities.npcs.ZombieMiner;
 import techguns.util.BlockUtils;
 import techguns.util.MBlock;
-import techguns.world.dungeon.presets.specialblocks.MBlockChestLoottable;
-import techguns.world.dungeon.presets.specialblocks.MBlockTGSpawner;
 
 public class NetherDungeonEntrance extends WorldgenStructure {
 
-	static ArrayList<MBlock> blockList = new ArrayList<MBlock>();
+	static ArrayList<MBlock> blockList = new ArrayList<>();
 	static short[][] blocks;
 	static {
 		blockList.add(new MBlock(TGBlocks.NETHER_METAL, 0));

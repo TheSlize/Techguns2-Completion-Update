@@ -5,19 +5,14 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.DimensionType;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraftforge.common.BiomeDictionary;
-import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.fml.common.eventhandler.Event;
 import techguns.TGConfig;
-import techguns.Techguns;
 import techguns.entities.npcs.GenericNPC;
-import techguns.entities.npcs.Ghastling;
 import techguns.util.MathUtil.Vec2;
 
 
@@ -35,7 +30,7 @@ public class TGSpawnManager {
 
 	public static void handleSpawn(World w, Entity dummyEnt){
 
-		EntityLivingBase entNew = null; // Используем более общий тип
+		EntityLivingBase entNew = null;
 
 		Biome biome = w.getBiome(new BlockPos(Math.round(dummyEnt.posX), 64, Math.round(dummyEnt.posZ)));
 
@@ -46,7 +41,7 @@ public class TGSpawnManager {
 
 		TGNpcSpawn chosenSpawn=null;
 
-		TGNpcSpawnTable spawntable = getSpawnTableForDimensionId(w.provider.getDimension());
+		TGNpcSpawnTable spawntable = getSpawnTableForWorld(w);
 
 		int totalweight=0;
 		//calculate possible weights
@@ -162,15 +157,15 @@ public class TGSpawnManager {
 		return 0;
 	}
 
-	protected static TGNpcSpawnTable getSpawnTableForDimensionId(int id) {
-		switch(id) {
-		case -1:
+	protected static TGNpcSpawnTable getSpawnTableForWorld(World world) {
+		int id = world.provider.getDimension();
+		if (id == -1 || world.provider.getDimensionType() == DimensionType.NETHER) {
 			return spawnTableNether;
-		case 1:
-			return spawnTableEnd;
-		default:
-			return spawnTableOverworld;
 		}
+		if (id == 1) {
+			return spawnTableEnd;
+		}
+		return spawnTableOverworld;
 	}
 
 	private static int getDistanceDanger(World w, Entity ent){

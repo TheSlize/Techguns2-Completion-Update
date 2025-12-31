@@ -56,7 +56,7 @@ public class ItemJsonCreator {
 	public static void writeJsonFilesForGun(GenericGun item){
 		String path = "models/item/";
 		if(item.isModelBase(new ItemStack(item))) {
-			writeItemJsonFileForPath(path, item.getRegistryName().getResourcePath(), "dummy");
+			writeItemJsonFileForPath(path, item.getRegistryName().getPath(), "dummy");
 		}
 	}
 	
@@ -79,7 +79,7 @@ public class ItemJsonCreator {
 		//System.out.println("Working Directory = "+System.getProperty("user.dir"));
 		
 		String path = "models/item/";
-		writeItemJsonFileForPath(path, item.getRegistryName().getResourcePath(), item.getRegistryName().getResourcePath());
+		writeItemJsonFileForPath(path, item.getRegistryName().getPath(), item.getRegistryName().getPath());
 		
 	}
 	

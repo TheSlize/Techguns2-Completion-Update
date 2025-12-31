@@ -57,15 +57,15 @@ public abstract class MultiBlockMachineSchematic {
 	
 	protected static void sendErrorPing(World w, BlockPos p, EntityPlayer player, int type, boolean message) {
 		if(!w.isRemote) {
-			TGPackets.network.sendTo(new PacketSpawnParticle("MultiblockInvalidPing", p.getX()+0.5d, p.getY()+0.5d, p.getZ()+0.5d), (EntityPlayerMP) player);
-			if(message)TGPackets.network.sendTo(new PacketMultiBlockFormInvalidBlockMessage(p,type), (EntityPlayerMP) player);
+			TGPackets.wrapper.sendTo(new PacketSpawnParticle("MultiblockInvalidPing", p.getX()+0.5d, p.getY()+0.5d, p.getZ()+0.5d), (EntityPlayerMP) player);
+			if(message)TGPackets.wrapper.sendTo(new PacketMultiBlockFormInvalidBlockMessage(p,type), (EntityPlayerMP) player);
 		}
 	}
 	
 	protected static void sendErrorMSG(World w, BlockPos p, EntityPlayer player, int msgID) {
 		if(!w.isRemote) {
 			//TGPackets.network.sendTo(new PacketSpawnParticle("MultiblockInvalidPing", p.getX()+0.5d, p.getY()+0.5d, p.getZ()+0.5d), (EntityPlayerMP) player);
-			TGPackets.network.sendTo(new PacketMultiBlockFormInvalidBlockMessage(p,msgID), (EntityPlayerMP) player);
+			TGPackets.wrapper.sendTo(new PacketMultiBlockFormInvalidBlockMessage(p,msgID), (EntityPlayerMP) player);
 		}
 	}
 	

@@ -9,7 +9,6 @@ import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import techguns.gui.widgets.SlotFabricator;
 import techguns.gui.widgets.SlotItemHandlerOutput;
-import techguns.gui.widgets.SlotMachineInput;
 import techguns.gui.widgets.SlotMachineInputBG;
 import techguns.gui.widgets.SlotMachineUpgrade;
 import techguns.gui.widgets.SlotTG;
@@ -48,7 +47,7 @@ public class BlastFurnaceContainer extends BasicMachineContainer {
 			this.addSlotToContainer(new SlotMachineUpgrade(handler,  BlastFurnaceTileEnt.SLOT_UPGRADE, SLOT_UPGRADE_X, SLOT_UPGRADE_Y));
 		}
 		
-		this.addPlayerInventorySlots(player);
+		this.addDefaultPlayerInventorySlots(player);
 	}
 
 	@Override

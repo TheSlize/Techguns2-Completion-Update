@@ -11,11 +11,10 @@ import techguns.entities.npcs.CyberDemon;
 import techguns.util.BlockUtils;
 import techguns.util.MBlock;
 import techguns.world.dungeon.presets.specialblocks.MBlockTGSpawner;
-import techguns.world.structures.WorldgenStructure.BiomeColorType;
 
 public class NetherAltarMedium extends WorldgenStructure {
 
-	static ArrayList<MBlock> blockList = new ArrayList<MBlock>();
+	static ArrayList<MBlock> blockList = new ArrayList<>();
 	static short[][] blocks;
 	static {
 		blockList.add(new MBlock(TGBlocks.NETHER_METAL, 0));

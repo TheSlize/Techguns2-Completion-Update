@@ -17,8 +17,6 @@ import net.minecraft.util.ResourceLocation;
 import techguns.TGBlocks;
 import techguns.Techguns;
 import techguns.api.render.IItemTGRenderer;
-import techguns.client.render.ItemRenderHack;
-import techguns.debug.Keybinds;
 import techguns.items.guns.GenericGun;
 import techguns.tileentities.GrinderTileEnt;
 

@@ -47,7 +47,7 @@ public class ArmorStatTweaker {
 		public setArmorMaterialValue(String materialname, String typename, float value) {
 			super();
 			this.materialname = materialname;
-			this.value = MathUtil.clamp(value, 0f, 20f);
+			this.value = MathUtil.clamp(value, 0f, 24f);
 			this.typename = typename;
 			
 			for(DamageType dt : DamageType.values()) {

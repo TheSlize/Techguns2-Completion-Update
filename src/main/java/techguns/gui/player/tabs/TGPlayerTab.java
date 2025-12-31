@@ -1,7 +1,6 @@
 package techguns.gui.player.tabs;
 
 import micdoodle8.mods.galacticraft.api.client.tabs.AbstractTab;
-import net.minecraft.item.ItemStack;
 import techguns.TGItems;
 import techguns.TGPackets;
 import techguns.packets.PacketOpenPlayerGUI;
@@ -14,7 +13,7 @@ public class TGPlayerTab extends AbstractTab {
 
 	@Override
 	public void onTabClicked() {
-		TGPackets.network.sendToServer(new PacketOpenPlayerGUI());
+		TGPackets.wrapper.sendToServer(new PacketOpenPlayerGUI());
 	}
 
 	@Override

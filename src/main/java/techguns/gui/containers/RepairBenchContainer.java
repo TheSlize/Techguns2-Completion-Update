@@ -35,7 +35,7 @@ public class RepairBenchContainer extends OwnedTileContainer {
 			}
 		});
 		
-		this.addPlayerInventorySlots(player);
+		this.addDefaultPlayerInventorySlots(player);
 		
 		for (i = 0; i < 4; ++i) {
 			this.addSlotToContainer(new SlotArmor(player, 39-i, 89+(i*20), 18,i,player.player));

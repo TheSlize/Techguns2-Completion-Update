@@ -897,6 +897,13 @@
     ]
 },
 
+"machines.rc_sel": {
+    "category": "block",
+    "sounds": [
+        "techguns:machines/rc_sel"
+    ]
+},
+
 
 "machines.rc_warning": {
     "category": "block",
@@ -1377,6 +1384,12 @@
     "category": "player",
     "sounds": [
         "techguns:guns/shishkebab_reload"
+    ]
+},
+"items.blueprint": {
+    "category": "player",
+    "sounds": [
+        "techguns:items/blueprint_sound"
     ]
 },
 "blocks.techdoor.open": {

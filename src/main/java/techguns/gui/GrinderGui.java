@@ -1,13 +1,11 @@
 package techguns.gui;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.inventory.Container;
 import net.minecraft.util.ResourceLocation;
 import techguns.Techguns;
-import techguns.gui.containers.BlastFurnaceContainer;
 import techguns.gui.containers.GrinderContainer;
-import techguns.tileentities.BasicPoweredTileEnt;
 import techguns.tileentities.GrinderTileEnt;
 
 public class GrinderGui extends PoweredTileEntGui {
@@ -17,10 +15,14 @@ public class GrinderGui extends PoweredTileEntGui {
 	public GrinderGui(InventoryPlayer ply, GrinderTileEnt tile) {
 		super(new GrinderContainer(ply, tile), tile);
 		
-		this.tile=tile;
-		this.tex=texture;
-		this.upgradeSlotX=GrinderContainer.SLOT_UPGRADE_X-1;
-		this.upgradeSlotY=GrinderContainer.SLOT_UPGRADE_Y-1;
+		this.tile = tile;
+		this.tex = texture;
+		this.xSize = 199;
+		this.ySize = 188;
+		this.upgradeSlotX = GrinderContainer.SLOT_UPGRADE_X - 2;
+		this.upgradeSlotY = GrinderContainer.SLOT_UPGRADE_Y - 2;
+		this.appearanceType = EnumAppearanceType.REGULAR;
+		this.invNameX = 18;
 	}
 
 	@Override
@@ -28,15 +30,43 @@ public class GrinderGui extends PoweredTileEntGui {
 		super.drawGuiContainerBackgroundLayer(partialTicks, mouseX, mouseY);
 		int k = (this.width - this.xSize) / 2;
 		int l = (this.height - this.ySize) / 2;
-		
-		if (this.tile.isWorking()) {
-			Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
-			int i1 = this.tile.getProgressScaled(21);
-			this.drawTexturedModalRect(k + 31, l + 39, 0, 167, i1 + 1, 22);
-			
-			int i2 = 20-i1;
-			this.drawTexturedModalRect(k + 31+20+i2, l + 39, 0+i2, 167, i1+1, 22);
+
+		Minecraft mc = Minecraft.getMinecraft();
+		mc.getTextureManager().bindTexture(texture);
+
+		int progress = this.tile.getProgressScaled(52);
+		if (progress > 0) {
+			this.drawTexturedModalRect(k + 51, l + 29, 204, 0, progress, 31);
 		}
 
+		float totalTime = (float) this.tile.totaltime;
+		float progressRatio = totalTime > 0.0F ? this.tile.progress / totalTime : 0.0F;
+		if (progressRatio < 0.0F) {
+			progressRatio = 0.0F;
+		} else if (progressRatio > 1.0F) {
+			progressRatio = 1.0F;
+		}
+
+		float angleUpper = -progressRatio * 1080.0F;
+		float angleLower = progressRatio * 1080.0F;
+
+		this.drawSaw(k + 62, l + 15, 227, 198, angleUpper);
+		this.drawSaw(k + 62, l + 44, 227, 227, angleLower);
+	}
+
+	private void drawSaw(int x, int y, int u, int v, float angle) {
+		GlStateManager.pushMatrix();
+		GlStateManager.enableBlend();
+		GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+
+		GlStateManager.translate(x + 14.5F, y + 14.5F, 0.0F);
+		if (angle != 0.0F) {
+			GlStateManager.rotate(angle, 0.0F, 0.0F, 1.0F);
+		}
+		GlStateManager.translate(-14.5F, -14.5F, 0.0F);
+
+		this.drawTexturedModalRect(0, 0, u, v, 29, 29);
+
+		GlStateManager.popMatrix();
 	}
 }

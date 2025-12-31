@@ -30,9 +30,9 @@ public class ScreenEffect implements IScreenEffect {
 	protected boolean flipY=false;
 	protected boolean flipX=false;
 	
-	public ScreenEffect() {};
-	
-	public ScreenEffect(String fxTexture, int cols,
+	public ScreenEffect() {}
+
+    public ScreenEffect(String fxTexture, int cols,
 			int rows, int numSprites, RenderType type) {
 		super();
 		this.fxTexture = new ResourceLocation(Techguns.MODID,fxTexture);
@@ -61,22 +61,6 @@ public class ScreenEffect implements IScreenEffect {
 		return this;
 	}
 	
-//	public ScreenEffect setJitter(float jX, float jY, float jAngle, float jScale) {
-//		this.jitterX = jX;
-//		this.jitterY = jY;
-//		this.jitterAngle = jAngle;
-//		this.jitterScale = jScale;
-//		return this;
-//	}
-	
-//	/* (non-Javadoc)
-//	 * @see techguns.client.render.fx.IScreenEffect#doRender(float, float, float, float, float, boolean)
-//	 */
-//	@Override
-//	public void doRender(float progress, float offsetX, float offsetY, float offsetZ, float scale, boolean is3p) {
-//		doRender(progress, offsetX, offsetY,offsetZ,scale,0,0,0,is3p);
-//	}
-	
 	/* (non-Javadoc)
 	 * @see techguns.client.render.fx.IScreenEffect#doRender(float, float, float, float, float, float, float, float, boolean)
 	 */
@@ -94,10 +78,8 @@ public class ScreenEffect implements IScreenEffect {
 			float V1 = row*v;
 			float U2 = (col+1)*u;
 			float V2 = (row+1)*v;
-			
-			//TGRenderHelper.enableFXLighting();
+
 			TGRenderHelper.enableBlendMode(type);
-			//GlStateManager.color(1f, 1f, 1f);
 			
 			Minecraft.getMinecraft().getTextureManager().bindTexture(fxTexture);
 
@@ -122,16 +104,7 @@ public class ScreenEffect implements IScreenEffect {
 	        BufferBuilder buffer = tessellator.getBuffer();
 			
 			float f = scale/2.0f;
-			
-//			if (!is3p) { //Local player in 1st person
-//				ClientProxy cp = ClientProxy.get();
-//				if (this.jitterScale > 0.0f) f = f + jitterScale*cp.muzzleFlashJitterScale;
-//				if (this.jitterX > 0.0f) offsetX += jitterX*cp.muzzleFlashJitterX*f;
-//				if (this.jitterY > 0.0f) offsetY += jitterY*cp.muzzleFlashJitterY*f;
-//				//if (this.jitterAngle > 0.0f) angle += jitterAngle*cp.muzzleFlashJitterAngle*f;
-//			}
-//			
-			float alpha = 0.0f;
+			float alpha;
 			
 			switch (fadeType) {
 	
@@ -154,10 +127,6 @@ public class ScreenEffect implements IScreenEffect {
 				GlStateManager.depthMask(false);
 				GlStateManager.disableCull();
 			}
-			
-			//Jitter
-			//ClientProxy cp = ClientProxy.
-			//offsetX += jitterX;
 
 	        buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR);
 	        
@@ -185,13 +154,12 @@ public class ScreenEffect implements IScreenEffect {
 	        	GlStateManager.enableCull();
 	        	GlStateManager.depthMask(true);
 	        }
-           //TGRenderHelper.disableFXLighting();
 	        TGRenderHelper.disableBlendMode(type);
 	        
 		}
 	}
 	
 	enum FadeType {
-		SMOOTH, FAST, NONE;
-	}
+		SMOOTH, FAST, NONE
+    }
 }

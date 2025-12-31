@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 
 public class RenderArmorItem extends RenderItemBase {
 
@@ -63,35 +64,28 @@ public class RenderArmorItem extends RenderItemBase {
 	}
 
 	@Override
-	public void renderItem(TransformType transform, ItemStack stack, EntityLivingBase elb, boolean leftHanded) {
+	public void renderItem(@NotNull TransformType transform, @NotNull ItemStack stack, EntityLivingBase elb, boolean leftHanded) {
 		
-			GlStateManager.pushMatrix();
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(0.5f, 0.5f, 0.5f);
 
-			Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
+		Minecraft.getMinecraft().getTextureManager().bindTexture(texture);
 
-			this.applyTranslation(transform);
+		this.applyTranslation(transform);
 
-			if (TransformType.FIRST_PERSON_LEFT_HAND == transform || TransformType.FIRST_PERSON_RIGHT_HAND == transform) {
+		if (transform == TransformType.GUI) {
+			GlStateManager.rotate(180.0f, 0, 1f, 0);
+		} else if (transform == TransformType.FIRST_PERSON_LEFT_HAND || transform == TransformType.THIRD_PERSON_LEFT_HAND) {
+			GlStateManager.translate(-1f, 0f, 0f);
+		}
 
-			} else if (TransformType.THIRD_PERSON_LEFT_HAND == transform || TransformType.THIRD_PERSON_RIGHT_HAND == transform) {
+		this.setBaseScale(elb,transform);
+		this.setBaseRotation(transform);
+		this.applyBaseTranslation();
 
-			} else if (TransformType.GUI == transform) {
-				GlStateManager.rotate(180.0f, 0, 1f, 0);
-				//GlStateManager.rotate(20.0f, 1f, 0, 0);
+		modelBiped.render(elb, 0, 0, 0, 0, 0, SCALE);
 
-			} else if (TransformType.GROUND == transform) {
-
-			} else if (TransformType.FIXED == transform) {
-				//GlStateManager.rotate(-90.0f, 0, 1.0f, 0);
-			}
-
-			this.setBaseScale(elb,transform);
-			this.setBaseRotation(transform);
-			this.applyBaseTranslation();
-
-			modelBiped.render(elb, 0, 0, 0, 0, 0, SCALE);
-
-			GlStateManager.popMatrix();
+		GlStateManager.popMatrix();
 
 	}
 	

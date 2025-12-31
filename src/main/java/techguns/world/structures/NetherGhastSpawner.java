@@ -8,20 +8,17 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import techguns.TGBlocks;
 import techguns.Techguns;
-import techguns.blocks.EnumMonsterSpawnerType;
-import techguns.entities.npcs.CyberDemon;
 import techguns.entities.npcs.Ghastling;
 import techguns.util.BlockUtils;
 import techguns.util.MBlock;
 import techguns.util.MBlockVanillaSpawner;
 import techguns.world.dungeon.presets.specialblocks.MBlockChestLoottable;
-import techguns.world.dungeon.presets.specialblocks.MBlockTGSpawner;
 
 public class NetherGhastSpawner extends WorldgenStructure {
 
 	private static final ResourceLocation CHEST_LOOT = new ResourceLocation(Techguns.MODID,"chests/factory_building");
 	
-	static ArrayList<MBlock> blockList = new ArrayList<MBlock>();
+	static ArrayList<MBlock> blockList = new ArrayList<>();
 	static short[][] blocks;
 	static {		
 		blockList.add(MBlockRegister.NETHERRACK_C2);

@@ -4,8 +4,6 @@ import com.google.common.base.Predicate;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.ai.attributes.RangedAttribute;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
@@ -19,10 +17,8 @@ import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.oredict.OreDictionary;
 import techguns.api.radiation.TGRadiation;
-import techguns.entities.special.EntityRadiation;
 import techguns.init.ITGInitializer;
 import techguns.radiation.ItemRadiationRegistry;
 import techguns.radiation.RadRegenerationPotion;
@@ -31,12 +27,7 @@ import techguns.radiation.RadiationPotion;
 
 public class TGRadiationSystem implements ITGInitializer {
 
-	public static final Predicate<Entity> RADIATION_TARGETS = new Predicate<Entity>() {
-		@Override
-		public boolean apply(Entity input) {
-			return input instanceof EntityLivingBase;
-		}
-	};
+	public static final Predicate<Entity> RADIATION_TARGETS = input -> input instanceof EntityLivingBase;
 	
 	public static RadiationPotion radiation_effect;
 	public static RadResistancePotion radresistance_effect;
@@ -57,7 +48,7 @@ public class TGRadiationSystem implements ITGInitializer {
 	
 	@Override
 	public void preInit(FMLPreInitializationEvent event) {
-		TGRadiation.RADIATION_RESISTANCE = (new RangedAttribute((IAttribute)null, Techguns.MODID+".radiationResistance", 0.0D, 0.0D, Float.MAX_VALUE)).setShouldWatch(true);
+		TGRadiation.RADIATION_RESISTANCE = (new RangedAttribute(null, Techguns.MODID+".radiationResistance", 0.0D, 0.0D, Float.MAX_VALUE)).setShouldWatch(true);
 
 		radiation_effect= new RadiationPotion();
 		radiation_effect.setPotionName(Techguns.MODID+".radiation").setRegistryName(new ResourceLocation(Techguns.MODID,"radiation"));
@@ -92,13 +83,11 @@ public class TGRadiationSystem implements ITGInitializer {
 			ItemRadiationRegistry.addRadiationData(TGItems.TACTICAL_NUKE_WARHEAD, 1, 100);
 			ItemRadiationRegistry.addRadiationData(TGItems.ROCKET_NUKE, 1, 100);
 			
-			OreDictionary.getOres("ore_uranium").forEach(o -> {
-				ItemRadiationRegistry.addRadiationData(o, 1, 100);
-			});
+			OreDictionary.getOres("oreUranium").forEach(o -> ItemRadiationRegistry.addRadiationData(o, 1, 100));
 			
-			OreDictionary.getOres("ingot_uranium").forEach(o -> {
-				ItemRadiationRegistry.addRadiationData(o, 1, 100);
-			});
+			OreDictionary.getOres("ingotUranium").forEach(o -> ItemRadiationRegistry.addRadiationData(o, 2, 100));
+
+			OreDictionary.getOres("blockUranium").forEach(o -> ItemRadiationRegistry.addRadiationData(o, 5, 100));
 		}
 	}
 
@@ -129,9 +118,9 @@ public class TGRadiationSystem implements ITGInitializer {
 					double factor = (distance-inner_radius)/(radius-inner_radius);
 					str = (int) Math.round(strength_outer + (strength-strength_outer)*factor);
 				}
-				
-				EntityLivingBase elb = (EntityLivingBase) e; //RADIATION_TARGETS only applies to EntityLivingBase
-				elb.addPotionEffect(new PotionEffect(TGRadiationSystem.radiation_effect, duration, 
+
+                //RADIATION_TARGETS only applies to EntityLivingBase
+                e.addPotionEffect(new PotionEffect(TGRadiationSystem.radiation_effect, duration,
 						str, true, true));
 			
 			}

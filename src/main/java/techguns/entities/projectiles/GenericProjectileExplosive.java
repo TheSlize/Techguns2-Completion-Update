@@ -1,8 +1,6 @@
 package techguns.entities.projectiles;
 
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
@@ -10,7 +8,6 @@ import techguns.TGPackets;
 import techguns.Techguns;
 import techguns.api.damagesystem.DamageType;
 import techguns.damagesystem.TGDamageSource;
-import techguns.damagesystem.TGExplosion;
 import techguns.deatheffects.EntityDeathUtils.DeathType;
 import techguns.items.guns.GenericGun;
 import techguns.items.guns.IProjectileFactory;
@@ -58,7 +55,7 @@ public class GenericProjectileExplosive extends GenericProjectile {
 	
 	protected void explode(double x, double y, double z) {
 		if (!this.world.isRemote){
-			TGPackets.network.sendToAllAround(new PacketSpawnParticle("MiningChargeBlockExplosion", x,y,z), TGPackets.targetPointAroundEnt(this, 100.0f));
+			TGPackets.wrapper.sendToAllAround(new PacketSpawnParticle("MiningChargeBlockExplosion", x,y,z), TGPackets.targetPointAroundEnt(this, 100.0f));
 
 			//TGExplosion explosion = new TGExplosion(world, this.shooter, this, x, y, z, this.damage, this.damageMin, 0.25f, 2.5f,/*this.damageDropStart,this.damageDropEnd,*/ this.blockdamage?0.05f:0.0);
 

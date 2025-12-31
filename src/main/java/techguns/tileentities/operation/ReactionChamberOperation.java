@@ -32,7 +32,6 @@ public class ReactionChamberOperation extends MachineOperation {
 	public ReactionChamberOperation(ReactionChamberRecipe r, ReactionChamberTileEntMaster tile) {
 		super(new ArrayList<ItemStack>(), new ArrayList<ItemStack>(), null, null, 1);
 		ItemStack input =tile.input.get().copy();
-		input.setCount(1);
 		this.inputs.add(input);
 		this.outputs.addAll(r.outputs);
 		if(r.liquidConsumtion>0) {
@@ -78,7 +77,7 @@ public class ReactionChamberOperation extends MachineOperation {
 		return this.recipe.beamFocus == ReactionBeamFocus.getBeamFocus(item);
 	}
 	
-	public boolean tick(byte intensity,byte liquidLevel, boolean client, ReactionChamberTileEntMaster tile, int RFTick){
+	public boolean tick(byte intensity, boolean client, ReactionChamberTileEntMaster tile, int RFTick){
 		int progress = tile.progress;
 		int totalTime = tile.totaltime;
 		
@@ -89,7 +88,7 @@ public class ReactionChamberOperation extends MachineOperation {
 			boolean focusMatch = focusMatches(tile.getInventory().getStackInSlot(ReactionChamberTileEntMaster.SLOT_FOCUS));
 			
 			//do recipe tick
-			if (powered && focusMatch && this.required_intensity==intensity && this.recipe.liquidLevel==liquidLevel){
+			if (powered && focusMatch && this.required_intensity==intensity){
 				completion++;
 				this.doRadiation(tile, true);
 			} else {

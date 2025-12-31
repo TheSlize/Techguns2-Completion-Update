@@ -26,25 +26,17 @@ public class MilitaryCamp {
 	static int outerFenceWidth = 1;
 	static int outerFenceHeight = 2;
 	static int outerFenceSpacing = 1;
-	//static MBlock outerFenceBlock = new MBlock(Blocks.IRON_BARS,0);
-	static int outerFenceGateHeight = 2;
-	static int roadMaxWidth = 5;
+    static int roadMaxWidth = 5;
 	static int roadMinWidth = 1;
-	//static MBlock roadBlock = new MBlock(Blocks.GRAVEL, 0);
-	//static MBlock roadBlockSecondary = new MBlock(Blocks.CONCRETE.getDefaultState().withProperty(BlockColored.COLOR, EnumDyeColor.GRAY));//TGChiselBlocks.concrete; //TODO
 	
-	static MBlock groundBlock = null; //new MBlock(Blocks.sand, 0); //Null to keep original world blocks;
+	static MBlock groundBlock = null;
 		
 	//NO LONGER STATIC!
-//	static int minSubSegmentSize = 7; //Below this size the segment must NOT be split
-//	static int maxSubSegmentSize = 15; //Above this size the segment must be split
-	
 	static ArrayList<WorldgenStructure> structures;
 	static ArrayList<WorldgenStructure> borderStructures;
 	static ArrayList<WorldgenStructure> cornerStructures;
-	static String[] militaryCampSpawns = new String[]{"ArmySoldier"};
-	
-	static int minBorderStructureSize = 30; //Below this (total) size border structures must NOT be used
+
+    static int minBorderStructureSize = 30; //Below this (total) size border structures must NOT be used
 	static int maxBorderStructureSize = 80; //Above this (total) size border structures must be used
 	
 	static int minCornerStructureSize = 20; //below this size no corner structures
@@ -52,7 +44,7 @@ public class MilitaryCamp {
 	
 	//--------------------
 	static {
-		structures = new ArrayList<WorldgenStructure>();
+		structures = new ArrayList<>();
 
 		structures.add(new Tent(5,4,5,7,5,7,0));
 		structures.add(new Tent(3,4,3,6,5,6,1));
@@ -105,10 +97,10 @@ public class MilitaryCamp {
 	Random rand;// = new Random(Minecraft.getMinecraft().theWorld.getSeed());
 	
 	CampSegment rootSegment;
-	private int maxHeightDiff = 0;
+	private final int maxHeightDiff;
 
 	CampSegment flagSegment;
-	List<Integer> spawnPositions = new ArrayList<Integer>();
+	List<Integer> spawnPositions = new ArrayList<>();
 	
 	private double campRadiusSquared;
 		
@@ -234,7 +226,7 @@ public class MilitaryCamp {
 		
 		world.setBlockState(p, TGBlocks.MONSTER_SPAWNER.getDefaultState().withProperty(TGBlocks.MONSTER_SPAWNER.TYPE,EnumMonsterSpawnerType.SOLDIER_SPAWN),3);
 		TileEntity tile = world.getTileEntity(p);
-		if(tile!=null && tile instanceof TGSpawnerTileEnt) {
+		if(tile instanceof TGSpawnerTileEnt) {
 			TGSpawnerTileEnt spawner = (TGSpawnerTileEnt) tile;
 			spawner.addMobType(AttackHelicopter.class, 1);
 			spawner.setParams(1, 1, 200,0);
@@ -246,14 +238,14 @@ public class MilitaryCamp {
 		for (int i=0;i<this.spawnPositions.size();i+=3) {
 			int x =posX + this.spawnPositions.get(i) - (posX-this.posX);
 			int y =posY + this.spawnPositions.get(i+1) - (posY-this.posY);
-			int z =posZ + this.spawnPositions.get(i+2) - (posZ-this.posZ);;
-			
-			//System.out.println("SpawnPos!");
+			int z =posZ + this.spawnPositions.get(i+2) - (posZ-this.posZ);
+
+            //System.out.println("SpawnPos!");
 			
 			world.setBlockState(p.setPos(x,y,z), TGBlocks.MONSTER_SPAWNER.getDefaultState().withProperty(TGBlocks.MONSTER_SPAWNER.TYPE,EnumMonsterSpawnerType.SOLDIER_SPAWN),3);
 			
 			tile = world.getTileEntity(p);
-			if(tile!=null && tile instanceof TGSpawnerTileEnt) {
+			if(tile instanceof TGSpawnerTileEnt) {
 				TGSpawnerTileEnt spawner = (TGSpawnerTileEnt) tile;
 				spawner.addMobType(ArmySoldier.class, 1);
 				spawner.setParams(3, 1, 200,0);
@@ -341,7 +333,7 @@ public class MilitaryCamp {
 		
 		CampSegment[] subSegments;
 		boolean subAlignment = false; //false = n/s (x), true = e/w (z);
-		int direction = 0; //0=n, 1=e, 2=s, 3=w;  TODO: Remove subAlignments
+		int direction; //0=n, 1=e, 2=s, 3=w;  TODO: Remove subAlignments
 		
 		//GenericStructure structure = null;
 		
@@ -470,7 +462,7 @@ public class MilitaryCamp {
 				//int count = 2;
 				
 				if (this != rootSegment && rand.nextFloat() >= 0.5) {
-				   count = Math.max(2,Math.round(1.0f+ (float)rand.nextFloat() * 0.5f * (((float)size-(((float)(minSubSegmentSize+1))/2.0f))/(float)(roadWidth+2))));	
+				   count = Math.max(2,Math.round(1.0f+ rand.nextFloat() * 0.5f * (((float)size-(((float)(minSubSegmentSize+1))/2.0f))/(float)(roadWidth+2))));
 				}
 				//int splitSize = Math.round((((float)size/(float)count) - ((float)roadWidth)*0.5f));				
 				
@@ -525,9 +517,8 @@ public class MilitaryCamp {
 		}
 		
 		public float getCenterFactor() {
-			float f = 0f;
-			
-			float segmentX = (float)this.x+((float)this.sizeX/2.0f);
+
+            float segmentX = (float)this.x+((float)this.sizeX/2.0f);
 			float segmentZ = (float)this.z+((float)this.sizeZ/2.0f);
 			
 			Vec2 vSeg = new Vec2(segmentX, segmentZ);
@@ -542,7 +533,7 @@ public class MilitaryCamp {
 		}
 		
 		public boolean shouldPlaceBorderStructure() {
-			int border = MilitaryCamp.this.outerFenceWidth + MilitaryCamp.this.outerFenceSpacing;
+			int border = outerFenceWidth + outerFenceSpacing;
 			boolean isBorderX = (this.x <= MilitaryCamp.this.posX+border ||
 				this.x+this.sizeX >= MilitaryCamp.this.posX + MilitaryCamp.this.sizeX-border);
 			boolean isBorderZ = (this.z <= MilitaryCamp.this.posZ+border ||
@@ -551,7 +542,7 @@ public class MilitaryCamp {
 		}
 		
 		public boolean shouldPlaceCornerStructure() {
-			int border = MilitaryCamp.this.outerFenceWidth + MilitaryCamp.this.outerFenceSpacing;
+			int border = outerFenceWidth + outerFenceSpacing;
 			boolean isCorner = ((this.x <= MilitaryCamp.this.posX+border && this.z <= MilitaryCamp.this.posZ+border) ||
 					(this.x <= MilitaryCamp.this.posX+border && this.z+this.sizeZ >= MilitaryCamp.this.posZ + MilitaryCamp.this.sizeZ-border) ||
 					(this.x+this.sizeX >= MilitaryCamp.this.posX + MilitaryCamp.this.sizeX-border && this.z <= MilitaryCamp.this.posZ+border)||
@@ -562,14 +553,4 @@ public class MilitaryCamp {
 	
 		
 	}
-
-
-	public int[] spawnPosAsArray(List<Integer> list) {
-		int[] s= new int[list.size()];
-		for (int i = 0; i < list.size(); i++) {
-			s[i] = list.get(i).intValue();			
-		}
-		return s;
-	}
-
 }

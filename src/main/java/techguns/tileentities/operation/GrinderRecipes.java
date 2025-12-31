@@ -2,12 +2,11 @@ package techguns.tileentities.operation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
-import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.oredict.OreDictionary;
 import techguns.TGArmors;
 import techguns.items.armors.GenericArmor;
 import techguns.items.guns.GenericGun;
@@ -27,25 +26,19 @@ public class GrinderRecipes {
 	}
 	
 	public static void removeRecipeFor(ItemStack input) {
-		Iterator<GrinderRecipe> it = recipes.iterator();
-		while(it.hasNext()) {
-			GrinderRecipe r = it.next();
-			if(r.input.matches(input)) {
-				it.remove();
-			}
-		}
+        recipes.removeIf(r -> r.input.matches(input));
 	}
 	
 	public static void addRecipe(GenericGun gun, ItemStack[]... outputs) {
 		ArrayList<ItemStack> al = new ArrayList<>();
-		Arrays.stream(outputs).forEach(o -> Arrays.stream(o).forEach(p -> al.add(p)));
+		Arrays.stream(outputs).forEach(o -> al.addAll(Arrays.asList(o)));
 		ItemStack input = new ItemStack(gun,1);
 		recipes.add(new GrinderRecipe(new ItemStackOreDict(input, input.getCount()), al.toArray(new ItemStack[al.size()])));
 	}
 	
 	public static void addRecipe(ItemStack input, ItemStack[]... outputs) {
 		ArrayList<ItemStack> al = new ArrayList<>();
-		Arrays.stream(outputs).forEach(o -> Arrays.stream(o).forEach(p -> al.add(p)));
+		Arrays.stream(outputs).forEach(o -> al.addAll(Arrays.asList(o)));
 		
 		recipes.add(new GrinderRecipe(new ItemStackOreDict(input, input.getCount()), al.toArray(new ItemStack[al.size()])));
 	}
@@ -54,11 +47,49 @@ public class GrinderRecipes {
 				
 		recipes.add(new GrinderRecipeChance(new ItemStackOreDict(input, input.getCount()), outputs, chances));
 	}
+
+    public static void addRecipeChance(ItemStackOreDict input, ItemStack[] outputs, double[] chances) {
+        recipes.add(new GrinderRecipeChance(input, outputs, chances));
+    }
+
+    public static void addOreToDustRecipesAuto(String orePrefix, String dustPrefix, int dustAmount, int bonusDustAmount, double bonusChance) {
+        final String oreName = orePrefix;
+        final String dustName = dustPrefix;
+
+        List<ItemStack> ores = OreDictionary.getOres(oreName, false);
+        List<ItemStack> dusts = OreDictionary.getOres(dustName, false);
+
+        if (ores == null || ores.isEmpty() || dusts == null || dusts.isEmpty()) return;
+
+        ItemStackOreDict input = new ItemStackOreDict(oreName, 1);
+
+        ItemStack dustOut = dusts.get(0).copy();
+        dustOut.setCount(dustAmount);
+
+        ItemStack bonusOut = dusts.get(0).copy();
+        bonusOut.setCount(bonusDustAmount);
+
+        addRecipeChance(input, new ItemStack[] { dustOut, bonusOut }, new double[] { 1.0d, bonusChance });
+    }
+
+    public static void addAllVanillaStyleOreToDustRecipesAuto(int dustAmount, int bonusDustAmount, double bonusChance) {
+        String[] names = OreDictionary.getOreNames();
+        for (String oreName : names) {
+            if (oreName == null || !oreName.startsWith("ore")) continue;
+
+            String mat = oreName.substring(3);
+            if (mat.isEmpty()) continue;
+
+            String dustName = "dust" + mat;
+            List<ItemStack> dusts = OreDictionary.getOres(dustName, false);
+            if (dusts == null || dusts.isEmpty()) continue;
+
+            addOreToDustRecipesAuto(oreName, dustName, dustAmount, bonusDustAmount, bonusChance);
+        }
+    }
 	
 	public static void addGenericArmorRecipes() {
-		TGArmors.armors.forEach(a -> {
-			recipes.add(new GrinderRecipeGenericArmor(a));
-		});
+		TGArmors.armors.forEach(a -> recipes.add(new GrinderRecipeGenericArmor(a)));
 	}
 	
 	public static MachineOperation getOperationForInput(ItemStack input,  GrinderTileEnt tile) {
@@ -102,10 +133,9 @@ public class GrinderRecipes {
 			inputs.add(it);
 			
 			ArrayList<ItemStack> outputs = new ArrayList<>(this.outputs.length);
-			Arrays.stream(this.outputs).forEach(i -> outputs.add(i));
-			
-			MachineOperation op = new MachineOperation(inputs, outputs, null, null, 1);
-			return op;
+            outputs.addAll(Arrays.asList(this.outputs));
+
+            return new MachineOperation(inputs, outputs, null, null, 1);
 		}
 		
 		@Override
@@ -152,13 +182,7 @@ public class GrinderRecipes {
 			inputs.add(it);
 			
 			ArrayList<ItemStack> outputs = new ArrayList<>(this.outputs.length);
-			Arrays.stream(this.outputs).forEach(i -> outputs.add(i));
-			
-			/*for(int i=0;i<this.outputs.length; i++) {
-				if(chances[i]>=1f || tile.getWorld().rand.nextFloat() <=chances[i]) {
-					outputs.add(this.outputs[i]);
-				}
-			}*/
+            outputs.addAll(Arrays.asList(this.outputs));
 			
 			return new MachineOperationChance(inputs, outputs, null, null, 1, chances);
 		}
@@ -182,11 +206,10 @@ public class GrinderRecipes {
 			ArrayList<ItemStack> outputs = new ArrayList<>();
 			
 			ItemStack inverted = input.copy();
-			inverted.setItemDamage(input.getMaxDamage()-input.getItemDamage());;
-			this.armor.getRepairMats(inverted).forEach(i -> outputs.add(i.copy()));
-			
-			MachineOperation op = new MachineOperation(inputs, outputs, null, null, 1);
-			return op;
+			inverted.setItemDamage(input.getMaxDamage()-input.getItemDamage());
+            this.armor.getRepairMats(inverted).forEach(i -> outputs.add(i.copy()));
+
+            return new MachineOperation(inputs, outputs, null, null, 1);
 		}
 
 		@Override
@@ -196,18 +219,16 @@ public class GrinderRecipes {
 
 		@Override
 		public List<List<ItemStack>> getItemInputs() {
-			List<List<ItemStack>> list = new ArrayList<List<ItemStack>>();
-			List<ItemStack> list2 = NonNullList.<ItemStack>withSize(1, new ItemStack(armor));
+			List<List<ItemStack>> list = new ArrayList<>();
+			List<ItemStack> list2 = NonNullList.withSize(1, new ItemStack(armor));
 			list.add(list2);
 			return list;
 		}
 		
 		@Override
 		public List<List<ItemStack>> getItemOutputs() {
-			List<List<ItemStack>> list = new ArrayList<List<ItemStack>>();
-			armor.getRepairMats(new ItemStack(armor,1,armor.getMaxDamage())).forEach(i ->{
-				list.add(NonNullList.<ItemStack>withSize(1, i));
-			});
+			List<List<ItemStack>> list = new ArrayList<>();
+			armor.getRepairMats(new ItemStack(armor,1,armor.getMaxDamage())).forEach(i -> list.add(NonNullList.withSize(1, i)));
 			return list;
 		}
 	}

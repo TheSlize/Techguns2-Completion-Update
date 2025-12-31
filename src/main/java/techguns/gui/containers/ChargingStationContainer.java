@@ -37,7 +37,7 @@ public class ChargingStationContainer extends BasicMachineContainer {
 			this.addSlotToContainer(new SlotMachineUpgrade(handler,  ChargingStationTileEnt.SLOT_UPGRADE, SLOT_UPGRADE_X, SLOT_UPGRADE_Y));
 		}
 		
-		this.addPlayerInventorySlots(player);
+		this.addDefaultPlayerInventorySlots(player);
 	}
 	
 	@Override

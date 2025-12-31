@@ -7,7 +7,6 @@ import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import techguns.TGBlocks;
 import techguns.blocks.EnumMonsterSpawnerType;
-import techguns.entities.npcs.CyberDemon;
 import techguns.entities.npcs.Ghastling;
 import techguns.util.BlockUtils;
 import techguns.util.MBlock;
@@ -15,7 +14,7 @@ import techguns.world.dungeon.presets.specialblocks.MBlockTGSpawner;
 
 public class NetherSoulPlatform extends WorldgenStructure {
 	
-	static ArrayList<MBlock> blockList = new ArrayList<MBlock>();
+	static ArrayList<MBlock> blockList = new ArrayList<>();
 	static short[][] blocks;
 	
 	static {

@@ -21,7 +21,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EntitySelectors;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -35,8 +34,6 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import techguns.TGEntities;
 import techguns.TGPackets;
-import techguns.TGSounds;
-import techguns.Techguns;
 import techguns.api.damagesystem.DamageType;
 import techguns.api.npc.INPCTechgunsShooter;
 import techguns.api.npc.factions.ITGNpcTeam;
@@ -663,7 +660,7 @@ public class GenericProjectile extends Entity implements IProjectile, IEntityAdd
     
     protected void sendImpactFX(double x, double y, double z, float pitch, float yaw, int type, boolean incendiary) {
     	if(!this.world.isRemote) {
-    		TGPackets.network.sendToAllAround(new PacketGunImpactFX((short) type,x,y,z,pitch,yaw, incendiary), new TargetPoint(this.world.provider.getDimension(), x,y,z, TGEntities.bulletTrackRange));
+    		TGPackets.wrapper.sendToAllAround(new PacketGunImpactFX((short) type,x,y,z,pitch,yaw, incendiary), new TargetPoint(this.world.provider.getDimension(), x,y,z, TGEntities.bulletTrackRange));
     	}
     }
     

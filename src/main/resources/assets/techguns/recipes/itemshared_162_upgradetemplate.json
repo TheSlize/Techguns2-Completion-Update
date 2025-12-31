@@ -1,0 +1,26 @@
+{
+  "result": {
+    "item": "techguns:itemshared",
+    "data": 162,
+    "count": 2
+  },
+  "pattern": [
+    "pnp",
+    "ncn",
+    "pnp"
+  ],
+  "type": "forge:ore_shaped",
+  "key": {
+    "p": {
+      "item": "techguns:itemshared",
+      "data": 53
+    },
+    "c": {
+      "item": "techguns:itemshared",
+      "data": 65
+    },
+    "n": {
+      "item": "#DYEGREEN"
+    }
+  }
+}

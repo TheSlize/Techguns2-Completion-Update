@@ -12,13 +12,13 @@
                         {
                             "function": "set_count",
                             "count": {
-                                "min": 1,
+                                "min": 2,
                                 "max": 3
                             }
                         },
                         {
                             "function": "set_data",
-                            "data": 69
+                            "data": 164
                         }
                     ],
                     "conditions": [

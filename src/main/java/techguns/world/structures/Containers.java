@@ -13,7 +13,7 @@ public class Containers extends WorldgenStructure{
 	int containerWidth = 2;
 	int containerHeight = 2;
 	int containerMinLength = 2;
-	IBlockState containerBlock=null;
+	IBlockState containerBlock;
 	
 	public Containers(int minX, int minY, int minZ, int maxX, int maxY, int maxZ, int containerWidth, int containerHeight, int containerMinLength, MBlock containerBlock) {
 		super(minX, minY, minZ, maxX, maxY, maxZ);

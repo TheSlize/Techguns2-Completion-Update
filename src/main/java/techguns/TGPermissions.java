@@ -26,13 +26,10 @@ public class TGPermissions implements ITGInitializer {
 	}
 	
 	public boolean canUseUnsafeMode(EntityPlayer ply) {
-		boolean allow =  (!TGConfig.limitUnsafeModeToOP && PermissionAPI.hasPermission(ply, TGPermissions.ALLOW_UNSAFE_MODE)) || (TGConfig.limitUnsafeModeToOP && isPlayerOp(ply));
-		//System.out.println("LimitOP:"+TGConfig.limitUnsafeModeToOP+" isOp:"+isPlayerOp(ply)+ " Perm:"+PermissionAPI.hasPermission(ply, TGPermissions.ALLOW_UNSAFE_MODE)+" Return:"+allow);
-		return allow;
+        return (TGConfig.limitUnsafeModeToOP || !PermissionAPI.hasPermission(ply, TGPermissions.ALLOW_UNSAFE_MODE)) && (!TGConfig.limitUnsafeModeToOP || !isPlayerOp(ply));
 	}
 	
 	public static boolean isPlayerOp(EntityPlayer player){
-		boolean op = FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getOppedPlayers().getEntry(player.getGameProfile()) != null;
-		return op;
+        return FMLCommonHandler.instance().getMinecraftServerInstance().getPlayerList().getOppedPlayers().getEntry(player.getGameProfile()) != null;
 	}
 }

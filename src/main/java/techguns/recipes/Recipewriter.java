@@ -125,7 +125,6 @@ import techguns.TGItems;
 import techguns.TGuns;
 import techguns.blocks.EnumConcreteType;
 import techguns.blocks.EnumDoorType;
-import techguns.blocks.EnumOreClusterType;
 import techguns.blocks.TGMetalPanelType;
 import techguns.blocks.machines.EnumExplosiveChargeType;
 import techguns.blocks.machines.EnumMachineType;
@@ -289,7 +288,7 @@ public class Recipewriter {
         RecipeJsonConverter.addShapedRecipe(new ItemStack(TGBlocks.MULTIBLOCK_MACHINE,6,EnumMultiBlockMachineType.REACTIONCHAMBER_GLASS.getIndex()), "rgr","rgr","rgr", 'r', rc, 'g', hardenedGlassOrGlass);
         
         ItemStack fab = new ItemStack(TGBlocks.MULTIBLOCK_MACHINE,1, EnumMultiBlockMachineType.FABRICATOR_HOUSING.getIndex());
-        RecipeJsonConverter.addShapedRecipe(new ItemStack(TGBlocks.MULTIBLOCK_MACHINE,4,EnumMultiBlockMachineType.FABRICATOR_HOUSING.getIndex()), "sms","pep","scs", 's', "plateSteel", 'm', MECHANICAL_PARTS_CARBON, 'p', TGItems.CYBERNETIC_PARTS, 'e', TGItems.ELECTRIC_ENGINE, 'c', "circuitElite");
+        RecipeJsonConverter.addShapedRecipe(new ItemStack(TGBlocks.MULTIBLOCK_MACHINE,4,EnumMultiBlockMachineType.FABRICATOR_HOUSING.getIndex()), "sms","pep","scs", 's', "plateSteel", 'm', MECHANICAL_PARTS_CARBON, 'p', TGItems.CYBERNETIC_WIRING, 'e', TGItems.ELECTRIC_ENGINE, 'c', "circuitElite");
         RecipeJsonConverter.addShapedRecipe(new ItemStack(TGBlocks.MULTIBLOCK_MACHINE,1,EnumMultiBlockMachineType.FABRICATOR_CONTROLLER.getIndex()), " g ","cfc"," g ", 'g', hardenedGlassOrGlass, 'c', "circuitElite",  'f', fab);
         RecipeJsonConverter.addShapedRecipe(new ItemStack(TGBlocks.MULTIBLOCK_MACHINE,4,EnumMultiBlockMachineType.FABRICATOR_GLASS.getIndex()), "fgf","g g","fgf", 'f', fab, 'g', hardenedGlassOrGlass);
      
@@ -484,9 +483,7 @@ public class Recipewriter {
 		GenericGun.guns.forEach(g -> {
 			AmmoType a = g.getAmmoType();
 			if(a.hasMultipleVariants()) {
-				a.getVariants().forEach(v -> {
-					RecipeJsonConverter.addShapelessAmmoSwapRecipe(g, a, v.getKey());
-				});
+				a.getVariants().forEach(v -> RecipeJsonConverter.addShapelessAmmoSwapRecipe(g, a, v.getKey()));
 			}
 		});
 	}

@@ -3,7 +3,6 @@ package techguns.items;
 import java.util.Random;
 
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.init.Biomes;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ActionResult;
@@ -13,29 +12,13 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
+import org.jetbrains.annotations.NotNull;
 import techguns.util.BlockUtils;
 import techguns.world.dungeon.Dungeon;
-import techguns.world.dungeon.DungeonTemplate;
 import techguns.world.dungeon.presets.IDungeonPreset;
-import techguns.world.dungeon.presets.PresetTemplateTest;
-import techguns.world.structures.AircraftCarrier;
-import techguns.world.structures.AlienBugNest;
-import techguns.world.structures.AlienBugNestStructure;
-import techguns.world.structures.Barracks;
-import techguns.world.structures.CastleStructure;
-import techguns.world.structures.FactoryHouseSmall;
-import techguns.world.structures.GasStation;
 import techguns.world.structures.MilitaryCamp;
 import techguns.world.structures.NetherDungeonEntrance;
-import techguns.world.structures.OreClusterMeteorBasis;
-import techguns.world.structures.PoliceStation;
-import techguns.world.structures.SmallMine;
-import techguns.world.structures.SmallTrainstation;
-import techguns.world.structures.SurvivorHideout;
-import techguns.world.structures.TechFortressStructure;
 import techguns.world.structures.WorldgenStructure.BiomeColorType;
-import techguns.world.structures.city.CityStructure;
 
 public class WorldGenTestTool extends GenericItem{
 
@@ -50,7 +33,7 @@ public class WorldGenTestTool extends GenericItem{
 	}
 
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand) {
+	public @NotNull ActionResult<ItemStack> onItemRightClick(@NotNull World world, EntityPlayer player, @NotNull EnumHand hand) {
 		ItemStack item = player.getHeldItem(hand);
 		if (!item.hasTagCompound()) {
 			item.setTagCompound(new NBTTagCompound());
@@ -67,8 +50,8 @@ public class WorldGenTestTool extends GenericItem{
 	}
 	
 	@Override
-	public EnumActionResult onItemUse(EntityPlayer player, World world, BlockPos pos, EnumHand hand,
-			EnumFacing facing, float hitX, float hitY, float hitZ) {
+	public @NotNull EnumActionResult onItemUse(EntityPlayer player, @NotNull World world, BlockPos pos, @NotNull EnumHand hand,
+                                               @NotNull EnumFacing facing, float hitX, float hitY, float hitZ) {
 	
 		int x = pos.getX();
 		int y = pos.getY();
@@ -103,7 +86,7 @@ public class WorldGenTestTool extends GenericItem{
 					if (item.getTagCompound().hasKey("mode")) {
 						mode = item.getTagCompound().getInteger("mode");
 					}
-					doOperation(world, Math.min(x, x1), Math.min(y, y1), Math.min(z, z1), sizeX, sizeY, sizeZ, mode);
+					doOperation(world, Math.min(x, x1), Math.min(y, y1), Math.min(z, z1), sizeX, sizeZ, mode);
 
 				}
 	
@@ -122,7 +105,7 @@ public class WorldGenTestTool extends GenericItem{
     }
 	
 	
-	private void doOperation(World world, int x, int y, int z, int sizeX, int sizeY, int sizeZ, int mode) {
+	private void doOperation(World world, int x, int y, int z, int sizeX, int sizeZ, int mode) {
 		
 		Random rnd = new Random();
 		switch (mode) {

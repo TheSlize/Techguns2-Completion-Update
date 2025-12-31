@@ -36,24 +36,22 @@ import techguns.items.additionalslots.ItemJumpPack;
 import techguns.items.additionalslots.ItemNightVisionGoggles;
 import techguns.items.additionalslots.ItemScubaTanks;
 import techguns.items.additionalslots.ItemTacticalMask;
-import techguns.items.armors.GenericShield;
 import techguns.items.guns.ammo.AmmoType;
 import techguns.items.guns.ammo.AmmoTypes;
 import techguns.items.tools.TGCrowbar;
 import techguns.items.tools.TGSword;
 import techguns.recipes.Recipewriter;
 import techguns.tools.ItemJsonCreator;
-import techguns.TGConfig;
 
 
-public class TGItems implements ITGInitializer{
+public class TGItems implements ITGInitializer {
 
 	/**
-	 * FIXME DISABLE THIS BEFORE RELEASE
+	 * DISABLE THIS BEFORE RELEASE
 	 */
 	public static boolean WRITE_ITEM_JSON = false;
 	/**
-	 * FIXME DISABLE THIS BEFORE RELEASE
+	 * DISABLE THIS BEFORE RELEASE
 	 */
 	public static boolean WRITE_RECIPES = false;
 	
@@ -123,7 +121,6 @@ public class TGItems implements ITGInitializer{
 	
 	public static ItemStack BARREL_STONE;
 	public static ItemStack BARREL_IRON;
-	//public static ItemStack BARREL_STEEL;
 	public static ItemStack BARREL_OBSIDIAN_STEEL;
 	public static ItemStack BARREL_CARBON;
 	public static ItemStack BARREL_LASER;
@@ -211,7 +208,11 @@ public class TGItems implements ITGInitializer{
 	
 	public static ItemStack GAUSSRIFLE_SLUGS;
 	public static ItemStack BARREL_GAUSS;
-	
+
+	public static ItemStack CYBERDEMON_FLESH;
+	public static ItemStack BLUEPRINTS;
+	public static ItemStack CYBERNETIC_WIRING;
+
 	//Ammo Variants
 	public static ItemStack SHOTGUN_ROUNDS_INCENDIARY;
 	public static ItemStack AS50_MAGAZINE_INCENDIARY;
@@ -261,7 +262,10 @@ public class TGItems implements ITGInitializer{
 	public static ItemStack RC_HEAT_RAY;
 	public static ItemStack RC_UV_EMITTER;
 	public static ItemStack UV_ELEMENT;
-	
+	public static ItemStack NETHERCHARGE_EMPTY;
+	public static ItemStack MACHINE_UPGRADE_TEMPLATE;
+	public static ItemStack MACHINE_UPGRADE_STEAM;
+
 	public static ItemStack MININGDRILLHEAD_OBSIDIAN;
 	public static ItemStack MININGDRILLHEAD_CARBON;
 	
@@ -362,10 +366,10 @@ public class TGItems implements ITGInitializer{
 		
 		NUCLEAR_POWERCELL = SHARED_ITEM.addsharedVariant("nuclearpowercell", TGSlotType.AMMOSLOT);
 		NUCLEAR_POWERCELL_EMPTY = SHARED_ITEM.addsharedVariant("nuclearpowercelldepleted", TGSlotType.AMMOSLOT);
-		
-		
+
+
 		/**
-		 * GUNPARTS
+		 * GUN PARTS
 		 */
 		RECEIVER_IRON = SHARED_ITEM.addsharedVariant("ironreceiver");
 		RECEIVER_STEEL = SHARED_ITEM.addsharedVariant("steelreceiver");
@@ -547,7 +551,7 @@ public class TGItems implements ITGInitializer{
 		TACTICAL_MASK = new ItemTacticalMask("tacticalmask", 4, 24000);	
 		ANTI_GRAV_PACK = new ItemAntiGravPack("antigravpack", 5, 12000);
 		
-		DOOR3x3 = new ItemTGDoor3x3<EnumDoorType>("item_door3x3",EnumDoorType.class);
+		DOOR3x3 = new ItemTGDoor3x3<>("item_door3x3", EnumDoorType.class);
 		
 		COMBAT_KNIFE = new TGSword(TG_STEEL, "combatknife");
 		CROWBAR = new TGCrowbar(TG_STEEL, "crowbar");
@@ -560,6 +564,14 @@ public class TGItems implements ITGInitializer{
 		REINFORCED_ELECTRIC_ENGINE = SHARED_ITEM.addsharedVariant("reinforced_electric_engine");
 		INGOT_HELLISH = SHARED_ITEM.addsharedVariant("ingothellish");
 		UV_ELEMENT = SHARED_ITEM.addsharedVariant("uvelement");
+		NETHERCHARGE_EMPTY = SHARED_ITEM.addsharedVariant("nethercharge_empty", false, TGSlotType.AMMOSLOT);
+		MACHINE_UPGRADE_TEMPLATE = SHARED_ITEM.addsharedVariant("machine_upgrade_template");
+		MACHINE_UPGRADE_STEAM = SHARED_ITEM.addsharedVariant("machine_upgrade_steam");
+
+		CYBERDEMON_FLESH = SHARED_ITEM.addsharedVariant("cyberdemon_flesh");
+        BLUEPRINTS = SHARED_ITEM.addsharedVariant("blueprints");
+        CYBERNETIC_WIRING = SHARED_ITEM.addsharedVariant("cybernetic_wiring");
+
 
 		if(TGConfig.debug) {
 			WORLDGEN_TEST_TOOL = new WorldGenTestTool("worldgentesttool");
@@ -603,9 +615,7 @@ public class TGItems implements ITGInitializer{
 		for(GenericItem item : ITEMLIST){
 			item.initModel();
 		}
-		ITEMLIST_VANILLA_ITEM.forEach(i -> {
-			 ModelLoader.setCustomModelResourceLocation(i, 0, new ModelResourceLocation(i.getRegistryName(), "inventory"));
-		});
+		ITEMLIST_VANILLA_ITEM.forEach(i -> ModelLoader.setCustomModelResourceLocation(i, 0, new ModelResourceLocation(i.getRegistryName(), "inventory")));
     }
 	
 	@Override
@@ -651,7 +661,7 @@ public class TGItems implements ITGInitializer{
 		}
 	}
 	
-	
+	// TODO: fucking obliterate this nonsense
 	public static ItemStack newStack(ItemStack stack, int size) {
 		ItemStack ret = stack.copy();
 		ret.setCount(size);
@@ -720,6 +730,10 @@ public class TGItems implements ITGInitializer{
 		
 	}
 	public static boolean isMachineUpgrade(ItemStack stack) {
-		return !stack.isEmpty() && stack.getItem()==SHARED_ITEM && stack.getItemDamage()==MACHINE_UPGRADE_STACK.getItemDamage();
+		return !stack.isEmpty() && stack.getItem() == SHARED_ITEM && stack.getItemDamage() == MACHINE_UPGRADE_STACK.getItemDamage();
+	}
+
+	public static boolean isSteamUpgrade(ItemStack stack) {
+		return !stack.isEmpty() && stack.getItem() == SHARED_ITEM && stack.getItemDamage() == MACHINE_UPGRADE_STEAM.getItemDamage();
 	}
 }

@@ -3,7 +3,6 @@ package techguns.entities.projectiles;
 import elucent.albedo.event.GatherLightsEvent;
 import elucent.albedo.lighting.ILightProvider;
 import elucent.albedo.lighting.Light;
-import io.netty.buffer.ByteBuf;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
@@ -116,7 +115,7 @@ public class GaussProjectile extends AdvancedBulletProjectile implements ILightP
 		double z = raytraceResultIn.hitVec.z;
 		
 		if (!this.world.isRemote) {
-			TGPackets.network.sendToAllAround(new PacketSpawnParticle("GaussRifleImpact_Block", x,y,z), TGPackets.targetPointAroundEnt(this, 50.0f));
+			TGPackets.wrapper.sendToAllAround(new PacketSpawnParticle("GaussRifleImpact_Block", x,y,z), TGPackets.targetPointAroundEnt(this, 50.0f));
 		}else {
 			Techguns.proxy.createLightPulse(x,y,z, 5, 10, 3.0f, 1.0f, 0.5f, 0.75f, 1f);
 		}
@@ -134,7 +133,7 @@ public class GaussProjectile extends AdvancedBulletProjectile implements ILightP
 			float offsetY = -0.09f;
 			float offsetZ = 0.5f;
 			
-			TGPackets.network.sendToAllAround(new PacketSpawnParticleOnEntity("GaussFireFX", p, offsetX, offsetY, offsetZ, true), TGPackets.targetPointAroundEnt(p, 25.0f));
+			TGPackets.wrapper.sendToAllAround(new PacketSpawnParticleOnEntity("GaussFireFX", p, offsetX, offsetY, offsetZ, true), TGPackets.targetPointAroundEnt(p, 25.0f));
 			return new GaussProjectile(world,p,damage,speed,TTL,spread,dmgDropStart,dmgDropEnd,dmgMin,penetration,blockdamage,firePos);
 		}
 
