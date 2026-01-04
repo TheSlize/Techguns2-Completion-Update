@@ -177,7 +177,7 @@ public class ClientProxy extends CommonProxy {
 	
 		Map<String, RenderPlayer> skinMap = Minecraft.getMinecraft().getRenderManager().getSkinMap();
 		
-		RenderPlayer slim =skinMap.get("slim");
+		RenderPlayer slim = skinMap.get("slim");
 		//slim.addLayer(new TGLayerRendererer(slim,true));
 		insertLayerAfterArmor(slim, new TGLayerRendererer(slim));
 		

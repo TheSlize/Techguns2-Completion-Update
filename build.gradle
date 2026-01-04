@@ -16,7 +16,7 @@ apply plugin: 'eclipse'
 apply plugin: 'org.jetbrains.gradle.plugin.idea-ext'
 
 
-version = "1.12.2-2.1.1.0"
+version = "1.12.2-2.1.1.1"
 group = "techguns" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = "techguns"
 
@@ -54,7 +54,7 @@ minecraft {
 			property 'forge.logging.console.level', 'debug'
 		}
 	}
-	accessTransformer = file('src/main/resources/techguns_at.cfg')
+	accessTransformer = file('src/main/resources/META-INF/techguns_at.cfg')
 }
 
 repositories {

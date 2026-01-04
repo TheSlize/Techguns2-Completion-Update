@@ -23,14 +23,16 @@ public class ChemLabRecipes {
 		ItemStack slot3 = tile.input_bottle.get();
 		FluidStack fluidIn = tile.getCurrentInputFluid();
 
-        for (ChemLabRecipe recipe : recipes) {
-            if (recipe.reqSteamUpgrade && !tile.hasSteamUpgrade()) return null;
-            ChemRecipeType t = recipe.isValidInput(slot1, slot2, slot3, fluidIn);
-            if (t != ChemRecipeType.INVALID) {
-                return recipe.getOperationFor(tile, t);
-            }
-        }
-		return null;		
+		for (ChemLabRecipe recipe : recipes) {
+			ChemRecipeType t = recipe.isValidInput(slot1, slot2, slot3, fluidIn);
+			if (t != ChemRecipeType.INVALID) {
+				if (recipe.reqSteamUpgrade && !tile.hasSteamUpgrade()) {
+					continue;
+				}
+				return recipe.getOperationFor(tile, t);
+			}
+		}
+		return null;
 	}
 	
 	public static ArrayList<ChemLabRecipe> getRecipes() {
@@ -110,7 +112,7 @@ public class ChemLabRecipes {
 		public ItemStack output;
 		public int[] amounts=new int[4];
 		public int powerPerTick;
-		public boolean reqSteamUpgrade;
+		public boolean reqSteamUpgrade = false;
 		
 		
 		public boolean isItemPartOfRecipe(ItemStack item){
