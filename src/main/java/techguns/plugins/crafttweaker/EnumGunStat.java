@@ -36,7 +36,12 @@ public enum EnumGunStat {
 	/**
 	 * How much shots randomly divert
 	 */
-	SPREAD;
+	SPREAD,
+	PENETRATION,
+	CLIP_SIZE,
+	AMMO_COUNT,
+	BULLET_COUNT,
+	RELOAD_TIME;
 	
 	public static EnumGunStat parseFromString(String s) {
 		for(EnumGunStat e :EnumGunStat.values()) {
