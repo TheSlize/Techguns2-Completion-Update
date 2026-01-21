@@ -24,16 +24,14 @@ public class TGNpcSpawn {
 		this.type=type;
 		this.spawnWeight=spawnWeight;
 		this.biomeWhitelist = null;
-		this.dimensionIDs= new ArrayList<>(1);
-		this.dimensionIDs.add(0);
+		this.dimensionIDs = null;
 	}
 
 	public TGNpcSpawn(Class<? extends EntityMob> type, int spawnWeight, boolean dummy){
 		this.type_vanillish=type;
 		this.spawnWeight=spawnWeight;
 		this.biomeWhitelist = null;
-		this.dimensionIDs= new ArrayList<>(1);
-		this.dimensionIDs.add(0);
+		this.dimensionIDs = null;
 	}
 
 	public int getWeightForBiome(Biome biome){
