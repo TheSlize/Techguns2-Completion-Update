@@ -1626,21 +1626,22 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
             case CLIP_SIZE -> {
                 this.clipsize = (int) value;
                 yield true;
-                case AMMO_COUNT -> {
-                    this.ammoCount = (int) value;
-                    yield true;
-                }
-                case BULLET_COUNT -> {
-                    this.bulletcount = (int) value;
-                    yield true;
-                }
-                case RELOAD_TIME -> {
-                    this.reloadtime = (int) value;
-                    yield true;
-                }
-                default -> false;
-            };
-        }
+            }
+            case AMMO_COUNT -> {
+                this.ammoCount = (int) value;
+                yield true;
+            }
+            case BULLET_COUNT -> {
+                this.bulletcount = (int) value;
+                yield true;
+            }
+            case RELOAD_TIME -> {
+                this.reloadtime = (int) value;
+                yield true;
+            }
+            default -> false;
+        };
+    }
 
     public float getSpread() {
         return spread;
