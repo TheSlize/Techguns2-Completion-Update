@@ -2,12 +2,15 @@ package techguns.plugins.jei;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import org.jetbrains.annotations.NotNull;
 import techguns.TGItems;
+import techguns.gui.PoweredTileEntGui;
+import techguns.gui.TGBaseGui;
 import techguns.tileentities.FabricatorTileEntMaster;
 import techguns.tileentities.operation.FabricatorRecipe;
 import techguns.util.TextUtil;
@@ -16,7 +19,7 @@ public class FabricatorJeiRecipe extends BasicRecipeWrapper {
 
     public final FabricatorRecipe recipe;
 
-    private static final int BLUEPRINT_X = 105 - 4;
+    private static final int BLUEPRINT_X = 100 - 4;
     private static final int BLUEPRINT_Y = 77 - 4;
 
     public FabricatorJeiRecipe(FabricatorRecipe recipe) {
@@ -46,7 +49,7 @@ public class FabricatorJeiRecipe extends BasicRecipeWrapper {
 
     @Override
     public @NotNull List<String> getTooltipStrings(int mouseX, int mouseY) {
-        final int x = 105 - 3;
+        final int x = 100 - 3;
         final int y = 77 - 3;
 
         if (this.recipe != null
@@ -59,6 +62,17 @@ public class FabricatorJeiRecipe extends BasicRecipeWrapper {
             return Arrays.asList(TextUtil.resolveKeyArray("techguns.tooltip.needsBlueprint"));
         }
 
-        return super.getTooltipStrings(mouseX, mouseY);
+        if (TGBaseGui.isInRect(mouseX, mouseY, 171 - 3, 9 - 4, 4, 83)) {
+
+            List<String> tooltip = new ArrayList<>();
+            tooltip.add(TextUtil.trans("techguns.container.power") + ":");
+
+            tooltip.add("-" + this.getRFperTick() + " " + PoweredTileEntGui.POWER_UNIT + "/t");
+            tooltip.add("-" + this.getRFperTick() * this.getDuration() + " " + PoweredTileEntGui.POWER_UNIT);
+
+            return tooltip;
+        } else {
+            return Collections.emptyList();
+        }
     }
 }

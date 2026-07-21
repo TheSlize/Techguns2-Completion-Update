@@ -153,23 +153,23 @@ public class TGEntities implements ITGInitializer {
 	public void init(FMLInitializationEvent event) {
 
 		//registerSpawn does not add the spawn if the spawnweight is <=0
-		TGSpawnManager.spawnTableOverworld.registerSpawn(new TGNpcSpawn(ZombieSoldier.class, TGConfig.spawnWeightZombieSoldier), 1);
-		TGSpawnManager.spawnTableOverworld.registerSpawn(new TGNpcSpawn(ZombieFarmer.class, TGConfig.spawnWeightZombieFarmer), 0);
-		TGSpawnManager.spawnTableOverworld.registerSpawn(new TGNpcSpawn(ZombieMiner.class, TGConfig.spawnWeightZombieMiner), 0);
-		TGSpawnManager.spawnTableOverworld.registerSpawn(new TGNpcSpawn(SkeletonSoldier.class, TGConfig.spawnWeightSkeletonSoldier), 1);
+		TGSpawnManager.spawnTableOverworld.registerSpawn(new TGNpcSpawn(ZombieSoldier.class, TGConfig.npcSpawn.spawnWeightZombieSoldier), 1);
+		TGSpawnManager.spawnTableOverworld.registerSpawn(new TGNpcSpawn(ZombieFarmer.class, TGConfig.npcSpawn.spawnWeightZombieFarmer), 0);
+		TGSpawnManager.spawnTableOverworld.registerSpawn(new TGNpcSpawn(ZombieMiner.class, TGConfig.npcSpawn.spawnWeightZombieMiner), 0);
+		TGSpawnManager.spawnTableOverworld.registerSpawn(new TGNpcSpawn(SkeletonSoldier.class, TGConfig.npcSpawn.spawnWeightSkeletonSoldier), 1);
 		
-		TGSpawnManager.spawnTableOverworld.registerSpawn(new TGNpcSpawn(PsychoSteve.class, TGConfig.spawnWeightPsychoSteve), 1);
+		TGSpawnManager.spawnTableOverworld.registerSpawn(new TGNpcSpawn(PsychoSteve.class, TGConfig.npcSpawn.spawnWeightPsychoSteve), 1);
 		
-		TGSpawnManager.spawnTableOverworld.registerSpawn(new TGNpcSpawn(Bandit.class, TGConfig.spawnWeightBandit), 2);
+		TGSpawnManager.spawnTableOverworld.registerSpawn(new TGNpcSpawn(Bandit.class, TGConfig.npcSpawn.spawnWeightBandit), 2);
 		
 		
-		TGSpawnManager.spawnTableNether.registerSpawn(new TGNpcSpawn(ZombiePigmanSoldier.class, TGConfig.spawnWeightZombiePigmanSoldier), 0);
-		TGSpawnManager.spawnTableNether.registerSpawn(new TGNpcSpawn(CyberDemon.class, TGConfig.spawnWeightCyberDemon), 0);
-		TGSpawnManager.spawnTableNether.registerSpawn(new TGNpcSpawn(Ghastling.class, TGConfig.spawnWeightGhastling, true), 0);
+		TGSpawnManager.spawnTableNether.registerSpawn(new TGNpcSpawn(ZombiePigmanSoldier.class, TGConfig.npcSpawn.spawnWeightZombiePigmanSoldier), 0);
+		TGSpawnManager.spawnTableNether.registerSpawn(new TGNpcSpawn(CyberDemon.class, TGConfig.npcSpawn.spawnWeightCyberDemon), 0);
+		TGSpawnManager.spawnTableNether.registerSpawn(new TGNpcSpawn(Ghastling.class, TGConfig.npcSpawn.spawnWeightGhastling, true), 0);
 
-		TGSpawnManager.spawnTableEnd.registerSpawn(new TGNpcSpawn(SuperMutantBasic.class, TGConfig.spawnWeightSuperMutantBasic), 0);
-		TGSpawnManager.spawnTableEnd.registerSpawn(new TGNpcSpawn(SuperMutantElite.class, TGConfig.spawnWeightSuperMutantElite), 0);
-		TGSpawnManager.spawnTableEnd.registerSpawn(new TGNpcSpawn(SuperMutantHeavy.class, TGConfig.spawnWeightSuperMutantHeavy), 0);
+		TGSpawnManager.spawnTableEnd.registerSpawn(new TGNpcSpawn(SuperMutantBasic.class, TGConfig.npcSpawn.spawnWeightSuperMutantBasic), 0);
+		TGSpawnManager.spawnTableEnd.registerSpawn(new TGNpcSpawn(SuperMutantElite.class, TGConfig.npcSpawn.spawnWeightSuperMutantElite), 0);
+		TGSpawnManager.spawnTableEnd.registerSpawn(new TGNpcSpawn(SuperMutantHeavy.class, TGConfig.npcSpawn.spawnWeightSuperMutantHeavy), 0);
 		
 	}
 
@@ -192,19 +192,19 @@ public class TGEntities implements ITGInitializer {
 			}
 		});
 
-		if(TGConfig.spawnWeightTGOverworld > 0) {
-			EntityRegistry.addSpawn(TGDummySpawn.class, TGConfig.spawnWeightTGOverworld, 1, 3, EnumCreatureType.MONSTER,overworldBiomes.toArray(new Biome[overworldBiomes.size()]));
+		if(TGConfig.npcSpawn.spawnWeightTGOverworld > 0) {
+			EntityRegistry.addSpawn(TGDummySpawn.class, TGConfig.npcSpawn.spawnWeightTGOverworld, 1, 3, EnumCreatureType.MONSTER,overworldBiomes.toArray(new Biome[overworldBiomes.size()]));
 		}
-		if(TGConfig.spawnWeightTGNether > 0) {
-			EntityRegistry.addSpawn(TGDummySpawn.class, TGConfig.spawnWeightTGNether, 1, 3, EnumCreatureType.MONSTER,netherBiomes.toArray(new Biome[netherBiomes.size()]));
+		if(TGConfig.npcSpawn.spawnWeightTGNether > 0) {
+			EntityRegistry.addSpawn(TGDummySpawn.class, TGConfig.npcSpawn.spawnWeightTGNether, 1, 3, EnumCreatureType.MONSTER,netherBiomes.toArray(new Biome[netherBiomes.size()]));
 		}
-		if(TGConfig.spawnWeightTGEnd > 0) {
-			EntityRegistry.addSpawn(TGDummySpawn.class, TGConfig.spawnWeightTGEnd, 1, 3, EnumCreatureType.MONSTER,endBiomes.toArray(new Biome[endBiomes.size()]));
+		if(TGConfig.npcSpawn.spawnWeightTGEnd > 0) {
+			EntityRegistry.addSpawn(TGDummySpawn.class, TGConfig.npcSpawn.spawnWeightTGEnd, 1, 3, EnumCreatureType.MONSTER,endBiomes.toArray(new Biome[endBiomes.size()]));
 		}
 	}
 
 	protected static boolean isBlacklisted(String registryName) {
-		for (String s: TGConfig.biomeBlacklist) {
+		for (String s: TGConfig.npcSpawn.biomeBlacklist) {
 			if(registryName.equals(s)) {
 				return true;
 			}

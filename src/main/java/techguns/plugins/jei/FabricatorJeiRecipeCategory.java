@@ -25,22 +25,22 @@ public class FabricatorJeiRecipeCategory extends BasicRecipeCategory<FabricatorJ
     private static final int SLOT_IN4 = 3;
     private static final int SLOT_OUT = 4;
 
-    private static final int SLOT_IN1_X = 16 - BG_U;
+    private static final int SLOT_IN1_X = 8 - BG_U;
     private static final int SLOT_IN1_Y = 8 - BG_V;
 
-    private static final int SLOT_IN2_X = 62 - BG_U;
+    private static final int SLOT_IN2_X = 54 - BG_U;
     private static final int SLOT_IN2_Y = 8 - BG_V;
 
-    private static final int SLOT_IN3_X = 108 - BG_U;
+    private static final int SLOT_IN3_X = 100 - BG_U;
     private static final int SLOT_IN3_Y = 8 - BG_V;
 
-    private static final int SLOT_IN4_X = 154 - BG_U;
+    private static final int SLOT_IN4_X = 146 - BG_U;
     private static final int SLOT_IN4_Y = 8 - BG_V;
 
-    private static final int SLOT_OUT_X = 85 - BG_U;
+    private static final int SLOT_OUT_X = 77 - BG_U;
     private static final int SLOT_OUT_Y = 76 - BG_V;
 
-    private static final int PROGRESS_X = 24 - BG_U;
+    private static final int PROGRESS_X = 16 - BG_U;
     private static final int PROGRESS_Y = 26 - BG_V;
 
     private final IDrawableAnimated progress;
@@ -72,7 +72,7 @@ public class FabricatorJeiRecipeCategory extends BasicRecipeCategory<FabricatorJ
 
     @Override
     public void drawExtras(@NotNull Minecraft minecraft) {
-        this.powerbar.draw(minecraft, 6 - BG_U, 9 - BG_V);
+        this.powerbar.draw(minecraft, 171 - BG_U, 9 - BG_V);
         this.progress.draw(minecraft, PROGRESS_X, PROGRESS_Y);
     }
 }

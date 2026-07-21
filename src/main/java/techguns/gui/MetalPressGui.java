@@ -25,7 +25,7 @@ import static techguns.gui.ReactionChamberGui.ru_ru;
 import static techguns.tileentities.MetalPressTileEnt.BUTTON_ID_AUTOSPLIT;
 
 public class MetalPressGui extends PoweredTileEntGui {
-    public static final ResourceLocation texture = new ResourceLocation(Tags.MOD_ID, "textures/gui/metal_press_gui.png");
+    public static final ResourceLocation texture = new ResourceLocation(Tags.MOD_ID, "textures/gui/ce_metal_press_gui.png");
     public static final ResourceLocation gauge_texture = new ResourceLocation(Tags.MOD_ID, "textures/gui/gauges.png");
 
     MetalPressTileEnt tile;

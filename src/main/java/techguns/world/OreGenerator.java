@@ -21,19 +21,19 @@ public class OreGenerator implements IWorldGenerator {
                          IChunkProvider chunkProvider) {
         //If OVERWORLD!
         if (world.provider.getDimension() == 0) {
-            if (TGConfig.doOreGenCopper) {
+            if (TGConfig.worldgen.doOreGenCopper) {
                 this.addOreSpawn(TGBlocks.TG_ORE.getDefaultState().withProperty(BlockTGOre.ORE_TYPE, EnumOreType.ORE_COPPER), world, random, chunkX * 16, chunkZ * 16, 16, 16, 5 + random.nextInt(3), 12, 5, 80);
             }
-            if (TGConfig.doOreGenTin) {
+            if (TGConfig.worldgen.doOreGenTin) {
                 this.addOreSpawn(TGBlocks.TG_ORE.getDefaultState().withProperty(BlockTGOre.ORE_TYPE, EnumOreType.ORE_TIN), world, random, chunkX * 16, chunkZ * 16, 16, 16, 4 + random.nextInt(3), 10, 5, 60);
             }
-            if (TGConfig.doOreGenLead) {
+            if (TGConfig.worldgen.doOreGenLead) {
                 this.addOreSpawn(TGBlocks.TG_ORE.getDefaultState().withProperty(BlockTGOre.ORE_TYPE, EnumOreType.ORE_LEAD), world, random, chunkX * 16, chunkZ * 16, 16, 16, 4 + random.nextInt(2), 8, 5, 50);
             }
-            if (TGConfig.doOreGenUranium) {
+            if (TGConfig.worldgen.doOreGenUranium) {
                 this.addOreSpawn(TGBlocks.TG_ORE.getDefaultState().withProperty(BlockTGOre.ORE_TYPE, EnumOreType.ORE_URANIUM), world, random, chunkX * 16, chunkZ * 16, 16, 16, 4 + random.nextInt(2), 4, 4, 24);
             }
-            if (TGConfig.doOreGenTitanium) {
+            if (TGConfig.worldgen.doOreGenTitanium) {
                 this.addOreSpawn(TGBlocks.TG_ORE.getDefaultState().withProperty(BlockTGOre.ORE_TYPE, EnumOreType.ORE_TITANIUM), world, random, chunkX * 16, chunkZ * 16, 16, 16, 4 + random.nextInt(4), 5, 4, 32);
             }
         }

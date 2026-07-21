@@ -22,452 +22,450 @@ import techguns.items.guns.GenericGunCharge;
 
 public class RenderGunBase extends RenderItemBase {
 
-	protected IScreenEffect muzzleFX= null;
-	
-	protected IScreenEffect scope=null;
-	
-	protected float muzzleFX_x_l=-1f;
-	protected float muzzleFX_x_r=0f;
-	protected float muzzleFX_y=0f;
-	protected float muzzleFX_z=0f;
-	protected float muzzleFX_scale=1.0f;
-	
-	
+    protected IScreenEffect muzzleFX = null;
 
-	protected float muzzleFX_3p_y=0f;
-	protected float muzzleFX_3p_z=0f;
-	protected float muzzleFX_3p_scale=0.5f;
-		
-	protected float mf_jitterX = 0f;
-	protected float mf_jitterY = 0f;
-	protected float mf_jitterAngle = 0f;
-	protected float mf_jitterScale = 0f;
-	
-	protected GunAnimation recoilAnim = GunAnimation.genericRecoil;
-	protected float[] recoilParams = new float[] {0.15f, 5.0f};
-	protected GunAnimation reloadAnim = GunAnimation.genericReload;
-	protected float[] reloadParams = new float[] {1.0f, 40.0f};
-	
-	protected GunAnimation scopeRecoilAnim = null; //GunAnimation.scopeRecoil;
-	protected float[] scopeRecoilParams = null; //new float[] {0.25f, 1.0f};	
-	
-	protected GunAnimation recoilAnim3p = GunAnimation.genericRecoil;
-	protected float[] recoilParams3p = new float[] {0f, 5.0f};
-	protected GunAnimation reloadAnim3p = GunAnimation.genericReload;
-	protected float[] reloadParams3p = new float[] {0f, 40.0f};
-	
-	protected float scopescale=3.0f;
-	
-	protected float chargeTranslation=0.25f;
-	
-	public RenderGunBase(ModelMultipart model, int parts) {
-		super(model, null);
-		this.parts = parts;
-		this.scale_ground=this.scale_thirdp;
-	}
+    protected IScreenEffect scope = null;
 
-	/**
-	 * Set the basic translation applied to ALL types
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return
-	 */
-	@Override
-	public RenderGunBase setBaseTranslation(float x, float y, float z) {
-		return (RenderGunBase) super.setBaseTranslation(x, y, z);
-	}
+    protected float muzzleFX_x_l = -1f;
+    protected float muzzleFX_x_r = 0f;
+    protected float muzzleFX_y = 0f;
+    protected float muzzleFX_z = 0f;
+    protected float muzzleFX_scale = 1.0f;
 
-	@Override
-	public RenderGunBase setGUIScale(float guiscale){
-		return (RenderGunBase) super.setGUIScale(guiscale);
-	}
-	
-	public RenderGunBase setReloadAnim(GunAnimation anim, float... params) {
-		this.reloadAnim = anim;
-		this.reloadParams = params;
-		return this;
-	}
-	
-	public RenderGunBase setRecoilAnim(GunAnimation anim, float... params) {
-		this.recoilAnim = anim;
-		this.recoilParams = params;
-		return this;
-	}
-	
-	public RenderGunBase setScopeRecoilAnim(GunAnimation anim, float... params) {
-		this.scopeRecoilAnim = anim;
-		this.scopeRecoilParams = params;
-		return this;
-	}
-	
-	public RenderGunBase setReloadAnim3p(GunAnimation anim, float... params) {
-		this.reloadAnim3p = anim;
-		this.reloadParams3p = params;
-		return this;
-	}
-	
-	public RenderGunBase setChargeTranslationAmount(float value) {
-		this.chargeTranslation=value;
-		return this;
-	}
-	
-	/**
-	 * TRANSLATE FIRST PERSON x,y,z
-	 * TRANSLATE THIRD PERSON x,y,z
-	 * TRANSLATE GUI x,y,z
-	 * TRANSLATEGROUND x,y,z
-	 * TRANLATE FIXED (frame) x,y,z
-	 * 
-	 * Left hand gets automatically mirrored
-	 * 
-	 * @param translations
-	 *            - must be a float[5][3]
-	 * @return
-	 */
-	public RenderGunBase setTransformTranslations(float[][] translations) {
-		return (RenderGunBase) super.setTransformTranslations(translations);
-	}
 
-	public RenderGunBase setMuzzleFx(IScreenEffect muzzleFX, float x, float y, float z, float scale, float x_l){
-		this.muzzleFX=muzzleFX;
-		this.muzzleFX_x_r=x;
-		this.muzzleFX_x_l=x_l;
-		this.muzzleFX_y=y;
-		this.muzzleFX_z=z;
-		this.muzzleFX_scale=scale;
-		return this;
-	}
-	
-	public RenderGunBase setMuzzleFXPos3P(float y, float z) {
-		this.muzzleFX_3p_y=y;
-		this.muzzleFX_3p_z=z;
-		return this;
-	}
-	
-	public RenderGunBase setScope(IScreenEffect scope) {
-		this.scope=scope;
-		return this;
-	}
-	
-	public RenderGunBase setScope(IScreenEffect scope, float scale) {
-		this.scope=scope;
-		this.scopescale=scale;
-		return this;
-	}
-	
-	public boolean hasScopeTexture() {
-		return this.scope!=null;
-	}
-	
-	protected static ITGShooterValues getShooterValues(EntityLivingBase ent) {
-		ITGShooterValues values = null;
-		if (ent != null) {
-			if (ent instanceof EntityPlayer) {
-				values = TGExtendedPlayer.get((EntityPlayer) ent);
-			} else {
-				values = TGShooterValues.get(ent);
-			}
-		}
-		return values;
-	}
+    protected float muzzleFX_3p_y = 0f;
+    protected float muzzleFX_3p_z = 0f;
+    protected float muzzleFX_3p_scale = 0.5f;
 
-	@Override
-	public void renderItem(@NotNull TransformType transform, @NotNull ItemStack stack, EntityLivingBase entityIn, boolean leftHand) {
-		GenericGun gun = ((GenericGun) stack.getItem());
-		ITGShooterValues values = getShooterValues(entityIn);
-		boolean sneaking = false;
-		boolean isOffhand = false;
-		if (entityIn!=null){
-			sneaking = entityIn.isSneaking();
-			isOffhand = ((!leftHand) && entityIn.getPrimaryHand() == EnumHandSide.LEFT) || ((leftHand) && entityIn.getPrimaryHand() == EnumHandSide.RIGHT);
-		}
+    protected float mf_jitterX = 0f;
+    protected float mf_jitterY = 0f;
+    protected float mf_jitterAngle = 0f;
+    protected float mf_jitterScale = 0f;
 
-		GlStateManager.pushMatrix();
+    protected GunAnimation recoilAnim = GunAnimation.genericRecoil;
+    protected float[] recoilParams = new float[]{0.15f, 5.0f};
+    protected GunAnimation reloadAnim = GunAnimation.genericReload;
+    protected float[] reloadParams = new float[]{1.0f, 40.0f};
+
+    protected GunAnimation scopeRecoilAnim = null; //GunAnimation.scopeRecoil;
+    protected float[] scopeRecoilParams = null; //new float[] {0.25f, 1.0f};
+
+    protected GunAnimation recoilAnim3p = GunAnimation.genericRecoil;
+    protected float[] recoilParams3p = new float[]{0f, 5.0f};
+    protected GunAnimation reloadAnim3p = GunAnimation.genericReload;
+    protected float[] reloadParams3p = new float[]{0f, 40.0f};
+
+    protected float scopescale = 3.0f;
+
+    protected float chargeTranslation = 0.25f;
+
+    public RenderGunBase(ModelMultipart model, int parts) {
+        super(model, null);
+        this.parts = parts;
+        this.scale_ground = this.scale_thirdp;
+    }
+
+    protected static ITGShooterValues getShooterValues(EntityLivingBase ent) {
+        ITGShooterValues values = null;
+        if (ent != null) {
+            if (ent instanceof EntityPlayer) {
+                values = TGExtendedPlayer.get((EntityPlayer) ent);
+            } else {
+                values = TGShooterValues.get(ent);
+            }
+        }
+        return values;
+    }
+
+    /**
+     * Set the basic translation applied to ALL types
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @return
+     */
+    @Override
+    public RenderGunBase setBaseTranslation(float x, float y, float z) {
+        return (RenderGunBase) super.setBaseTranslation(x, y, z);
+    }
+
+    @Override
+    public RenderGunBase setGUIScale(float guiscale) {
+        return (RenderGunBase) super.setGUIScale(guiscale);
+    }
+
+    public RenderGunBase setReloadAnim(GunAnimation anim, float... params) {
+        this.reloadAnim = anim;
+        this.reloadParams = params;
+        return this;
+    }
+
+    public RenderGunBase setRecoilAnim(GunAnimation anim, float... params) {
+        this.recoilAnim = anim;
+        this.recoilParams = params;
+        return this;
+    }
+
+    public RenderGunBase setScopeRecoilAnim(GunAnimation anim, float... params) {
+        this.scopeRecoilAnim = anim;
+        this.scopeRecoilParams = params;
+        return this;
+    }
+
+    public RenderGunBase setReloadAnim3p(GunAnimation anim, float... params) {
+        this.reloadAnim3p = anim;
+        this.reloadParams3p = params;
+        return this;
+    }
+
+    public RenderGunBase setChargeTranslationAmount(float value) {
+        this.chargeTranslation = value;
+        return this;
+    }
+
+    /**
+     * TRANSLATE FIRST PERSON x,y,z
+     * TRANSLATE THIRD PERSON x,y,z
+     * TRANSLATE GUI x,y,z
+     * TRANSLATEGROUND x,y,z
+     * TRANLATE FIXED (frame) x,y,z
+     * <p>
+     * Left hand gets automatically mirrored
+     *
+     * @param translations - must be a float[5][3]
+     * @return
+     */
+    public RenderGunBase setTransformTranslations(float[][] translations) {
+        return (RenderGunBase) super.setTransformTranslations(translations);
+    }
+
+    public RenderGunBase setMuzzleFx(IScreenEffect muzzleFX, float x, float y, float z, float scale, float x_l) {
+        this.muzzleFX = muzzleFX;
+        this.muzzleFX_x_r = x;
+        this.muzzleFX_x_l = x_l;
+        this.muzzleFX_y = y;
+        this.muzzleFX_z = z;
+        this.muzzleFX_scale = scale;
+        return this;
+    }
+
+    public RenderGunBase setMuzzleFXPos3P(float y, float z) {
+        this.muzzleFX_3p_y = y;
+        this.muzzleFX_3p_z = z;
+        return this;
+    }
+
+    public RenderGunBase setScope(IScreenEffect scope) {
+        this.scope = scope;
+        return this;
+    }
+
+    public RenderGunBase setScope(IScreenEffect scope, float scale) {
+        this.scope = scope;
+        this.scopescale = scale;
+        return this;
+    }
+
+    public boolean hasScopeTexture() {
+        return this.scope != null;
+    }
+
+    @Override
+    public void renderItem(@NotNull TransformType transform, @NotNull ItemStack stack, EntityLivingBase entityIn, boolean leftHand) {
+        GenericGun gun = ((GenericGun) stack.getItem());
+        ITGShooterValues values = getShooterValues(entityIn);
+        boolean sneaking = false;
+        boolean isOffhand = false;
+        if (entityIn != null) {
+            sneaking = entityIn.isSneaking();
+            isOffhand = ((!leftHand) && entityIn.getPrimaryHand() == EnumHandSide.LEFT) || ((leftHand) && entityIn.getPrimaryHand() == EnumHandSide.RIGHT);
+        }
+
+        GlStateManager.pushMatrix();
         GlStateManager.disableCull();
-		GlStateManager.translate(0.5f, 0.5f, 0.5f);
+        GlStateManager.translate(0.5f, 0.5f, 0.5f);
 
-
-
-		float fireProgress = 0.0f;
-		float reloadProgress = 0.0f;
-		float muzzleFlashProgress = 0.0f;
-		float chargeProgress = 0.0f;
+        float fireProgress = 0.0f;
+        float reloadProgress = 0.0f;
+        float muzzleFlashProgress = 0.0f;
+        float chargeProgress = 0.0f;
 
         boolean renderScope = false;
 
-		if (transform == TransformType.FIRST_PERSON_LEFT_HAND || transform == TransformType.THIRD_PERSON_LEFT_HAND) {
-			GlStateManager.translate(-1f, 0f, 0f);
-		}
-		
-		if (values != null && (TransformType.FIRST_PERSON_LEFT_HAND == transform || TransformType.FIRST_PERSON_RIGHT_HAND == transform
-				|| TransformType.THIRD_PERSON_LEFT_HAND == transform || TransformType.THIRD_PERSON_RIGHT_HAND == transform)) {
-			AttackTime attack = values.getAttackTime(isOffhand);
+        if (transform == TransformType.FIRST_PERSON_LEFT_HAND || transform == TransformType.THIRD_PERSON_LEFT_HAND) {
+            GlStateManager.translate(-1f, 0f, 0f);
+        }
+
+        if (values != null && (TransformType.FIRST_PERSON_LEFT_HAND == transform || TransformType.FIRST_PERSON_RIGHT_HAND == transform || TransformType.THIRD_PERSON_LEFT_HAND == transform || TransformType.THIRD_PERSON_RIGHT_HAND == transform)) {
+            AttackTime attack = values.getAttackTime(isOffhand);
 
             if (entityIn != null && gun.canCharge() && !isOffhand && !entityIn.getActiveItemStack().isEmpty()) {
 
-				int dur = stack.getItem().getMaxItemUseDuration(stack)-entityIn.getItemInUseCount();
+                int dur = stack.getItem().getMaxItemUseDuration(stack) - entityIn.getItemInUseCount();
 
-				chargeProgress = dur / ((GenericGunCharge)stack.getItem()).fullChargeTime;
+                chargeProgress = dur / ((GenericGunCharge) stack.getItem()).fullChargeTime;
 
-				if (chargeProgress < 0.0f) {
-					chargeProgress = 0.0f;
-				} else if (chargeProgress > 1.0f) {
-					chargeProgress = 1.0f;
-				}
+                if (chargeProgress < 0.0f) {
+                    chargeProgress = 0.0f;
+                } else if (chargeProgress > 1.0f) {
+                    chargeProgress = 1.0f;
+                }
 
-			} else if (attack.isReloading()) {
-				long diff = attack.getReloadTime() - System.currentTimeMillis();
+            } else if (attack.isReloading()) {
+                long diff = attack.getReloadTime() - System.currentTimeMillis();
 
-				if (diff <= 0) {
-					attack.setReloadTime(0);
-					attack.setReloadTimeTotal(0);
-					attack.setAttackType((byte) 0);
-				} else {
-					reloadProgress = 1.0f - ((float) diff / (float) attack.getReloadTimeTotal());
-				}
-			} else if (attack.isRecoiling()) {
-				long diff = attack.getRecoilTime() - System.currentTimeMillis();
+                if (diff <= 0) {
+                    attack.setReloadTime(0);
+                    attack.setReloadTimeTotal(0);
+                    attack.setAttackType((byte) 0);
+                } else {
+                    reloadProgress = 1.0f - ((float) diff / (float) attack.getReloadTimeTotal());
+                }
+            } else if (attack.isRecoiling()) {
+                long diff = attack.getRecoilTime() - System.currentTimeMillis();
 
-				if (diff <= 0) {
-					attack.setRecoilTime(0);
-					attack.setRecoilTimeTotal(0);
-					attack.setAttackType((byte) 0);
-					attack.setRecoilChargeProgress(0f);
-				} else {
-					fireProgress = 1.0f - ((float) diff / (float) attack.getRecoilTimeTotal());
+                if (diff <= 0) {
+                    attack.setRecoilTime(0);
+                    attack.setRecoilTimeTotal(0);
+                    attack.setAttackType((byte) 0);
+                    attack.setRecoilChargeProgress(0f);
+                } else {
+                    fireProgress = 1.0f - ((float) diff / (float) attack.getRecoilTimeTotal());
 
-					if (gun.canCharge()) {
-						chargeProgress = (1.0f- fireProgress) * attack.getRecoilChargeProgress();
-					}
+                    if (gun.canCharge()) {
+                        chargeProgress = (1.0f - fireProgress) * attack.getRecoilChargeProgress();
+                    }
 
-				}
-			}
+                }
+            }
 
-			//Calculate muzzleFlash progress
+            //Calculate muzzleFlash progress
 
-			if(attack.getMuzzleFlashTime()>0) {
-				long diff = attack.getMuzzleFlashTime() - System.currentTimeMillis();
-				if (diff <= 0 || diff > attack.getMuzzleFlashTimeTotal()) {
-					attack.setMuzzleFlashTime(0L);
-					attack.setMuzzleFlashTimeTotal(0);
-				}else{
-					muzzleFlashProgress = 1.0f-((float)diff / (float)attack.getMuzzleFlashTimeTotal());
-				}
-			}
+            if (attack.getMuzzleFlashTime() > 0) {
+                long diff = attack.getMuzzleFlashTime() - System.currentTimeMillis();
+                if (diff <= 0 || diff > attack.getMuzzleFlashTimeTotal()) {
+                    attack.setMuzzleFlashTime(0L);
+                    attack.setMuzzleFlashTimeTotal(0);
+                } else {
+                    muzzleFlashProgress = 1.0f - ((float) diff / (float) attack.getMuzzleFlashTimeTotal());
+                }
+            }
 
-		}
+        }
 
-		this.applyTranslation(transform);
+        this.applyTranslation(transform);
 
-		if (TransformType.FIRST_PERSON_LEFT_HAND == transform || TransformType.FIRST_PERSON_RIGHT_HAND == transform) {
-			
-			if (!isOffhand && gun.isZooming() && this.scope!=null) {
-				renderScope = true;
-			} else {
-			
-				if (!isOffhand && gun.getZoomMult()<1.0f && gun.isZooming()) {
-					this.transformADS(gun.getZoomX(), gun.getZoomY(), gun.getZoomZ()); //-0.35f, 0.1f, 0.05f)
-				}
-				
-				
-				this.transformFirstPerson(fireProgress, reloadProgress, chargeProgress, TransformType.FIRST_PERSON_LEFT_HAND == transform, sneaking&&isOffhand);
-			}
+        if (TransformType.FIRST_PERSON_LEFT_HAND == transform || TransformType.FIRST_PERSON_RIGHT_HAND == transform) {
 
-		} else if (TransformType.THIRD_PERSON_LEFT_HAND == transform || TransformType.THIRD_PERSON_RIGHT_HAND == transform) {
-			this.transformThirdPerson(entityIn, fireProgress, reloadProgress, TransformType.THIRD_PERSON_LEFT_HAND == transform);
+            if (!isOffhand && gun.isZooming() && this.scope != null) {
+                renderScope = true;
+            } else {
 
-		} else if (TransformType.GUI == transform) {
-			this.transformGUI();
-
-		} else if (TransformType.GROUND == transform) {
-			this.transformGround();
-
-		} else if (TransformType.FIXED == transform) {
-			this.transformFixed();
-		}
-
-		
-		if (!renderScope) {		
-			this.setBaseScale(entityIn, transform);
-			this.setBaseRotation(transform);
-			this.applyBaseTranslation();
-			GlStateManager.color(1f, 1f, 1f, 1f);
-
-			for (int i = 0; i < parts; i++) {
-				this.bindTextureForPart(gun, i, stack);
-				this.setGLColorForPart(gun, i, stack);
-				model.render(entityIn, 0, 0, 0, 0, 0, SCALE, gun.getAmmoLeft(stack), reloadProgress, transform, i, fireProgress, chargeProgress);
-				GlStateManager.color(1f, 1f, 1f, 1f);
-			}
-			GlStateManager.popMatrix();
-
-			this.applyAnimForParticles(entityIn, reloadProgress, transform, sneaking, isOffhand);
-			this.renderItemParticles(entityIn, transform, ClientProxy.get().PARTIAL_TICK_TIME);
+                if (!isOffhand && gun.getZoomMult() < 1.0f && gun.isZooming()) {
+                    this.transformADS(gun.getZoomX(), gun.getZoomY(), gun.getZoomZ()); //-0.35f, 0.1f, 0.05f)
+                }
 
 
-			//Draw muzzle FX
-			if (muzzleFlashProgress>0){
-				if (TransformType.FIRST_PERSON_LEFT_HAND== transform || TransformType.FIRST_PERSON_RIGHT_HAND == transform ) {
-					if (!isOffhand && gun.getZoomMult()<1.0f && gun.isZooming())
-						this.drawMuzzleFx(muzzleFlashProgress, leftHand, gun.getZoomX(), gun.getZoomY());
-					else
-						this.drawMuzzleFx(muzzleFlashProgress, leftHand, 0f, 0f);
-				} else {
-					this.drawMuzzleFx3P(muzzleFlashProgress);
-				}
-			}else if (reloadProgress<=0){
-				if (TransformType.FIRST_PERSON_LEFT_HAND== transform || TransformType.FIRST_PERSON_RIGHT_HAND == transform ) {
-					this.drawIdleFx(leftHand);
-				} else {
-					this.drawIdleFx3P(leftHand);
-				}
-			}
+                this.transformFirstPerson(fireProgress, reloadProgress, chargeProgress, TransformType.FIRST_PERSON_LEFT_HAND == transform, sneaking && isOffhand);
+            }
+
+        } else if (TransformType.THIRD_PERSON_LEFT_HAND == transform || TransformType.THIRD_PERSON_RIGHT_HAND == transform) {
+            this.transformThirdPerson(entityIn, fireProgress, reloadProgress, TransformType.THIRD_PERSON_LEFT_HAND == transform);
+
+        } else if (TransformType.GUI == transform) {
+            this.transformGUI();
+
+        } else if (TransformType.GROUND == transform) {
+            this.transformGround();
+
+        } else if (TransformType.FIXED == transform) {
+            this.transformFixed();
+        }
+
+
+        if (!renderScope) {
+            this.setBaseScale(entityIn, transform);
+            this.setBaseRotation(transform);
+            this.applyBaseTranslation();
+            GlStateManager.color(1f, 1f, 1f, 1f);
+
+            for (int i = 0; i < parts; i++) {
+                this.bindTextureForPart(gun, i, stack);
+                this.setGLColorForPart(gun, i, stack);
+                model.render(entityIn, 0, 0, 0, 0, 0, SCALE, gun.getAmmoLeft(stack), reloadProgress, transform, i, fireProgress, chargeProgress);
+                GlStateManager.color(1f, 1f, 1f, 1f);
+            }
+            GlStateManager.popMatrix();
+
+            this.applyAnimForParticles(entityIn, reloadProgress, transform, sneaking, isOffhand);
+            this.renderItemParticles(entityIn, transform, ClientProxy.get().PARTIAL_TICK_TIME);
+
+
+            //Draw muzzle FX
+            if (muzzleFlashProgress > 0) {
+                if (TransformType.FIRST_PERSON_LEFT_HAND == transform || TransformType.FIRST_PERSON_RIGHT_HAND == transform) {
+                    if (!isOffhand && gun.getZoomMult() < 1.0f && gun.isZooming())
+                        this.drawMuzzleFx(muzzleFlashProgress, leftHand, gun.getZoomX(), gun.getZoomY());
+                    else this.drawMuzzleFx(muzzleFlashProgress, leftHand, 0f, 0f);
+                } else {
+                    this.drawMuzzleFx3P(muzzleFlashProgress);
+                }
+            } else if (reloadProgress <= 0) {
+                if (TransformType.FIRST_PERSON_LEFT_HAND == transform || TransformType.FIRST_PERSON_RIGHT_HAND == transform) {
+                    this.drawIdleFx(leftHand);
+                } else {
+                    this.drawIdleFx3P(leftHand);
+                }
+            }
             GlStateManager.enableCull();
             GlStateManager.popMatrix();
-		} else {
+        } else {
             GlStateManager.enableCull();
-			GlStateManager.popMatrix();
-			if (this.scopeRecoilAnim != null && fireProgress > 0f) {
-				this.scopeRecoilAnim.play(fireProgress, TransformType.FIRST_PERSON_LEFT_HAND == transform, this.scopeRecoilParams);
-			}
-			this.renderScope(fireProgress, leftHand);
-		}
+            GlStateManager.popMatrix();
+            if (this.scopeRecoilAnim != null && fireProgress > 0f) {
+                this.scopeRecoilAnim.play(fireProgress, TransformType.FIRST_PERSON_LEFT_HAND == transform, this.scopeRecoilParams);
+            }
+            this.renderScope(fireProgress, leftHand);
+        }
 
-	}
+    }
 
-	protected void drawIdleFx(boolean leftHand) {}
-	protected void drawIdleFx3P(boolean leftHand) {}
+    protected void drawIdleFx(boolean leftHand) {
+    }
 
-	protected void setGLColorForPart(GenericGun gun, int part, ItemStack stack) {
-		
-	}
+    protected void drawIdleFx3P(boolean leftHand) {
+    }
 
-	public void applyAnimForParticles(EntityLivingBase entity, float reloadProgress, TransformType transform, boolean sneaking, boolean isOffhand) {
-		GlStateManager.pushMatrix();
-		if(reloadProgress==0) return;
-		if (transform==TransformType.FIRST_PERSON_LEFT_HAND || transform==TransformType.FIRST_PERSON_RIGHT_HAND) {
-			this.transformFirstPerson(0f, reloadProgress, 0f, TransformType.FIRST_PERSON_LEFT_HAND == transform, sneaking&&isOffhand);
-		} else if (transform==TransformType.THIRD_PERSON_LEFT_HAND || transform==TransformType.THIRD_PERSON_RIGHT_HAND) {
-			this.transformThirdPerson(entity, 0f, reloadProgress, TransformType.THIRD_PERSON_LEFT_HAND == transform);
-		}
-		
-	}
-	
-	protected void transformFirstPerson(float fireProgress, float reloadProgress, float chargeProgress, boolean left, boolean shoudLowerWeapon) {
-		if (chargeProgress>0) {
-		
-			GlStateManager.translate(0, 0, this.chargeTranslation*chargeProgress);
-			
-		}
-		if (fireProgress >0){
-		
-			this.recoilAnim.play(fireProgress, left, this.recoilParams);
-			
-		} else if (reloadProgress>0){
-			
-			this.reloadAnim.play(reloadProgress, left, this.reloadParams);
-			
-		} else if (shoudLowerWeapon){
-			GlStateManager.rotate(-35f, 1, 0, 0);
-		}
-	}
+    protected void setGLColorForPart(GenericGun gun, int part, ItemStack stack) {
 
-	protected void transformThirdPerson(EntityLivingBase ent, float fireProgress, float reloadProgress, boolean left) {
-		if(ent instanceof INPCTechgunsShooter) {
-			INPCTechgunsShooter shooter = (INPCTechgunsShooter) ent;
-			if(!shooter.hasWeaponArmPose()) {
-				GlStateManager.rotate(90.0f, 1, 0, 0);
-				//GlStateManager.translate(Keybinds.X, Keybinds.Y, Keybinds.Z);
-			}
-			
-		}
-		
-		
-		if (fireProgress >0){
-			
-			this.recoilAnim3p.play(fireProgress, left, this.recoilParams3p);
-			
-		} else if (reloadProgress>0){	
-			
-			this.reloadAnim3p.play(reloadProgress, left, this.reloadParams3p);
-		}
-	}
+    }
 
-	protected void transformGUI() {
-		// GlStateManager.rotate(-22.5f, 1f, 2f, 0f);
-		GlStateManager.rotate(40.0f, 0, 1f, 0);
-		GlStateManager.rotate(20.0f, 1f, 0, 0);
-	}
+    public void applyAnimForParticles(EntityLivingBase entity, float reloadProgress, TransformType transform, boolean sneaking, boolean isOffhand) {
+        GlStateManager.pushMatrix();
+        if (reloadProgress == 0) return;
+        if (transform == TransformType.FIRST_PERSON_LEFT_HAND || transform == TransformType.FIRST_PERSON_RIGHT_HAND) {
+            this.transformFirstPerson(0f, reloadProgress, 0f, TransformType.FIRST_PERSON_LEFT_HAND == transform, sneaking && isOffhand);
+        } else if (transform == TransformType.THIRD_PERSON_LEFT_HAND || transform == TransformType.THIRD_PERSON_RIGHT_HAND) {
+            this.transformThirdPerson(entity, 0f, reloadProgress, TransformType.THIRD_PERSON_LEFT_HAND == transform);
+        }
 
-	protected void transformGround() {
-		// GlStateManager.rotate(Keybinds.Y, 0, 1, 0);
-	}
+    }
 
-	protected void transformFixed() {
-		GlStateManager.rotate(-90.0f, 0, 1.0f, 0);
-	}
-	
-	protected void drawMuzzleFx(float progress, boolean leftHand, float zoomX, float zoomY){
-		if (this.muzzleFX!=null){
-			float x= leftHand?this.muzzleFX_x_l:this.muzzleFX_x_r;
+    protected void transformFirstPerson(float fireProgress, float reloadProgress, float chargeProgress, boolean left, boolean shoudLowerWeapon) {
+        if (chargeProgress > 0) {
 
-			//Muzzle flash jitter
-			ClientProxy cp = ClientProxy.get();
-			float scale = this.muzzleFX_scale;
-			float offsetX = x + zoomX;
-			float offsetY = this.muzzleFX_y + zoomY;
-			if (this.mf_jitterScale > 0.0f) scale += mf_jitterScale*cp.muzzleFlashJitterScale;
-			if (this.mf_jitterX > 0.0f) offsetX += mf_jitterX*cp.muzzleFlashJitterX;
-			if (this.mf_jitterY > 0.0f) offsetY += mf_jitterY*cp.muzzleFlashJitterY;
+            GlStateManager.translate(0, 0, this.chargeTranslation * chargeProgress);
 
-			this.muzzleFX.doRender(progress, offsetX, offsetY, this.muzzleFX_z, scale, false);
-			
-		}
-	}
+        }
+        if (fireProgress > 0) {
 
-	protected void drawMuzzleFx3P(float progress) {
-		if (this.muzzleFX!=null) {
-			this.muzzleFX.doRender(progress, 0, this.muzzleFX_3p_y, this.muzzleFX_3p_z, this.muzzleFX_scale*this.muzzleFX_3p_scale, true);
-		}
-	}
-	
-	protected void renderScope(float fireProgress, boolean leftHand) {
-		if (this.scope!=null) {
-			float x= leftHand?0.56f:-0.56f;
-			this.scope.doRender(fireProgress, x, 0.52f, 0f, scopescale, false);
-		}
-	}
-	
-	@Override
-	public RenderGunBase setBaseScale(float baseScale) {
-		return (RenderGunBase) super.setBaseScale(baseScale);
-	}
-	
-	protected void transformADS(float Xzoom, float Yzoom, float Zzoom) {
-		GlStateManager.translate(Xzoom, Yzoom, Zzoom);
-	}
-	
-	public RenderGunBase setMuzzleFlashJitter(float jX, float jY, float jAngle, float jScale) {
-		this.mf_jitterX = jX;
-		this.mf_jitterY = jY;
-		this.mf_jitterAngle = jAngle;
-		this.mf_jitterScale = jScale;
-		return this;
-	}
-	
-	public void bindTextureForPart(GenericGun gun, int part, ItemStack stack) {
-		if(part==0) {
-			if(gun.hasCustomTexture) {
-				Minecraft.getMinecraft().getTextureManager().bindTexture(gun.getCurrentTexture(stack));
-			} else {
-				Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
-			}
-		}
-	}
-	
-	public RenderGunBase setAmbientParticleFX(String ambientParticleFX) {
-		this.ambientParticleFX = ambientParticleFX;
-		return this;
-	}
+            this.recoilAnim.play(fireProgress, left, this.recoilParams);
+
+        } else if (reloadProgress > 0) {
+
+            this.reloadAnim.play(reloadProgress, left, this.reloadParams);
+
+        } else if (shoudLowerWeapon) {
+            GlStateManager.rotate(-35f, 1, 0, 0);
+        }
+    }
+
+    protected void transformThirdPerson(EntityLivingBase ent, float fireProgress, float reloadProgress, boolean left) {
+        if (ent instanceof INPCTechgunsShooter) {
+            INPCTechgunsShooter shooter = (INPCTechgunsShooter) ent;
+            if (!shooter.hasWeaponArmPose()) {
+                GlStateManager.rotate(90.0f, 1, 0, 0);
+                //GlStateManager.translate(Keybinds.X, Keybinds.Y, Keybinds.Z);
+            }
+
+        }
+
+
+        if (fireProgress > 0) {
+
+            this.recoilAnim3p.play(fireProgress, left, this.recoilParams3p);
+
+        } else if (reloadProgress > 0) {
+
+            this.reloadAnim3p.play(reloadProgress, left, this.reloadParams3p);
+        }
+    }
+
+    protected void transformGUI() {
+        // GlStateManager.rotate(-22.5f, 1f, 2f, 0f);
+        GlStateManager.rotate(40.0f, 0, 1f, 0);
+        GlStateManager.rotate(20.0f, 1f, 0, 0);
+    }
+
+    protected void transformGround() {
+        // GlStateManager.rotate(Keybinds.Y, 0, 1, 0);
+    }
+
+    protected void transformFixed() {
+        GlStateManager.rotate(-90.0f, 0, 1.0f, 0);
+    }
+
+    protected void drawMuzzleFx(float progress, boolean leftHand, float zoomX, float zoomY) {
+        if (this.muzzleFX != null) {
+            float x = leftHand ? this.muzzleFX_x_l : this.muzzleFX_x_r;
+
+            //Muzzle flash jitter
+            ClientProxy cp = ClientProxy.get();
+            float scale = this.muzzleFX_scale;
+            float offsetX = x + zoomX;
+            float offsetY = this.muzzleFX_y + zoomY;
+            if (this.mf_jitterScale > 0.0f) scale += mf_jitterScale * cp.muzzleFlashJitterScale;
+            if (this.mf_jitterX > 0.0f) offsetX += mf_jitterX * cp.muzzleFlashJitterX;
+            if (this.mf_jitterY > 0.0f) offsetY += mf_jitterY * cp.muzzleFlashJitterY;
+
+            this.muzzleFX.doRender(progress, offsetX, offsetY, this.muzzleFX_z, scale, false);
+
+        }
+    }
+
+    protected void drawMuzzleFx3P(float progress) {
+        if (this.muzzleFX != null) {
+            this.muzzleFX.doRender(progress, 0, this.muzzleFX_3p_y, this.muzzleFX_3p_z, this.muzzleFX_scale * this.muzzleFX_3p_scale, true);
+        }
+    }
+
+    protected void renderScope(float fireProgress, boolean leftHand) {
+        if (this.scope != null) {
+            float x = leftHand ? 0.56f : -0.56f;
+            this.scope.doRender(fireProgress, x, 0.52f, 0f, scopescale, false);
+        }
+    }
+
+    @Override
+    public RenderGunBase setBaseScale(float baseScale) {
+        return (RenderGunBase) super.setBaseScale(baseScale);
+    }
+
+    protected void transformADS(float Xzoom, float Yzoom, float Zzoom) {
+        GlStateManager.translate(Xzoom, Yzoom, Zzoom);
+    }
+
+    public RenderGunBase setMuzzleFlashJitter(float jX, float jY, float jAngle, float jScale) {
+        this.mf_jitterX = jX;
+        this.mf_jitterY = jY;
+        this.mf_jitterAngle = jAngle;
+        this.mf_jitterScale = jScale;
+        return this;
+    }
+
+    public void bindTextureForPart(GenericGun gun, int part, ItemStack stack) {
+        if (part == 0) {
+            if (gun.hasCustomTexture) {
+                Minecraft.getMinecraft().getTextureManager().bindTexture(gun.getCurrentTexture(stack));
+            } else {
+                Minecraft.getMinecraft().getTextureManager().bindTexture(TextureMap.LOCATION_BLOCKS_TEXTURE);
+            }
+        }
+    }
+
+    public RenderGunBase setAmbientParticleFX(String ambientParticleFX) {
+        this.ambientParticleFX = ambientParticleFX;
+        return this;
+    }
 }

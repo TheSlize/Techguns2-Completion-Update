@@ -68,7 +68,7 @@ public class TGStructureSpawnRegister {
         spawns_big.add(new TGStructureSpawn(new EndFloatingShip(), 10, null, 1, LAND, StructureSize.BIG));
         spawns_big.add(new TGStructureSpawn(new EndBuilding(), 10, null, 1, LAND, StructureSize.BIG));
 
-        if (TGConfig.spawnOreClusterStructures) {
+        if (TGConfig.worldgen.spawnOreClusterStructures) {
             spawns_medium.add(new TGStructureSpawn(new OreClusterSpike().setXZSize(8, 8), 10, null, 0, LAND, StructureSize.MEDIUM));
             spawns_medium.add(new TGStructureSpawn(new OreClusterMeteorBasis().setXZSize(17, 17), 5, null, 0, LAND, StructureSize.MEDIUM));
 

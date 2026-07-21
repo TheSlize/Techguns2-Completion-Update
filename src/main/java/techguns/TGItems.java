@@ -430,17 +430,17 @@ public class TGItems implements ITGInitializer {
 		TREATED_LEATHER = SHARED_ITEM.addsharedVariant("treatedleather");
 		ORE_TITANIUM = SHARED_ITEM.addsharedVariant("oretitanium");
 		
-		INGOT_COPPER = SHARED_ITEM.addsharedVariantOptional("ingotcopper",TGConfig.addCopperIngots);
-		INGOT_TIN = SHARED_ITEM.addsharedVariantOptional("ingottin",TGConfig.addTinIngots);
-		INGOT_BRONZE = SHARED_ITEM.addsharedVariantOptional("ingotbronze",TGConfig.addBronzeIngots);
-		INGOT_LEAD = SHARED_ITEM.addsharedVariantOptional("ingotlead",TGConfig.addLeadIngots);
-		INGOT_STEEL = SHARED_ITEM.addsharedVariantOptional("ingotsteel",TGConfig.addSteelIngots);
+		INGOT_COPPER = SHARED_ITEM.addsharedVariantOptional("ingotcopper",TGConfig.disableItems.addCopperIngots);
+		INGOT_TIN = SHARED_ITEM.addsharedVariantOptional("ingottin",TGConfig.disableItems.addTinIngots);
+		INGOT_BRONZE = SHARED_ITEM.addsharedVariantOptional("ingotbronze",TGConfig.disableItems.addBronzeIngots);
+		INGOT_LEAD = SHARED_ITEM.addsharedVariantOptional("ingotlead",TGConfig.disableItems.addLeadIngots);
+		INGOT_STEEL = SHARED_ITEM.addsharedVariantOptional("ingotsteel",TGConfig.disableItems.addSteelIngots);
 		INGOT_OBSIDIAN_STEEL = SHARED_ITEM.addsharedVariant("ingotobsidiansteel");
 		INGOT_TITANIUM = SHARED_ITEM.addsharedVariant("ingottitanium");
 		
-		NUGGET_COPPER = SHARED_ITEM.addsharedVariantOptional("nuggetcopper",TGConfig.addCopperNuggets);
-		NUGGET_LEAD = SHARED_ITEM.addsharedVariantOptional("nuggetlead", TGConfig.addLeadNuggets);
-		NUGGET_STEEL = SHARED_ITEM.addsharedVariantOptional("nuggetsteel", TGConfig.addSteelNuggets);
+		NUGGET_COPPER = SHARED_ITEM.addsharedVariantOptional("nuggetcopper",TGConfig.disableItems.addCopperNuggets);
+		NUGGET_LEAD = SHARED_ITEM.addsharedVariantOptional("nuggetlead", TGConfig.disableItems.addLeadNuggets);
+		NUGGET_STEEL = SHARED_ITEM.addsharedVariantOptional("nuggetsteel", TGConfig.disableItems.addSteelNuggets);
 		
 		GAS_MASK_FILTER = SHARED_ITEM.addsharedVariant("gasmaskfilter");
 		GLIDER_BACKBACK = SHARED_ITEM.addsharedVariant("gliderbackpack");
@@ -573,7 +573,7 @@ public class TGItems implements ITGInitializer {
         CYBERNETIC_WIRING = SHARED_ITEM.addsharedVariant("cybernetic_wiring");
 
 
-		if(TGConfig.debug) {
+		if(TGConfig.general.debug) {
 			WORLDGEN_TEST_TOOL = new WorldGenTestTool("worldgentesttool");
 			BUIDLING_SCAN_TOOL = new BuildingScanTool("buildingscantool");
 		}
@@ -663,7 +663,7 @@ public class TGItems implements ITGInitializer {
 
 	public static void registerItemsToOreDict() {
 		
-		if(TGConfig.addOreDicts) {
+		if(TGConfig.disableItems.addOreDicts) {
 			registerIfEnabled("plateCarbon", PLATE_CARBON);
 		    registerIfEnabled("fiberCarbon", CARBON_FIBERS);
 			registerIfEnabled("circuitBasic", CIRCUIT_BOARD_BASIC);

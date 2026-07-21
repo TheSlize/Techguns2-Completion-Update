@@ -9,9 +9,9 @@ import techguns.capabilities.TGExtendedPlayer;
 import techguns.items.guns.GenericGun;
 
 public interface ILivingSoldier {
-
-    double SOUND_SCAN_RANGE = 48.0D;
-    double BASE_HEARING_RANGE = 12.0D;
+    // TODO maybe just move them in the config?..
+    double SOUND_SCAN_RANGE = 24.0D;
+    double BASE_HEARING_RANGE = 4.0D;
     int SOUND_REACTION_COOLDOWN = 40;
 
     void tickHearingAI();
@@ -26,7 +26,7 @@ public interface ILivingSoldier {
         if (player.isSprinting() && moved > 0.02D) {
             loudness += 1.2f;
         } else if (moved > 0.02D) {
-            loudness += player.isSneaking() ? 0.2f : 0.6f;
+            loudness += player.isSneaking() ? 0.1f : 0.6f;
         }
 
         if (!player.onGround && player.motionY < -0.2D) {

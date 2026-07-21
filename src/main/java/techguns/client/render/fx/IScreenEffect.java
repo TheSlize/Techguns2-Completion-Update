@@ -54,6 +54,19 @@ public interface IScreenEffect {
 	}
 
 	void doRender(float progress, float offsetX, float offsetY, float offsetZ, float scale, float rot_x, float rot_y,
-			float rot_z, boolean is3p);
+	              float rot_z, boolean is3p);
+
+	default void preload() {}
+
+	static void preloadAll() {
+		for (java.lang.reflect.Field field : IScreenEffect.class.getDeclaredFields()) {
+			if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) && IScreenEffect.class.isAssignableFrom(field.getType())) {
+				try {
+					((IScreenEffect) field.get(null)).preload();
+				} catch (Exception ignored) {
+				}
+			}
+		}
+	}
 
 }

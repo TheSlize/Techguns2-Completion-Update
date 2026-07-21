@@ -86,7 +86,7 @@ public class BasicMachine<T extends Enum<T> & IStringSerializable & IMachineType
 	@Override
 	public void getSubBlocks(@NotNull CreativeTabs tab, @NotNull NonNullList<ItemStack> items) {
 		for (T t : clazz.getEnumConstants()) {
-			if( (!t.debugOnly() || TGConfig.debug) && !(t.hideInCreative())) {
+			if( (!t.debugOnly() || TGConfig.general.debug) && !(t.hideInCreative())) {
 				items.add(new ItemStack(this,1,this.getMetaFromState(getDefaultState().withProperty(MACHINE_TYPE, t))));
 			}
 		}

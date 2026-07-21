@@ -69,13 +69,13 @@ public class PacketEntityDeathType implements IMessage {
 
         private void handle(PacketEntityDeathType message, MessageContext ctx) {
             //If deathFX are disabled, ignore packet
-            if (TGConfig.cl_enableDeathFX) {
+            if (TGConfig.clientside.cl_enableDeathFX) {
 
                 EntityPlayer ply = TGPackets.getPlayerFromContext(ctx);
                 EntityLivingBase entity = (EntityLivingBase) ply.world.getEntityByID(message.entityId);
                 DeathType deathtype = DeathType.values()[message.deathtypeId];
 
-                if (deathtype != DeathType.GORE || TGConfig.cl_enableDeathFX_Gore) {
+                if (deathtype != DeathType.GORE || TGConfig.clientside.cl_enableDeathFX_Gore) {
 
                     if (entity != null) {
                         entity.motionX = message.motionX;

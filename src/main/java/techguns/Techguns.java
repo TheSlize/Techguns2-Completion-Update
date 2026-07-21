@@ -22,15 +22,14 @@ import techguns.world.OreGenerator;
 import techguns.world.WorldGenTGStructureSpawn;
 import techguns.world.dungeon.DungeonTemplate;
 
-@Mod(modid = Tags.MOD_ID, version = Tags.VERSION, name = Tags.MOD_NAME, acceptedMinecraftVersions = Techguns.MCVERSION, guiFactory = Techguns.GUI_FACTORY, updateJSON = Techguns.UPDATEURL, dependencies = Techguns.DEPENDENCIES)
+@Mod(modid = Tags.MOD_ID, version = Tags.VERSION, name = Tags.MOD_NAME, acceptedMinecraftVersions = Techguns.MCVERSION, updateJSON = Techguns.UPDATEURL, dependencies = Techguns.DEPENDENCIES)
 public class Techguns {
     public static final String MCVERSION = "1.12.2";
-    public static final String GUI_FACTORY = "techguns.gui.config.GuiFactoryTechguns";
 
     public static final Logger logger = LogManager.getLogger(Tags.MOD_ID);
     public static final String UPDATEURL = "https://raw.githubusercontent.com/pWn3d1337/Techguns2/master/update.json";
     public static final String FORGE_BUILD = "14.23.5.2847";
-    public static final String DEPENDENCIES = "required:forge@[" + FORGE_BUILD + ",);after:ftblib;after:chisel";
+    public static final String DEPENDENCIES = "required:forge@[" + FORGE_BUILD + ",);after:ftblib;after:chisel;after:configanytime";
 
     @Mod.Instance
     public static Techguns instance;
@@ -46,6 +45,7 @@ public class Techguns {
     public AmmoTypes ammoTypes = new AmmoTypes();
     public TGArmors armors = new TGArmors();
     public TGFluids fluids = new TGFluids();
+    public TGRecipes recipes = new TGRecipes();
     public TGPermissions permissions = new TGPermissions();
     public static TGOreClusters orecluster = new TGOreClusters();
 
@@ -66,6 +66,7 @@ public class Techguns {
             packets,
             rad,
             orecluster,
+            recipes,
             permissions
     };
 
@@ -112,7 +113,6 @@ public class Techguns {
 
     @EventHandler
     public void preinit(FMLPreInitializationEvent event) {
-        TGConfig.init(event);
         for (ITGInitializer init : initializers) {
             init.preInit(event);
         }
@@ -122,11 +122,11 @@ public class Techguns {
             TGCraftTweakerIntegration.init();
         }
 
-        if (TGConfig.doOreGenTitanium || TGConfig.doOreGenUranium || TGConfig.doOreGenLead || TGConfig.doOreGenTin || TGConfig.doOreGenCopper) {
+        if (TGConfig.worldgen.doOreGenTitanium || TGConfig.worldgen.doOreGenUranium || TGConfig.worldgen.doOreGenLead || TGConfig.worldgen.doOreGenTin || TGConfig.worldgen.doOreGenCopper) {
             GameRegistry.registerWorldGenerator(new OreGenerator(), 1);
         }
 
-        if (TGConfig.doWorldspawn) {
+        if (TGConfig.worldgen.doWorldspawn) {
             GameRegistry.registerWorldGenerator(new WorldGenTGStructureSpawn(), 6);
         }
     }

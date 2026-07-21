@@ -65,7 +65,7 @@ public class TGMachineRecipes {
         MetalPressRecipes.addRecipe("ingotLead", "ingotLead", new ItemStack(TGItems.PLATE_LEAD.getItem(), 2, TGItems.PLATE_LEAD.getItemDamage()), true);
         MetalPressRecipes.addRecipe("plateIron", new ItemStack(Items.FLINT, 1), new ItemStack(TGItems.MECHANICAL_PARTS_IRON.getItem(), 1, TGItems.MECHANICAL_PARTS_IRON.getItemDamage()), true);
         MetalPressRecipes.addRecipe("plateObsidianSteel", "gemQuartz", new ItemStack(TGItems.MECHANICAL_PARTS_OBSIDIAN_STEEL.getItem(), 1, TGItems.MECHANICAL_PARTS_OBSIDIAN_STEEL.getItemDamage()), true);
-        if (TGConfig.addOreDicts) {
+        if (TGConfig.disableItems.addOreDicts) {
             MetalPressRecipes.addRecipe("plateCarbon", new ItemStack(Items.BLAZE_ROD), new ItemStack(TGItems.MECHANICAL_PARTS_CARBON.getItem(), 2, TGItems.MECHANICAL_PARTS_CARBON.getItemDamage()), true);
             MetalPressRecipes.addRecipe("fiberCarbon", "fiberCarbon", new ItemStack(TGItems.PLATE_CARBON.getItem(), 2, TGItems.PLATE_CARBON.getItemDamage()), true);
             MetalPressRecipes.addRecipe("ingotTitanium", "ingotTitanium", new ItemStack(TGItems.PLATE_TITANIUM.getItem(), 2, TGItems.PLATE_TITANIUM.getItemDamage()), true);
@@ -122,7 +122,7 @@ public class TGMachineRecipes {
                 ChemLabRecipes.addRecipe(new ItemStack(TGItems.ROCKET.getItem(), 1, TGItems.ROCKET.getItemDamage()), 1, (ItemStack) null, 0, null, 0, new FluidStack(f, 125), null, new ItemStack(TGItems.ROCKET_HIGH_VELOCITY.getItem(), 1, TGItems.ROCKET_HIGH_VELOCITY.getItemDamage()), false, 5);
             });
         }
-        if (TGFluids.fuels.isEmpty() || TGConfig.keepLavaRecipesWhenFuelIsPresent) {
+        if (TGFluids.fuels.isEmpty() || TGConfig.general.keepLavaRecipesWhenFuelIsPresent) {
             ChemLabRecipes.addRecipe("gunpowder", 1, "gemLapis", 1, null, 0, new FluidStack(FluidRegistry.LAVA, 500), null, new ItemStack(TGItems.TGX.getItem(), 1, TGItems.TGX.getItemDamage()), true, 20);
             ChemLabRecipes.addRecipe(fuelTankEmpty, 1, (ItemStack) null, 0, null, 0, new FluidStack(TGFluids.LAVA, 500), null, fuelTank, false, 1);
             ChemLabRecipes.addRecipe(new ItemStack(TGItems.ROCKET.getItem(), 1, TGItems.ROCKET.getItemDamage()), 1, (ItemStack) null, 0, null, 0, new FluidStack(TGFluids.LAVA, 250), null, new ItemStack(TGItems.ROCKET_HIGH_VELOCITY.getItem(), 1, TGItems.ROCKET_HIGH_VELOCITY.getItemDamage()), false, 5);
@@ -170,7 +170,7 @@ public class TGMachineRecipes {
 		/*
 		  FABRICATOR
 		 */
-        if (TGConfig.addOreDicts) {
+        if (TGConfig.disableItems.addOreDicts) {
             FabricatorRecipe.addRecipe(new ItemStackOreDict("ingotTitanium"), 2, FabricatorRecipe.circuit_basic, 4, FabricatorRecipe.mechanicalPartsT3, 1, FabricatorRecipe.carbonPlate, 4, TGItems.POWER_ARMOR_PLATING, 2);
         } else {
             FabricatorRecipe.addRecipe(new ItemStackOreDict("ingotTitaniumTG"), 2, FabricatorRecipe.circuit_basic, 4, FabricatorRecipe.mechanicalPartsT3, 1, FabricatorRecipe.carbonPlate, 4, TGItems.POWER_ARMOR_PLATING, 2);
@@ -207,7 +207,7 @@ public class TGMachineRecipes {
 		/*
 		  Blast Furnace
 		 */
-        if (TGConfig.addSteelRecipe) {
+        if (TGConfig.disableItems.addSteelRecipe) {
             BlastFurnaceRecipes.addRecipe(new ItemStack(Items.IRON_INGOT, 4), new ItemStack(Items.COAL, 1), new ItemStack(TGItems.INGOT_STEEL.getItem(), 4, TGItems.INGOT_STEEL.getItemDamage()), 10, 800);
             BlastFurnaceRecipes.addRecipe(new ItemStack(Items.IRON_INGOT, 4), new ItemStack(Items.COAL, 1, 1), new ItemStack(TGItems.INGOT_STEEL.getItem(), 4, TGItems.INGOT_STEEL.getItemDamage()), 10, 800);
         }

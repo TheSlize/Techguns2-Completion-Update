@@ -56,8 +56,33 @@ public class TGBlocks implements ITGInitializer{
 	public static BlockTGDoor2x1 BUNKER_DOOR;
 	
 	public static BlockTGStairs METAL_STAIRS;
+	public static BlockTGStairs METAL_STAIRS_ALT;
+	public static BlockTGStairs METAL_STAIRS_ALT1;
+	public static BlockTGStairs METAL_STAIRS_ALT2;
 	public static BlockTGStairs CONCRETE_STAIRS;
-	
+	public static BlockTGStairs CONCRETE_STAIRS_ALT;
+	public static BlockTGStairs CONCRETE_STAIRS_ALT1;
+	public static BlockTGStairs NETHER_METAL_STAIRS;
+	public static BlockTGStairs NETHER_METAL_STAIRS_ALT;
+	public static BlockTGStairs NETHER_METAL_STAIRS_ALT1;
+	public static BlockTGStairs NETHER_METAL_STAIRS_ALT2;
+
+	public static BlockTGSlab METAL_SLAB;
+	public static BlockTGDoubleSlab METAL_DOUBLE_SLAB;
+
+	public static BlockTGSlab CONCRETE_SLAB;
+	public static BlockTGDoubleSlab CONCRETE_DOUBLE_SLAB;
+
+	public static BlockTGSlab NETHER_METAL_SLAB;
+	public static BlockTGDoubleSlab NETHER_METAL_DOUBLE_SLAB;
+
+	public static BlockTGSlab NETHER_METAL_SLAB_ALT;
+	public static BlockTGDoubleSlab NETHER_METAL_DOUBLE_SLAB_ALT;
+
+	public static BlockTGFence METAL_FENCE;
+	public static BlockTGFence CONCRETE_FENCE;
+	public static BlockTGFence NETHER_METAL_FENCE;
+
 	public static BlockTGSpawner MONSTER_SPAWNER;
 	
 	public static GenericBlockMetaEnumCamoChangeable<EnumLightblockType> NEONLIGHT_BLOCK;
@@ -118,9 +143,43 @@ public class TGBlocks implements ITGInitializer{
 		CAMONET_TOP = new BlockTGCamoNetTop("camonet_top");
 		BUNKER_DOOR = (BlockTGDoor2x1) new BlockTGDoor2x1("bunkerdoor",TGItems.BUNKER_DOOR).setHardness(8.0f);
 		
-		METAL_STAIRS = (BlockTGStairs) new BlockTGStairs("stairs_metal", Material.IRON, SoundType.METAL).setHardness(8.0f);
-		CONCRETE_STAIRS = (BlockTGStairs) new BlockTGStairs("stairs_concrete", Material.ROCK, SoundType.STONE).setHardness(6.0f);
-		
+		METAL_STAIRS = (BlockTGStairs) new BlockTGStairs("stairs_metal", Material.IRON, SoundType.METAL).setTextures("panel_large_border", "steelframe_dark").setHardness(8.0f);
+		METAL_STAIRS_ALT = (BlockTGStairs) new BlockTGStairs("stairs_metal_alt", Material.IRON, SoundType.METAL).setTextures("container_red", "container_green").setHardness(8.0f);
+		METAL_STAIRS_ALT1 = (BlockTGStairs) new BlockTGStairs("stairs_metal_alt1", Material.IRON, SoundType.METAL).setTextures("container_blue", "container_orange").setHardness(8.0f);
+		METAL_STAIRS_ALT2 = (BlockTGStairs) new BlockTGStairs("stairs_metal_alt2", Material.IRON, SoundType.METAL).setTextures("steelframe_blue", "steelframe_scaffold").setHardness(8.0f);
+		CONCRETE_STAIRS = (BlockTGStairs) new BlockTGStairs("stairs_concrete", Material.ROCK, SoundType.STONE).setTextures("concrete_grey_dark", "concrete_brown_light").setHardness(6.0f);
+		CONCRETE_STAIRS_ALT = (BlockTGStairs) new BlockTGStairs("stairs_concrete_alt", Material.ROCK, SoundType.STONE).setTextures("concrete_brown", "concrete_grey").setHardness(6.0f);
+		CONCRETE_STAIRS_ALT1 = (BlockTGStairs) new BlockTGStairs("stairs_concrete_alt1", Material.ROCK, SoundType.STONE).setTextures("concrete_brown_light_scaff").setHardness(6.0f);
+
+		NETHER_METAL_STAIRS = (BlockTGStairs) new BlockTGStairs("stairs_nethermetal", Material.IRON, SoundType.METAL).setTextures("nethermetal_panel", "nethermetal_grate1").setHardness(8.0f);
+		NETHER_METAL_STAIRS_ALT = (BlockTGStairs) new BlockTGStairs("stairs_nethermetal_alt", Material.IRON, SoundType.METAL).setTextures("nethermetal_grate2", "nethermetal_grey_dark").setHardness(8.0f);
+		NETHER_METAL_STAIRS_ALT1 = (BlockTGStairs) new BlockTGStairs("stairs_nethermetal_alt1", Material.IRON, SoundType.METAL).setTextures("nethermetal_grey", "nethermetal_grey_tiles").setHardness(8.0f);
+		NETHER_METAL_STAIRS_ALT2 = (BlockTGStairs) new BlockTGStairs("stairs_nethermetal_alt2", Material.IRON, SoundType.METAL).setTextures("nethermetal_plate_red", "nethermetal_plate_black").setHardness(8.0f);
+
+		METAL_SLAB = (BlockTGSlab) new BlockTGSlab("slab_metal", Material.IRON, SoundType.METAL).setTextures("container_red", "container_green",
+				"container_blue", "container_orange", "panel_large_border", "steelframe_blue", "steelframe_dark", "steelframe_scaffold").setHardness(8.0f);
+		METAL_DOUBLE_SLAB = (BlockTGDoubleSlab) new BlockTGDoubleSlab("double_slab_metal", Material.IRON, SoundType.METAL, METAL_SLAB).setHardness(8.0f);
+		METAL_SLAB.setDoubleSlab(METAL_DOUBLE_SLAB);
+
+		CONCRETE_SLAB = (BlockTGSlab) new BlockTGSlab("slab_concrete", Material.ROCK, SoundType.STONE).setTextures("concrete_brown", "concrete_brown_light", "concrete_grey", "concrete_grey_dark", "concrete_brown_pipes", "concrete_brown_light_scaff").setSideTexture(4, "concrete_brown").setHardness(8.0f);
+		CONCRETE_DOUBLE_SLAB = (BlockTGDoubleSlab) new BlockTGDoubleSlab("double_slab_concrete", Material.ROCK, SoundType.STONE, CONCRETE_SLAB).setHardness(8.0f);
+		CONCRETE_SLAB.setDoubleSlab(CONCRETE_DOUBLE_SLAB);
+
+		NETHER_METAL_SLAB = (BlockTGSlab) new BlockTGSlab("slab_nethermetal", Material.ROCK, SoundType.STONE).setTextures("nethermetal_panel", "nethermetal_grate1", "nethermetal_grate2", "nethermetal_grey_dark", "nethermetal_grey",
+				"nethermetal_grey_tiles", "nethermetal_border_red", "nethermetal_plate_black").setSideTexture(6, "nethermetal_panel").setHardness(8.0f);
+		NETHER_METAL_DOUBLE_SLAB = (BlockTGDoubleSlab) new BlockTGDoubleSlab("double_slab_nethermetal", Material.ROCK, SoundType.STONE, NETHER_METAL_SLAB).setHardness(8.0f);
+		NETHER_METAL_SLAB.setDoubleSlab(NETHER_METAL_DOUBLE_SLAB);
+
+		NETHER_METAL_SLAB_ALT = (BlockTGSlab) new BlockTGSlab("slab_nethermetal_alt", Material.ROCK, SoundType.STONE).setTextures("nethermetal_plate_red").setHardness(8.0f);
+		NETHER_METAL_DOUBLE_SLAB_ALT = (BlockTGDoubleSlab) new BlockTGDoubleSlab("double_slab_nethermetal_alt", Material.ROCK, SoundType.STONE, NETHER_METAL_SLAB).setHardness(8.0f);
+		NETHER_METAL_SLAB_ALT.setDoubleSlab(NETHER_METAL_DOUBLE_SLAB_ALT);
+
+		METAL_FENCE = (BlockTGFence) new BlockTGFence("fence_metal", Material.IRON, SoundType.METAL).setTextures("container_red", "container_green",
+				"container_blue", "container_orange", "panel_large_border", "steelframe_blue", "steelframe_dark", "steelframe_scaffold").setHardness(8.0f);
+		CONCRETE_FENCE = (BlockTGFence) new BlockTGFence("fence_concrete", Material.IRON, SoundType.METAL).setTextures("concrete_brown", "concrete_brown_light", "concrete_grey", "concrete_grey_dark", "concrete_brown_light_scaff").setHardness(8.0f);
+		NETHER_METAL_FENCE = (BlockTGFence) new BlockTGFence("fence_nethermetal", Material.IRON, SoundType.METAL).setTextures("nethermetal_panel", "nethermetal_grate1", "nethermetal_grate2", "nethermetal_grey_dark", "nethermetal_grey",
+				"nethermetal_grey_tiles", "nethermetal_plate_black", "nethermetal_plate_red").setHardness(8.0f);
+
 		MONSTER_SPAWNER = new BlockTGSpawner("tg_spawner");
 		
 		NEONLIGHT_BLOCK = (GenericBlockMetaEnumCamoChangeable<EnumLightblockType>) new GenericBlockMetaEnumCamoChangeable<>("neonlights", Material.GLASS, MapColor.YELLOW, SoundType.GLASS, EnumLightblockType.class).setLightLevel(1f).setHardness(4.0f);
@@ -138,7 +197,7 @@ public class TGBlocks implements ITGInitializer{
 		
 		ORE_DRILL_BLOCK = new BlockOreDrill("oredrill");
 		
-		//if (TGConfig.debug) {
+		//if (TGConfig.general.debug) {
 		DEBUG_BLOCK = new BlockDebugMarker("debugblock", Material.GROUND);
 		//}
 		

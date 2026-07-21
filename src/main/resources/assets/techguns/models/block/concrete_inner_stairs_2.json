@@ -1,8 +1,0 @@
-{
-    "parent": "block/inner_stairs",
-    "textures": {
-        "bottom": "techguns:blocks/concrete_brown_light",
-        "top": "techguns:blocks/concrete_brown_light",
-        "side": "techguns:blocks/concrete_brown_light"
-    }
-}

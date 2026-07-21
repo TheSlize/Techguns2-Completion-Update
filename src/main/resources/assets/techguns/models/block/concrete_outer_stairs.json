@@ -1,8 +1,0 @@
-{
-    "parent": "block/outer_stairs",
-    "textures": {
-        "bottom": "techguns:blocks/concrete_grey_dark",
-        "top": "techguns:blocks/concrete_grey_dark",
-        "side": "techguns:blocks/concrete_grey_dark"
-    }
-}

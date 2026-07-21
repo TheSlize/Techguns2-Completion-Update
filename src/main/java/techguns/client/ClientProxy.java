@@ -1,8 +1,11 @@
 package techguns.client;
 
+import com.google.common.collect.ImmutableMap;
 import micdoodle8.mods.galacticraft.api.client.tabs.InventoryTabVanilla;
 import micdoodle8.mods.galacticraft.api.client.tabs.TabRegistry;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockSlab;
+import net.minecraft.block.BlockStairs;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -14,6 +17,7 @@ import net.minecraft.client.renderer.block.statemap.StateMapperBase;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.client.renderer.entity.layers.LayerBipedArmor;
 import net.minecraft.client.renderer.entity.layers.LayerRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,12 +28,17 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.minecraftforge.client.event.ModelBakeEvent;
 import net.minecraftforge.client.event.ModelRegistryEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.model.IModel;
 import net.minecraftforge.client.model.ModelLoader;
+import net.minecraftforge.client.model.ModelLoaderRegistry;
 import net.minecraftforge.client.model.obj.OBJLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.UsernameCache;
 import net.minecraftforge.common.capabilities.CapabilityManager;
+import net.minecraftforge.common.model.IModelState;
 import net.minecraftforge.fluids.IFluidBlock;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -44,6 +53,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 import org.jetbrains.annotations.NotNull;
 import techguns.*;
 import techguns.api.npc.INPCTechgunsShooter;
+import techguns.blocks.*;
 import techguns.capabilities.TGDeathTypeCap;
 import techguns.capabilities.TGDeathTypeCapStorage;
 import techguns.capabilities.TGExtendedPlayerClient;
@@ -68,6 +78,7 @@ import techguns.client.render.RenderAdditionalSlotSharedItem;
 import techguns.client.render.entities.TGLayerRendererer;
 import techguns.client.render.entities.npcs.*;
 import techguns.client.render.entities.projectiles.*;
+import techguns.client.render.fx.IScreenEffect;
 import techguns.client.render.fx.ScreenEffect;
 import techguns.client.render.item.*;
 import techguns.client.render.tileentities.*;
@@ -83,7 +94,10 @@ import techguns.gui.player.tabs.TGPlayerTab;
 import techguns.items.guns.GenericGun;
 import techguns.keybind.TGKeybinds;
 import techguns.tileentities.*;
+import techguns.util.BlockUtils;
 import techguns.util.EntityCondition;
+
+import java.lang.reflect.Method;
 import java.util.*;
 
 @Mod.EventBusSubscriber(Side.CLIENT)
@@ -119,6 +133,23 @@ public class ClientProxy extends CommonProxy {
 	public boolean hasStepassist=false;
 	
 	public boolean hasNightvision=false;
+
+	public static boolean ignoreBlockstatesForCustomModels = false;
+
+	public static final StateMapperBase CUSTOM_STATE_MAPPER = new StateMapperBase() {
+		@Override
+		public Map<IBlockState, ModelResourceLocation> putStateModelLocations(Block blockIn) {
+			if (ignoreBlockstatesForCustomModels) {
+				return Collections.emptyMap();
+			}
+			return super.putStateModelLocations(blockIn);
+		}
+
+		@Override
+		protected ModelResourceLocation getModelResourceLocation(IBlockState state) {
+			return new ModelResourceLocation(state.getBlock().getRegistryName(), BlockUtils.getBlockStateVariantString(state));
+		}
+	};
 	
 	protected HashMap<String,ModelBiped> armorModelRegistry = new HashMap<>();
 	
@@ -166,10 +197,12 @@ public class ClientProxy extends CommonProxy {
 	@Override
 	public void init(FMLInitializationEvent event) {
 		super.init(event);
-		
-		if(TGConfig.debug) {
-			Keybinds.init(); //Debuging Keybinds
-		} 
+
+		IScreenEffect.preloadAll();
+
+		if(TGConfig.general.debug) {
+			Keybinds.init();
+		}
 		TGKeybinds.init();
 		
 		MinecraftForge.EVENT_BUS.register(new TGGuiEvents());
@@ -261,8 +294,8 @@ public class ClientProxy extends CommonProxy {
             }
         }
     }
-	
-	
+
+
 	@Override
 	public void postInit(FMLPostInitializationEvent event) {
 		super.postInit(event);
@@ -271,12 +304,295 @@ public class ClientProxy extends CommonProxy {
 
 	@SubscribeEvent
 	public static void registerModels(ModelRegistryEvent event) {
+		ignoreBlockstatesForCustomModels = true;
 		TGItems.initModels();
 		TGArmors.initModels();
 		TGuns.initModels();
 		TGEntities.initModels();
 		TGBlocks.initModels();
 		TGFluids.initModels();
+
+		for (IGenericBlock b : TGBlocks.BLOCKLIST) {
+			if (b instanceof BlockTGStairs || b instanceof BlockTGSlab || b instanceof BlockTGDoubleSlab || b instanceof BlockTGFence) {
+				ModelLoader.setCustomStateMapper((Block) b, CUSTOM_STATE_MAPPER);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void onTextureStitch(TextureStitchEvent.Pre event) {
+		for (IGenericBlock b : TGBlocks.BLOCKLIST) {
+			if (b instanceof BlockTGStairs) {
+				for (String tex : ((BlockTGStairs) b).getTextures()) {
+					if (tex != null) event.getMap().registerSprite(new ResourceLocation(Tags.MOD_ID, "blocks/" + tex));
+				}
+			} else if (b instanceof BlockTGSlab) {
+				for (String tex : ((BlockTGSlab) b).getTextures()) {
+					if (tex != null) event.getMap().registerSprite(new ResourceLocation(Tags.MOD_ID, "blocks/" + tex));
+				}
+				for (String tex : ((BlockTGSlab) b).getSideTextures()) {
+					if (tex != null) event.getMap().registerSprite(new ResourceLocation(Tags.MOD_ID, "blocks/" + tex));
+				}
+			} else if (b instanceof BlockTGFence) {
+				for (String tex : ((BlockTGFence) b).getSideTextures()) {
+					if (tex != null) event.getMap().registerSprite(new ResourceLocation(Tags.MOD_ID, "blocks/" + tex));
+				}
+				for (String tex : ((BlockTGFence) b).getTopTextures()) {
+					if (tex != null) event.getMap().registerSprite(new ResourceLocation(Tags.MOD_ID, "blocks/" + tex));
+				}
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public static void onModelBake(ModelBakeEvent event) {
+		ignoreBlockstatesForCustomModels = false;
+		IModel stairs, stairsOuter, stairsInner, slabHalf, slabUpper, cubeBottomTop, fenceCenter, fenceSideN, fenceSideE, fenceSideS, fenceSideW, fenceCornerNE, fenceCornerES, fenceCornerSW, fenceCornerWN, fenceInventory;
+		try {
+			stairs = ModelLoaderRegistry.getModel(new ResourceLocation("minecraft:block/stairs"));
+			stairsOuter = ModelLoaderRegistry.getModel(new ResourceLocation("minecraft:block/outer_stairs"));
+			stairsInner = ModelLoaderRegistry.getModel(new ResourceLocation("minecraft:block/inner_stairs"));
+			slabHalf = ModelLoaderRegistry.getModel(new ResourceLocation("minecraft:block/half_slab"));
+			slabUpper = ModelLoaderRegistry.getModel(new ResourceLocation("minecraft:block/upper_slab"));
+			cubeBottomTop = ModelLoaderRegistry.getModel(new ResourceLocation("minecraft:block/cube_bottom_top"));
+			// Th3_Sl1ze: as far as I hate having different models for each side, they're necessary here. rotating a single side model will cause
+			// fucked up connected textures at the top and bottom sides
+			fenceCenter = ModelLoaderRegistry.getModel(new ResourceLocation(Tags.MOD_ID, "block/fence_center"));
+			fenceSideN = ModelLoaderRegistry.getModel(new ResourceLocation(Tags.MOD_ID, "block/fence_side_north"));
+			fenceSideE = ModelLoaderRegistry.getModel(new ResourceLocation(Tags.MOD_ID, "block/fence_side_east"));
+			fenceSideS = ModelLoaderRegistry.getModel(new ResourceLocation(Tags.MOD_ID, "block/fence_side_south"));
+			fenceSideW = ModelLoaderRegistry.getModel(new ResourceLocation(Tags.MOD_ID, "block/fence_side_west"));
+
+			fenceCornerNE = ModelLoaderRegistry.getModel(new ResourceLocation(Tags.MOD_ID, "block/fence_corner_ne"));
+			fenceCornerES = ModelLoaderRegistry.getModel(new ResourceLocation(Tags.MOD_ID, "block/fence_corner_es"));
+			fenceCornerSW = ModelLoaderRegistry.getModel(new ResourceLocation(Tags.MOD_ID, "block/fence_corner_sw"));
+			fenceCornerWN = ModelLoaderRegistry.getModel(new ResourceLocation(Tags.MOD_ID, "block/fence_corner_wn"));
+
+			fenceInventory = ModelLoaderRegistry.getModel(new ResourceLocation(Tags.MOD_ID, "block/fence_inventory"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
+		}
+		for (IGenericBlock b : TGBlocks.BLOCKLIST) {
+			if (b instanceof BlockTGStairs block) {
+				for (IBlockState state : block.getBlockState().getValidStates()) {
+					boolean type2 = state.getValue(BlockTGStairs.TYPE2);
+					String texture = block.getTextures()[type2 ? 1 : 0];
+					if (texture == null) continue;
+
+					EnumFacing facing = state.getValue(BlockTGStairs.FACING);
+					BlockStairs.EnumHalf half = state.getValue(BlockTGStairs.HALF);
+					BlockStairs.EnumShape shape = state.getValue(BlockTGStairs.SHAPE);
+
+					IModel baseModel = stairs;
+					if (shape == BlockStairs.EnumShape.OUTER_LEFT || shape == BlockStairs.EnumShape.OUTER_RIGHT) baseModel = stairsOuter;
+					else if (shape == BlockStairs.EnumShape.INNER_LEFT || shape == BlockStairs.EnumShape.INNER_RIGHT) baseModel = stairsInner;
+
+					int x = (half == BlockStairs.EnumHalf.TOP) ? 180 : 0;
+					int y = getStairsYRotation(facing, shape, half);
+
+					ModelRotation rot = ModelRotation.getModelRotation(x, y);
+					IBakedModel baked = bakeModel(baseModel, rot, true, texture, null);
+					event.getModelRegistry().putObject(new ModelResourceLocation(block.getRegistryName(), BlockUtils.getBlockStateVariantString(state)), baked);
+				}
+			} else if (b instanceof BlockTGSlab block) {
+				for (IBlockState state : block.getBlockState().getValidStates()) {
+					int variant = state.getValue(BlockTGSlab.VARIANT);
+					String texture = block.getTextures()[variant];
+					if (texture == null) continue;
+					String sideTexture = block.getSideTextures()[variant];
+
+					BlockSlab.EnumBlockHalf half = state.getValue(BlockTGSlab.HALF);
+					IModel baseModel = (half == BlockSlab.EnumBlockHalf.TOP) ? slabUpper : slabHalf;
+
+					IBakedModel baked = bakeModel(baseModel, ModelRotation.X0_Y0, true, texture, sideTexture);
+					event.getModelRegistry().putObject(new ModelResourceLocation(block.getRegistryName(), BlockUtils.getBlockStateVariantString(state)), baked);
+				}
+			} else if (b instanceof BlockTGDoubleSlab block) {
+				for (IBlockState state : block.getBlockState().getValidStates()) {
+					int variant = state.getValue(BlockTGDoubleSlab.VARIANT);
+					String texture = block.getSingleSlab().getTextures()[variant];
+					if (texture == null) continue;
+					String sideTexture = block.getSingleSlab().getSideTextures()[variant];
+
+					IBakedModel baked = event.getModelRegistry().getObject(new ModelResourceLocation(Tags.MOD_ID + ":" + texture + (sideTexture != null ? "_side_" + sideTexture : ""), "normal"));
+					if (baked == null) {
+						baked = bakeModel(cubeBottomTop, ModelRotation.X0_Y0, true, texture, sideTexture);
+					}
+					event.getModelRegistry().putObject(new ModelResourceLocation(block.getRegistryName(), BlockUtils.getBlockStateVariantString(state)), baked);
+				}
+			} else if (b instanceof BlockTGFence block) {
+				for (int variant = 0; variant < block.numVariants; variant++) {
+					String sideTex = block.getSideTextures()[variant];
+					String topTex = block.getTopTextures()[variant];
+					if (sideTex == null || topTex == null) continue;
+
+					IBakedModel centerBaked = bakeFencePart(fenceCenter, ModelRotation.X0_Y0, false, sideTex, topTex);
+					IBakedModel northBaked = bakeFencePart(fenceSideN, ModelRotation.X0_Y0, false, sideTex, topTex);
+					IBakedModel eastBaked = bakeFencePart(fenceSideE, ModelRotation.X0_Y0, false, sideTex, topTex);
+					IBakedModel southBaked = bakeFencePart(fenceSideS, ModelRotation.X0_Y0, false, sideTex, topTex);
+					IBakedModel westBaked = bakeFencePart(fenceSideW, ModelRotation.X0_Y0, false, sideTex, topTex);
+
+					IBakedModel cornerNEBaked = bakeFencePart(fenceCornerNE, ModelRotation.X0_Y0, false, sideTex, topTex);
+					IBakedModel cornerESBaked = bakeFencePart(fenceCornerES, ModelRotation.X0_Y0, false, sideTex, topTex);
+					IBakedModel cornerSWBaked = bakeFencePart(fenceCornerSW, ModelRotation.X0_Y0, false, sideTex, topTex);
+					IBakedModel cornerWNBaked = bakeFencePart(fenceCornerWN, ModelRotation.X0_Y0, false, sideTex, topTex);
+
+					IBakedModel inventoryBaked = bakeFencePart(fenceInventory, ModelRotation.X0_Y0, false, sideTex, topTex);
+					event.getModelRegistry().putObject(new ModelResourceLocation(block.getRegistryName(), "inventory_" + variant), inventoryBaked);
+
+					MultipartBakedModel.Builder builder = new MultipartBakedModel.Builder();
+					builder.putModel(s -> true, centerBaked);
+					builder.putModel(s -> s != null && s.getBlock() == block && s.getValue(BlockTGFence.NORTH), northBaked);
+					builder.putModel(s -> s != null && s.getBlock() == block && s.getValue(BlockTGFence.EAST), eastBaked);
+					builder.putModel(s -> s != null && s.getBlock() == block && s.getValue(BlockTGFence.SOUTH), southBaked);
+					builder.putModel(s -> s != null && s.getBlock() == block && s.getValue(BlockTGFence.WEST), westBaked);
+
+					builder.putModel(s -> s != null && s.getBlock() == block && s.getValue(BlockTGFence.CORNER_NE), cornerNEBaked);
+					builder.putModel(s -> s != null && s.getBlock() == block && s.getValue(BlockTGFence.CORNER_ES), cornerESBaked);
+					builder.putModel(s -> s != null && s.getBlock() == block && s.getValue(BlockTGFence.CORNER_SW), cornerSWBaked);
+					builder.putModel(s -> s != null && s.getBlock() == block && s.getValue(BlockTGFence.CORNER_WN), cornerWNBaked);
+
+					IBakedModel combined = builder.makeMultipartModel();
+
+					for (IBlockState state : block.getBlockState().getValidStates()) {
+						if (state.getValue(BlockTGFence.VARIANT) == variant) {
+							event.getModelRegistry().putObject(new ModelResourceLocation(block.getRegistryName(), BlockUtils.getBlockStateVariantString(state)), combined);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private static IBakedModel bakeFencePart(IModel model, ModelRotation rot, boolean uvlock, String sideTex, String topTex) {
+		String sidePath = techguns.Tags.MOD_ID + ":blocks/" + sideTex;
+		String topPath = techguns.Tags.MOD_ID + ":blocks/" + topTex;
+		ImmutableMap<String, String> dict = ImmutableMap.<String, String>builder()
+				.put("0", sidePath)
+				.put("1", topPath)
+				.put("particle", sidePath)
+				.build();
+		IModel retextured = model.retexture(dict).uvlock(uvlock);
+		IModelState state = new Variant(new net.minecraft.util.ResourceLocation("minecraft:block/fence"), rot, uvlock, 1).getState();
+		IBakedModel baked = retextured.bake(state, DefaultVertexFormats.BLOCK, location -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString()));
+		return forceCTMWrap(retextured, baked);
+	}
+
+	private static IBakedModel bakeModel(IModel model, ModelRotation rot, boolean uvlock, String textureName, String sideTextureName) {
+		String texPath = techguns.Tags.MOD_ID + ":blocks/" + textureName;
+		String sideTexPath = techguns.Tags.MOD_ID + ":blocks/" + (sideTextureName != null ? sideTextureName : textureName);
+		ImmutableMap<String, String> dict = ImmutableMap.<String, String>builder()
+				.put("bottom", texPath)
+				.put("top", texPath)
+				.put("side", sideTexPath)
+				.put("all", texPath)
+				.put("particle", texPath)
+				.build();
+		IModel retextured = model.retexture(dict).uvlock(uvlock);
+		IModelState state = new Variant(new ResourceLocation("minecraft:block/stairs"), rot, uvlock, 1).getState();
+		IBakedModel baked = retextured.bake(state, DefaultVertexFormats.BLOCK, location -> Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(location.toString()));
+		return forceCTMWrap(retextured, baked);
+	}
+
+	// Th3_Sl1ze: for anyone wondering, this enables CTM support for models that AREN'T done in json
+	// by default, CTM doesn't really like dealing with hardcoded models
+	private static IBakedModel forceCTMWrap(IModel iModel, IBakedModel bakedModel) {
+		if (Loader.isModLoaded("ctm")) {
+			try {
+				Class<?> cls = Class.forName("team.chisel.ctm.client.util.TextureMetadataHandler");
+				Object instance = cls.getField("INSTANCE").get(null);
+				Method wrapMethod = cls.getDeclaredMethod("wrap", IModel.class, IBakedModel.class);
+				wrapMethod.setAccessible(true);
+				IBakedModel wrapped = (IBakedModel) wrapMethod.invoke(instance, iModel, bakedModel);
+				if (wrapped != null) return wrapped;
+			} catch (Throwable ignored) {
+			}
+		}
+		return bakedModel;
+	}
+
+	private static int getStairsYRotation(EnumFacing facing, BlockStairs.EnumShape shape, BlockStairs.EnumHalf half) {
+		boolean top = (half == BlockStairs.EnumHalf.TOP);
+		switch (shape) {
+			case STRAIGHT:
+				switch (facing) {
+					case EAST: return 0;
+					case WEST: return 180;
+					case SOUTH: return 90;
+					case NORTH: return 270;
+				}
+				break;
+			case OUTER_RIGHT:
+				if (top) {
+					switch (facing) {
+						case EAST: return 90;
+						case WEST: return 270;
+						case SOUTH: return 180;
+						case NORTH: return 0;
+					}
+				} else {
+					switch (facing) {
+						case EAST: return 0;
+						case WEST: return 180;
+						case SOUTH: return 90;
+						case NORTH: return 270;
+					}
+				}
+				break;
+			case OUTER_LEFT:
+				if (top) {
+					switch (facing) {
+						case EAST: return 0;
+						case WEST: return 180;
+						case SOUTH: return 90;
+						case NORTH: return 270;
+					}
+				} else {
+					switch (facing) {
+						case EAST: return 270;
+						case WEST: return 90;
+						case SOUTH: return 0;
+						case NORTH: return 180;
+					}
+				}
+				break;
+			case INNER_RIGHT:
+				if (top) {
+					switch (facing) {
+						case EAST: return 90;
+						case WEST: return 270;
+						case SOUTH: return 180;
+						case NORTH: return 0;
+					}
+				} else {
+					switch (facing) {
+						case EAST: return 0;
+						case WEST: return 180;
+						case SOUTH: return 90;
+						case NORTH: return 270;
+					}
+				}
+				break;
+			case INNER_LEFT:
+				if (top) {
+					switch (facing) {
+						case EAST: return 0;
+						case WEST: return 180;
+						case SOUTH: return 90;
+						case NORTH: return 270;
+					}
+				} else {
+					switch (facing) {
+						case EAST: return 270;
+						case WEST: return 90;
+						case SOUTH: return 0;
+						case NORTH: return 180;
+					}
+				}
+				break;
+		}
+		return 0;
 	}
 
 	@Override

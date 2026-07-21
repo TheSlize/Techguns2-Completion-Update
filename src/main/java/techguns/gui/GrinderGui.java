@@ -9,7 +9,7 @@ import techguns.gui.containers.GrinderContainer;
 import techguns.tileentities.GrinderTileEnt;
 
 public class GrinderGui extends PoweredTileEntGui {
-    public static final ResourceLocation texture = new ResourceLocation(Tags.MOD_ID, "textures/gui/grinder_gui.png");
+    public static final ResourceLocation texture = new ResourceLocation(Tags.MOD_ID, "textures/gui/ce_grinder_gui.png");
 
     protected GrinderTileEnt tile;
 

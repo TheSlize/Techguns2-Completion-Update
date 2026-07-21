@@ -26,6 +26,6 @@ public class ExplosiveChargeAdvTileEnt extends ExplosiveChargeTileEnt {
 
     @Override
     protected boolean canBreakBlockHardness(float hardness) {
-        return hardness >= 0 && hardness <= TGConfig.explosiveChargeAdvancedMaxBlockHardness;
+        return hardness >= 0 && hardness <= TGConfig.general.explosiveChargeAdvancedMaxBlockHardness;
     }
 }

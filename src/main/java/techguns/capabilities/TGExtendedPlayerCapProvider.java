@@ -30,7 +30,7 @@ public class TGExtendedPlayerCapProvider implements ICapabilitySerializable<NBTB
 
 	@Override
 	public boolean hasCapability(@NotNull Capability<?> capability, EnumFacing facing) {
-		return false;
+		return capability == TG_EXTENDED_PLAYER; // actually TG_EXTENDED_PLAYER becomes non-null in runtime..
 	}
 
 	@Override

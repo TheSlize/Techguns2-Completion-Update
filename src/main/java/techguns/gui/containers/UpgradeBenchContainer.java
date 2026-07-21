@@ -188,13 +188,13 @@ public class UpgradeBenchContainer extends OwnedTileContainer {
 
             if (r.getLevel() > level) {
                 int dif = r.getLevel() - level;
-                return TGConfig.upgrade_xp_cost * dif;
+                return TGConfig.general.upgrade_xp_cost * dif;
             } else {
                 return 0;
             }
 
         } else {
-            return TGConfig.upgrade_xp_cost * r.getLevel();
+            return TGConfig.general.upgrade_xp_cost * r.getLevel();
         }
     }
 

@@ -22,7 +22,7 @@ import java.util.List;
 import static techguns.tileentities.ReactionChamberTileEntMaster.*;
 
 public class ReactionChamberGui extends PoweredTileEntGui {
-    public static final ResourceLocation texture = new ResourceLocation(Tags.MOD_ID, "textures/gui/reaction_chamber_gui.png");
+    public static final ResourceLocation texture = new ResourceLocation(Tags.MOD_ID, "textures/gui/ce_reaction_chamber_gui.png");
     public static final ResourceLocation ru_ru = new ResourceLocation(Tags.MOD_ID, "textures/gui/translations/ru_ru.png");
     ReactionChamberTileEntMaster tile;
 
@@ -140,7 +140,7 @@ public class ReactionChamberGui extends PoweredTileEntGui {
             FluidTankInfo info = this.tile.inputTank.getInfo();
             List<String> tooltip = new ArrayList<>();
 
-            tooltip.add(TextUtil.trans(info.fluid != null ? info.fluid.getFluid().getUnlocalizedName() : Tags.MOD_ID + ".gui.empty"));
+            tooltip.add(TextUtil.trans(info.fluid != null ? info.fluid.getLocalizedName() : Tags.MOD_ID + ".gui.empty"));
             tooltip.add(tile.inputTank.getFluidAmount() + "/" + (info.capacity + "mB"));
 
             this.drawHoveringText(tooltip, mx, my);

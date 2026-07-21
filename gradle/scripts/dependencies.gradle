@@ -75,6 +75,7 @@ dependencies {
     // }
 
     implementation rfg.deobf("curse.maven:jei-238222:5846804")
+    implementation rfg.deobf("curse.maven:ctm-267602:2915363")
     // everything else I don't really want to use during runClient, so I'd leave it compileOnly tbh
     compileOnly rfg.deobf("curse.maven:crafttweaker-239197:7406648")
     compileOnly rfg.deobf("curse.maven:opencomputers-223008:6608365")

@@ -13,7 +13,7 @@ public class OreDictIngredientWireGold implements IIngredientFactory {
 
 	@Override
 	public Ingredient parse(JsonContext context, JsonObject json) {
-		if(OreDictionary.doesOreNameExist("wireGold") && TGConfig.addOreDicts) {
+		if(OreDictionary.doesOreNameExist("wireGold") && TGConfig.disableItems.addOreDicts) {
 			return new OreIngredient("wireGold");
 		}
 		return new OreIngredient("wireGoldTG");

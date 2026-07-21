@@ -149,12 +149,12 @@ public class TGSpawnManager {
 
     protected static TGNpcSpawnTable getSpawnTableForWorld(World world) {
         int id = world.provider.getDimension();
-        boolean overworldCondition = TGConfig.dimensionAutoadd ? world.provider.getDimensionType() == DimensionType.OVERWORLD
-                : (id == 0 || Arrays.asList(TGConfig.dimensionWhitelistOverworld).contains(String.valueOf(id)));
-        boolean netherCondition = TGConfig.dimensionAutoadd ? world.provider.getDimensionType() == DimensionType.NETHER
-                : (id == -1 || Arrays.asList(TGConfig.dimensionWhitelistNether).contains(String.valueOf(id)));
-        boolean endCondition = TGConfig.dimensionAutoadd ? world.provider.getDimensionType() == DimensionType.THE_END
-                : (id == 1 || Arrays.asList(TGConfig.dimensionWhitelistEnd).contains(String.valueOf(id)));
+        boolean overworldCondition = TGConfig.npcSpawn.dimensionAutoadd ? world.provider.getDimensionType() == DimensionType.OVERWORLD
+                : (id == 0 || Arrays.asList(TGConfig.npcSpawn.dimensionWhitelistOverworld).contains(String.valueOf(id)));
+        boolean netherCondition = TGConfig.npcSpawn.dimensionAutoadd ? world.provider.getDimensionType() == DimensionType.NETHER
+                : (id == -1 || Arrays.asList(TGConfig.npcSpawn.dimensionWhitelistNether).contains(String.valueOf(id)));
+        boolean endCondition = TGConfig.npcSpawn.dimensionAutoadd ? world.provider.getDimensionType() == DimensionType.THE_END
+                : (id == 1 || Arrays.asList(TGConfig.npcSpawn.dimensionWhitelistEnd).contains(String.valueOf(id)));
         if (overworldCondition) return spawnTableOverworld;
         if (netherCondition) return spawnTableNether;
         if (endCondition) return spawnTableEnd;
@@ -177,11 +177,11 @@ public class TGSpawnManager {
         }
 
 
-        if (distance < TGConfig.distanceSpawnLevel0 * factor) {
+        if (distance < TGConfig.npcSpawn.distanceSpawnLevel0 * factor) {
             return 0;
-        } else if (distance < TGConfig.distanceSpawnLevel1 * factor) {
+        } else if (distance < TGConfig.npcSpawn.distanceSpawnLevel1 * factor) {
             return 1;
-        } else if (distance < TGConfig.distanceSpawnLevel2 * factor) {
+        } else if (distance < TGConfig.npcSpawn.distanceSpawnLevel2 * factor) {
             return 2;
         } else {
             return 3;

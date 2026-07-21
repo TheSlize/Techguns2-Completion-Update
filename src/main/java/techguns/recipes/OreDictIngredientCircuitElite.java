@@ -13,7 +13,7 @@ public class OreDictIngredientCircuitElite implements IIngredientFactory {
 
 	@Override
 	public Ingredient parse(JsonContext context, JsonObject json) {
-		if(OreDictionary.doesOreNameExist("circuitElite") && TGConfig.addOreDicts) {
+		if(OreDictionary.doesOreNameExist("circuitElite") && TGConfig.disableItems.addOreDicts) {
 			return new OreIngredient("circuitElite");
 		}
 		return new OreIngredient("circuitEliteTG");

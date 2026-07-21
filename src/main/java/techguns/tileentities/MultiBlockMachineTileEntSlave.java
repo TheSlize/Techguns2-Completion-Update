@@ -29,7 +29,7 @@ public abstract class MultiBlockMachineTileEntSlave extends TileEntity {
 
     private MultiBlockMachineTileEntMaster masterTileEnt = null;
 
-    protected MultiBlockMachineTileEntMaster getMaster() {
+    public MultiBlockMachineTileEntMaster getMaster() {
         if (hasMaster) {
             if (masterTileEnt == null) {
                 TileEntity tile = this.world.getTileEntity(new BlockPos(this.masterX, this.masterY, this.masterZ));

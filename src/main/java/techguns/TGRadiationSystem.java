@@ -63,7 +63,7 @@ public class TGRadiationSystem implements ITGInitializer {
 	}
 
 	public static boolean isEnabled() {
-		return !TGConfig.WIP_disableRadiationSystem;
+		return !TGConfig.general.WIP_disableRadiationSystem;
 	}
 	
 	@Override

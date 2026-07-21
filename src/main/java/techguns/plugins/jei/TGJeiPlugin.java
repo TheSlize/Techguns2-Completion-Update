@@ -5,6 +5,7 @@ import mezz.jei.api.IJeiHelpers;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.IModRegistry;
 import mezz.jei.api.JEIPlugin;
+import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import mezz.jei.api.recipe.VanillaRecipeCategoryUid;
 import net.minecraft.item.ItemStack;
@@ -55,6 +56,7 @@ public class TGJeiPlugin implements IModPlugin {
 	}
 	@Override
 	public void register(IModRegistry registry) {
+		final IIngredientRegistry ingredientRegistry = registry.getIngredientRegistry();
         final IJeiHelpers jeiHelpers = registry.getJeiHelpers();
 			
 		registry.handleRecipes(MiningToolUpgradeRecipe.class, recipe -> new MiningToolUpgradeRecipeWrapper(jeiHelpers, recipe), VanillaRecipeCategoryUid.CRAFTING);
@@ -67,6 +69,7 @@ public class TGJeiPlugin implements IModPlugin {
 		registry.addRecipes(CamoBenchJeiRecipe.getRecipes(jeiHelpers), CAMO_BENCH);
 		registry.addRecipes(ChargingStationJeiRecipe.getRecipes(jeiHelpers), CHARGING_STATION);
 		registry.addRecipes(ReactionChamberJeiRecipe.getRecipes(), REACTION_CHAMBER);
+		registry.addRecipes(OreDrillJeiRecipe.getRecipes(ingredientRegistry), ORE_DRILL);
 		registry.addRecipes(BlastFurnaceJeiRecipe.getRecipes(), BLAST_FURNACE);
 		registry.addRecipes(GrinderJeiRecipe.getRecipes(), GRINDER);
 		registry.addRecipes(UpgradeBenchJeiRecipe.getRecipes(jeiHelpers), UPGRADE_BENCH);
@@ -80,7 +83,7 @@ public class TGJeiPlugin implements IModPlugin {
 		registry.addRecipeClickArea(FabricatorGui.class, 155, 61, 4, 28, FABRICATOR);
 		registry.addRecipeClickArea(FabricatorGui.class, 18, 84, 140, 5, FABRICATOR);
 		registry.addRecipeClickArea(FabricatorGui.class, 83, 89, 10, 18, FABRICATOR);
-		//registry.addRecipeClickArea(OreDrillGui.class, 30, 45, 20, 20, ORE_DRILL);
+		registry.addRecipeClickArea(OreDrillGui.class, 72, 16, 27, 39, ORE_DRILL);
 		//NO CLICKAREA for camobench
 		registry.addRecipeClickArea(ChargingStationGui.class, 38, 18, 28, 12, CHARGING_STATION);
 		registry.addRecipeClickArea(ReactionChamberGui.class, 61, 90, 58, 9, REACTION_CHAMBER);

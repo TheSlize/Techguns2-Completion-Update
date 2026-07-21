@@ -68,7 +68,7 @@ public class Keybinds {
 
     @SubscribeEvent
     public static void onKeyInput(InputEvent.KeyInputEvent event) {
-        if (!TGConfig.debug) return;
+        if (!TGConfig.general.debug) return;
 
         if (Keybinds.plusX.isPressed()) {
             Keybinds.X += D;

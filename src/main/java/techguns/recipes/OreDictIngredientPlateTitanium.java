@@ -13,7 +13,7 @@ public class OreDictIngredientPlateTitanium implements IIngredientFactory {
 
 	@Override
 	public Ingredient parse(JsonContext context, JsonObject json) {
-		if(OreDictionary.doesOreNameExist("plateTitanium") && TGConfig.addOreDicts) {
+		if(OreDictionary.doesOreNameExist("plateTitanium") && TGConfig.disableItems.addOreDicts) {
 			return new OreIngredient("plateTitanium");
 		}
 		return new OreIngredient("plateTitaniumTG");
