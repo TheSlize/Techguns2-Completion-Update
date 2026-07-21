@@ -69,7 +69,7 @@ public class ModelRevolver extends ModelMultipart {
 		Shape6.mirror = true;
 		setRotation(Shape6, 0F, 0F, 0F);
 		Shape7 = new ModelRenderer(this, 50, 15);
-		Shape7.addBox(0F, 0F, 0F, 3, 0, 2);
+		Shape7.addBox(-1F, 0F, 0F, 5, 1, 2);
 		Shape7.setRotationPoint(3F, 5.5F, 0F);
 		Shape7.setTextureSize(64, 32);
 		Shape7.mirror = true;
