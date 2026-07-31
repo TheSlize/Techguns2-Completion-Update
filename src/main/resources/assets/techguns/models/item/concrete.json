@@ -1,0 +1,62 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "techguns:blocks/concrete_brown"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "variant": 0
+      },
+      "model": "techguns:item/concrete_brown"
+    },
+    {
+      "predicate": {
+        "variant": 1
+      },
+      "model": "techguns:item/concrete_brown_light"
+    },
+    {
+      "predicate": {
+        "variant": 2
+      },
+      "model": "techguns:item/concrete_grey"
+    },
+    {
+      "predicate": {
+        "variant": 3
+      },
+      "model": "techguns:item/concrete_grey_dark"
+    },
+    {
+      "predicate": {
+        "variant": 4
+      },
+      "model": "techguns:item/concrete_brown_pipes"
+    },
+    {
+      "predicate": {
+        "variant": 5
+      },
+      "model": "techguns:item/concrete_brown_light_scaff"
+    },
+    {
+      "predicate": {
+        "variant": 6
+      },
+      "model": "techguns:item/concrete_brown_light_pipes"
+    },
+    {
+      "predicate": {
+        "variant": 7
+      },
+      "model": "techguns:item/concrete_grey_pipes"
+    },
+    {
+      "predicate": {
+        "variant": 8
+      },
+      "model": "techguns:item/concrete_grey_dark_pipes"
+    }
+  ]
+}
