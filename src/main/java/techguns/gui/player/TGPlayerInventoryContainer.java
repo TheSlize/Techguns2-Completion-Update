@@ -9,6 +9,7 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.NotNull;
 import techguns.api.tginventory.TGSlotType;
 import techguns.capabilities.TGExtendedPlayer;
 import techguns.gui.widgets.SlotArmor;
@@ -87,7 +88,7 @@ public class TGPlayerInventoryContainer extends Container {
     }
 
     @Override
-    public boolean canInteractWith(EntityPlayer player) {
+    public boolean canInteractWith(@NotNull EntityPlayer player) {
         return true;
     }
 
@@ -129,7 +130,7 @@ public class TGPlayerInventoryContainer extends Container {
     }
 
     @Override
-    public ItemStack transferStackInSlot(EntityPlayer player, int id) {
+    public @NotNull ItemStack transferStackInSlot(@NotNull EntityPlayer player, int id) {
         int o = TGPlayerInventory.NUMSLOTS - 5; //offset compared to Default inv, -5 craftmatrix + TG inventory size
 
 

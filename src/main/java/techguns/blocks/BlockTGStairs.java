@@ -41,6 +41,8 @@ import java.util.List;
 public class BlockTGStairs extends GenericBlock {
 	
 	protected GenericItemBlockMeta itemblock;
+    protected boolean hasType2 = true;
+    protected String[] textures = new String[2];
 	
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
     public static final PropertyEnum<BlockStairs.EnumHalf> HALF = PropertyEnum.create("half", BlockStairs.EnumHalf.class);
@@ -142,6 +144,16 @@ public class BlockTGStairs extends GenericBlock {
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.EAST).withProperty(HALF, BlockStairs.EnumHalf.BOTTOM).withProperty(SHAPE, BlockStairs.EnumShape.STRAIGHT).withProperty(TYPE2, false));
 	    this.setSoundType(sound); 
 	}
+
+    public BlockTGStairs setTextures(String... tex) {
+        System.arraycopy(tex, 0, this.textures, 0, Math.min(tex.length, 2));
+        this.hasType2 = tex.length >= 2;
+        return this;
+    }
+
+    public String[] getTextures() {
+        return textures;
+    }
 	
     @Override
 	public int damageDropped(IBlockState state) {
@@ -189,18 +201,12 @@ public class BlockTGStairs extends GenericBlock {
     {
         boolean flag = bstate.getValue(HALF) == BlockStairs.EnumHalf.TOP;
 
-        switch (bstate.getValue(FACING))
-        {
-            case NORTH:
-            default:
-                return flag ? AABB_QTR_BOT_NORTH : AABB_QTR_TOP_NORTH;
-            case SOUTH:
-                return flag ? AABB_QTR_BOT_SOUTH : AABB_QTR_TOP_SOUTH;
-            case WEST:
-                return flag ? AABB_QTR_BOT_WEST : AABB_QTR_TOP_WEST;
-            case EAST:
-                return flag ? AABB_QTR_BOT_EAST : AABB_QTR_TOP_EAST;
-        }
+        return switch (bstate.getValue(FACING)) {
+            case SOUTH -> flag ? AABB_QTR_BOT_SOUTH : AABB_QTR_TOP_SOUTH;
+            case WEST -> flag ? AABB_QTR_BOT_WEST : AABB_QTR_TOP_WEST;
+            case EAST -> flag ? AABB_QTR_BOT_EAST : AABB_QTR_TOP_EAST;
+            default -> flag ? AABB_QTR_BOT_NORTH : AABB_QTR_TOP_NORTH;
+        };
     }
 
     /**
@@ -211,38 +217,21 @@ public class BlockTGStairs extends GenericBlock {
     private static AxisAlignedBB getCollEighthBlock(IBlockState bstate)
     {
         EnumFacing enumfacing = bstate.getValue(FACING);
-        EnumFacing enumfacing1;
-
-        switch (bstate.getValue(SHAPE))
-        {
-            case OUTER_LEFT:
-            default:
-                enumfacing1 = enumfacing;
-                break;
-            case OUTER_RIGHT:
-                enumfacing1 = enumfacing.rotateY();
-                break;
-            case INNER_RIGHT:
-                enumfacing1 = enumfacing.getOpposite();
-                break;
-            case INNER_LEFT:
-                enumfacing1 = enumfacing.rotateYCCW();
-        }
+        EnumFacing enumfacing1 = switch (bstate.getValue(SHAPE)) {
+            case OUTER_RIGHT -> enumfacing.rotateY();
+            case INNER_RIGHT -> enumfacing.getOpposite();
+            case INNER_LEFT -> enumfacing.rotateYCCW();
+            default -> enumfacing;
+        };
 
         boolean flag = bstate.getValue(HALF) == BlockStairs.EnumHalf.TOP;
 
-        switch (enumfacing1)
-        {
-            case NORTH:
-            default:
-                return flag ? AABB_OCT_BOT_NW : AABB_OCT_TOP_NW;
-            case SOUTH:
-                return flag ? AABB_OCT_BOT_SE : AABB_OCT_TOP_SE;
-            case WEST:
-                return flag ? AABB_OCT_BOT_SW : AABB_OCT_TOP_SW;
-            case EAST:
-                return flag ? AABB_OCT_BOT_NE : AABB_OCT_TOP_NE;
-        }
+        return switch (enumfacing1) {
+            case SOUTH -> flag ? AABB_OCT_BOT_SE : AABB_OCT_TOP_SE;
+            case WEST -> flag ? AABB_OCT_BOT_SW : AABB_OCT_TOP_SW;
+            case EAST -> flag ? AABB_OCT_BOT_NE : AABB_OCT_TOP_NE;
+            default -> flag ? AABB_OCT_BOT_NW : AABB_OCT_TOP_NW;
+        };
     }
 
     public @NotNull BlockFaceShape getBlockFaceShape(@NotNull IBlockAccess p_193383_1_, @NotNull IBlockState p_193383_2_, @NotNull BlockPos p_193383_3_, EnumFacing p_193383_4_)
@@ -261,17 +250,14 @@ public class BlockTGStairs extends GenericBlock {
             {
                 EnumFacing enumfacing = p_193383_2_.getValue(FACING);
 
-                switch (blockstairs$enumshape)
-                {
-                    case INNER_RIGHT:
-                        return enumfacing != p_193383_4_ && enumfacing != p_193383_4_.rotateYCCW() ? BlockFaceShape.UNDEFINED : BlockFaceShape.SOLID;
-                    case INNER_LEFT:
-                        return enumfacing != p_193383_4_ && enumfacing != p_193383_4_.rotateY() ? BlockFaceShape.UNDEFINED : BlockFaceShape.SOLID;
-                    case STRAIGHT:
-                        return enumfacing == p_193383_4_ ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
-                    default:
-                        return BlockFaceShape.UNDEFINED;
-                }
+                return switch (blockstairs$enumshape) {
+                    case INNER_RIGHT ->
+                            enumfacing != p_193383_4_ && enumfacing != p_193383_4_.rotateYCCW() ? BlockFaceShape.UNDEFINED : BlockFaceShape.SOLID;
+                    case INNER_LEFT ->
+                            enumfacing != p_193383_4_ && enumfacing != p_193383_4_.rotateY() ? BlockFaceShape.UNDEFINED : BlockFaceShape.SOLID;
+                    case STRAIGHT -> enumfacing == p_193383_4_ ? BlockFaceShape.SOLID : BlockFaceShape.UNDEFINED;
+                    default -> BlockFaceShape.UNDEFINED;
+                };
             }
             else
             {
@@ -303,13 +289,15 @@ public class BlockTGStairs extends GenericBlock {
         return state.getValue(HALF) == BlockStairs.EnumHalf.TOP;
     }
 
-    
+
 
     @Override
-	public void getSubBlocks(@NotNull CreativeTabs tab, NonNullList<ItemStack> items) {
-		items.add(new ItemStack(this,1,this.getMetaFromState(getDefaultState())));
-		items.add(new ItemStack(this,1,this.getMetaFromState(getDefaultState().withProperty(TYPE2, true))));
-	}
+    public void getSubBlocks(@NotNull CreativeTabs tab, NonNullList<ItemStack> items) {
+        items.add(new ItemStack(this, 1, this.getMetaFromState(getDefaultState())));
+        if (this.hasType2) {
+            items.add(new ItemStack(this, 1, this.getMetaFromState(getDefaultState().withProperty(TYPE2, true))));
+        }
+    }
 
 	/**
      * Called by ItemBlocks just before a block is actually set in the world, to allow for adjustments to the
@@ -456,19 +444,17 @@ public class BlockTGStairs extends GenericBlock {
 
                 if (enumfacing.getAxis() == EnumFacing.Axis.Z)
                 {
-                    switch (blockstairs$enumshape)
-                    {
-                        case OUTER_LEFT:
-                            return state.withRotation(Rotation.CLOCKWISE_180).withProperty(SHAPE, BlockStairs.EnumShape.OUTER_RIGHT);
-                        case OUTER_RIGHT:
-                            return state.withRotation(Rotation.CLOCKWISE_180).withProperty(SHAPE, BlockStairs.EnumShape.OUTER_LEFT);
-                        case INNER_RIGHT:
-                            return state.withRotation(Rotation.CLOCKWISE_180).withProperty(SHAPE, BlockStairs.EnumShape.INNER_LEFT);
-                        case INNER_LEFT:
-                            return state.withRotation(Rotation.CLOCKWISE_180).withProperty(SHAPE, BlockStairs.EnumShape.INNER_RIGHT);
-                        default:
-                            return state.withRotation(Rotation.CLOCKWISE_180);
-                    }
+                    return switch (blockstairs$enumshape) {
+                        case OUTER_LEFT ->
+                                state.withRotation(Rotation.CLOCKWISE_180).withProperty(SHAPE, EnumShape.OUTER_RIGHT);
+                        case OUTER_RIGHT ->
+                                state.withRotation(Rotation.CLOCKWISE_180).withProperty(SHAPE, EnumShape.OUTER_LEFT);
+                        case INNER_RIGHT ->
+                                state.withRotation(Rotation.CLOCKWISE_180).withProperty(SHAPE, EnumShape.INNER_LEFT);
+                        case INNER_LEFT ->
+                                state.withRotation(Rotation.CLOCKWISE_180).withProperty(SHAPE, EnumShape.INNER_RIGHT);
+                        default -> state.withRotation(Rotation.CLOCKWISE_180);
+                    };
                 }
 
                 break;
@@ -476,19 +462,17 @@ public class BlockTGStairs extends GenericBlock {
 
                 if (enumfacing.getAxis() == EnumFacing.Axis.X)
                 {
-                    switch (blockstairs$enumshape)
-                    {
-                        case OUTER_LEFT:
-                            return state.withRotation(Rotation.CLOCKWISE_180).withProperty(SHAPE, BlockStairs.EnumShape.OUTER_RIGHT);
-                        case OUTER_RIGHT:
-                            return state.withRotation(Rotation.CLOCKWISE_180).withProperty(SHAPE, BlockStairs.EnumShape.OUTER_LEFT);
-                        case INNER_RIGHT:
-                            return state.withRotation(Rotation.CLOCKWISE_180).withProperty(SHAPE, BlockStairs.EnumShape.INNER_RIGHT);
-                        case INNER_LEFT:
-                            return state.withRotation(Rotation.CLOCKWISE_180).withProperty(SHAPE, BlockStairs.EnumShape.INNER_LEFT);
-                        case STRAIGHT:
-                            return state.withRotation(Rotation.CLOCKWISE_180);
-                    }
+                    return switch (blockstairs$enumshape) {
+                        case OUTER_LEFT ->
+                                state.withRotation(Rotation.CLOCKWISE_180).withProperty(SHAPE, EnumShape.OUTER_RIGHT);
+                        case OUTER_RIGHT ->
+                                state.withRotation(Rotation.CLOCKWISE_180).withProperty(SHAPE, EnumShape.OUTER_LEFT);
+                        case INNER_RIGHT ->
+                                state.withRotation(Rotation.CLOCKWISE_180).withProperty(SHAPE, EnumShape.INNER_RIGHT);
+                        case INNER_LEFT ->
+                                state.withRotation(Rotation.CLOCKWISE_180).withProperty(SHAPE, EnumShape.INNER_LEFT);
+                        case STRAIGHT -> state.withRotation(Rotation.CLOCKWISE_180);
+                    };
                 }
         }
 
@@ -528,13 +512,15 @@ public class BlockTGStairs extends GenericBlock {
 		return itemblock;
 	}
 
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void registerItemBlockModels() {
-		IBlockState state = getDefaultState();
-		IBlockState state2 = getDefaultState().withProperty(TYPE2, true);
-		ModelLoader.setCustomModelResourceLocation(this.itemblock, this.getMetaFromState(state), new ModelResourceLocation(getRegistryName(),BlockUtils.getBlockStateVariantString(state)));
-		ModelLoader.setCustomModelResourceLocation(this.itemblock, this.getMetaFromState(state2), new ModelResourceLocation(getRegistryName(),BlockUtils.getBlockStateVariantString(state2)));
-	}
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void registerItemBlockModels() {
+        IBlockState state = getDefaultState();
+        ModelLoader.setCustomModelResourceLocation(this.itemblock, this.getMetaFromState(state), new ModelResourceLocation(getRegistryName(), BlockUtils.getBlockStateVariantString(state)));
+        if (this.hasType2) {
+            IBlockState state2 = getDefaultState().withProperty(TYPE2, true);
+            ModelLoader.setCustomModelResourceLocation(this.itemblock, this.getMetaFromState(state2), new ModelResourceLocation(getRegistryName(), BlockUtils.getBlockStateVariantString(state2)));
+        }
+    }
     
 }

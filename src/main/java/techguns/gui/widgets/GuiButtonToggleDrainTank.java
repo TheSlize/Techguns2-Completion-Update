@@ -8,7 +8,7 @@ import techguns.Tags;
 import techguns.tileentities.ChemLabTileEnt;
 
 public class GuiButtonToggleDrainTank extends GuiButtonExt {
-    private static final ResourceLocation texture = new ResourceLocation(Tags.MOD_ID, "textures/gui/chem_lab_gui.png");
+    private static final ResourceLocation texture = new ResourceLocation(Tags.MOD_ID, "textures/gui/ce_chem_lab_gui.png");
     private final ChemLabTileEnt tileent;
 
     public GuiButtonToggleDrainTank(int id, int xPos, int yPos, int width, int height, ChemLabTileEnt tileEnt) {

@@ -114,6 +114,17 @@ repositories {
 }
 
 dependencies {
+
+	components {
+		withModule('curse.maven:crafttweaker-239197') { details ->
+			details.allVariants { variant ->
+				variant.attributes {
+					attribute(Attribute.of('rfgDeobfuscatorTransformed', Boolean.class), true)
+				}
+			}
+		}
+	}
+
 	if (propertyBool('use_modern_java_syntax')) {
 		annotationProcessor 'com.github.bsideup.jabel:jabel-javac-plugin:1.0.0'
 		// Workaround for https://github.com/bsideup/jabel/issues/174

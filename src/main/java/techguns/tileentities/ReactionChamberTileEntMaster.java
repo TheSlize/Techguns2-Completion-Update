@@ -236,7 +236,8 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
             if (currentReaction != null && currentReaction.getRecipe() != null) {
 
                 this.progress++;
-                boolean state = currentReaction.tick(this.intensity, this.world.isRemote, this, currentReaction.getRecipe().RFTick);
+                int rfCost = TGConfig.general.machinesNeedNoPower ? 0 : currentReaction.getRecipe().RFTick;
+                boolean state = currentReaction.tick(this.intensity, this.world.isRemote, this, rfCost);
 
                 if (!this.world.isRemote && state) {
                     if (currentReaction.isSuccess()) {
@@ -309,7 +310,7 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
 
         if (rec != null) {
             if (inputStack.getCount() >= rec.input.item.getCount()) {
-                if (rec.RFTick <= this.energy.getEnergyStored()) {
+                if (TGConfig.general.machinesNeedNoPower || rec.RFTick <= this.energy.getEnergyStored()) {
                     int count = rec.input.item.getCount();
                     this.currentOperation = new ReactionChamberOperation(rec, this);
                     this.input.consume(count);
@@ -577,6 +578,21 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
         }
     }
 
+    @Override
+    public void unform() {
+        if (!this.world.isRemote && this.inventory != null && this.multiblockDirection != null) {
+            BlockPos dropPos = this.pos.offset(this.multiblockDirection.getOpposite());
+            for (int i = 0; i < this.inventory.getSlots(); i++) {
+                ItemStack stack = this.inventory.getStackInSlot(i);
+                if (!stack.isEmpty()) {
+                    this.world.spawnEntity(new EntityItem(this.world, dropPos.getX() + 0.5, dropPos.getY() + 0.5, dropPos.getZ() + 0.5, stack));
+                    this.inventory.setStackInSlot(i, ItemStack.EMPTY);
+                }
+            }
+        }
+        super.unform();
+    }
+
     /* OpenComputers Integration */
     @Override
     @Optional.Method(modid = "opencomputers")
@@ -631,7 +647,7 @@ public class ReactionChamberTileEntMaster extends MultiBlockMachineTileEntMaster
             data.put("preferedIntensity", getCurrentReaction().getCurrentPreferedIntensity());
             data.put("progress", progress);
             data.put("duration", totaltime);
-            data.put("energyPerTick", getCurrentReaction().getPowerPerTick());
+            data.put("energyPerTick", TGConfig.general.machinesNeedNoPower ? 0 : getCurrentReaction().getPowerPerTick());
         }
 
         return new Object[]{data};

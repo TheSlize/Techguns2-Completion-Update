@@ -21,7 +21,7 @@ import static techguns.gui.ReactionChamberGui.ru_ru;
 
 public class ChemLabGui extends PoweredTileEntGui {
 
-    public static final ResourceLocation texture = new ResourceLocation(Tags.MOD_ID, "textures/gui/chem_lab_gui.png");// new
+    public static final ResourceLocation texture = new ResourceLocation(Tags.MOD_ID, "textures/gui/ce_chem_lab_gui.png");
 
     public static final int INPUT_TANK_X = 20;
     public static final int TANK_Y = 17;

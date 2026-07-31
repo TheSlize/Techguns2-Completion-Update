@@ -340,7 +340,7 @@ public class TGTickHandler {
 			 /** 
 			  * Auto feeder
 			  */
-			 if (!TGConfig.disableAutofeeder && event.player.getFoodStats().getFoodLevel()<=19){
+			 if (!TGConfig.general.disableAutofeeder && event.player.getFoodStats().getFoodLevel()<=19){
 
                  int needed = 20 - event.player.getFoodStats().getFoodLevel();
                  if (props.foodleft>0){
