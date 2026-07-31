@@ -13,7 +13,7 @@ public class OreDictIngredientSheetPlastic implements IIngredientFactory {
 
 	@Override
 	public Ingredient parse(JsonContext context, JsonObject json) {
-		if(OreDictionary.doesOreNameExist("sheetPlastic") && TGConfig.addOreDicts) {
+		if(OreDictionary.doesOreNameExist("sheetPlastic") && TGConfig.disableItems.addOreDicts) {
 			return new OreIngredient("sheetPlastic");
 		}
 		return new OreIngredient("sheetPlasticTG");

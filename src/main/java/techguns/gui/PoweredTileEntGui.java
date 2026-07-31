@@ -70,7 +70,7 @@ public abstract class PoweredTileEntGui extends RedstoneTileEntGui {
         int energyStored = this.poweredTileEnt.getEnergyStorage().getEnergyStored();
         int maxEnergy = this.poweredTileEnt.getEnergyStorage().getMaxEnergyStored();
 
-        int filled = TGConfig.machinesNeedNoPower
+        int filled = TGConfig.general.machinesNeedNoPower
                 ? height
                 : (maxEnergy > 0 ? (int) Math.round((double) energyStored * height / (double) maxEnergy) : 0);
 
@@ -89,7 +89,7 @@ public abstract class PoweredTileEntGui extends RedstoneTileEntGui {
 
     protected void drawEnergyTooltip(int mx, int my, int x, int y, int w, int h) {
         if (isInRect(mx, my, x, y, w, h)) {
-            if (TGConfig.machinesNeedNoPower) {
+            if (TGConfig.general.machinesNeedNoPower) {
                 this.drawHoveringText(TextUtil.trans("techguns.container.power"), mx, my);
             } else {
                 int cur = this.poweredTileEnt.getEnergyStorage().getEnergyStored();
@@ -106,7 +106,7 @@ public abstract class PoweredTileEntGui extends RedstoneTileEntGui {
         int energyStored = this.poweredTileEnt.getEnergyStorage().getEnergyStored();
         int maxEnergy = this.poweredTileEnt.getEnergyStorage().getMaxEnergyStored();
 
-        int filled = TGConfig.machinesNeedNoPower
+        int filled = TGConfig.general.machinesNeedNoPower
                 ? height
                 : (maxEnergy > 0 ? (int) Math.round((double) energyStored * height / (double) maxEnergy) : 0);
 

@@ -22,36 +22,36 @@ public class ReactionChamberJeiRecipe extends BasicRecipeWrapper {
     public static final int BG_U = 4;
     public static final int BG_V = 4;
 
-    public static final int TANK_X = 19 - BG_U;
+    public static final int TANK_X = 9 - BG_U;
     public static final int TANK_Y = 9 - BG_V;
     public static final int TANK_W = 12;
     public static final int TANK_H = 88;
 
-    public static final int RISK_X = 113 - BG_U;
+    public static final int RISK_X = 107 - BG_U;
     public static final int RISK_Y = 16 - BG_V;
     public static final int RISK_W = 12;
     public static final int RISK_H = 12;
 
-    public static final int COMPLETION_X = 61 - BG_U;
+    public static final int COMPLETION_X = 55 - BG_U;
     public static final int COMPLETION_Y = 69 - BG_V;
     public static final int COMPLETION_W = 58;
     public static final int COMPLETION_H = 9;
 
-    public static final int PROGRESS_X = 40 - BG_U;
+    public static final int PROGRESS_X = 34 - BG_U;
     public static final int PROGRESS_Y = 96 - BG_V;
     public static final int PROGRESS_W = 100;
     public static final int PROGRESS_H = 3;
 
-    public static final int INTENSITY_X = 49 - BG_U;
+    public static final int INTENSITY_X = 43 - BG_U;
     public static final int INTENSITY_Y = 43 - BG_V;
     public static final int INTENSITY_STEP_X = 7;
     public static final int INTENSITY_DOT_W = 5;
     public static final int INTENSITY_DOT_H = 5;
 
-    public static final int POWER_X = 8 - BG_U;
-    public static final int POWER_Y = 17 - BG_V;
+    public static final int POWER_X = 163 - BG_U;
+    public static final int POWER_Y = 9 - BG_V;
     public static final int POWER_W = 6;
-    public static final int POWER_H = 60;
+    public static final int POWER_H = 88;
 
     public final ReactionChamberRecipe recipe;
 
@@ -79,7 +79,7 @@ public class ReactionChamberJeiRecipe extends BasicRecipeWrapper {
     }
 
     @Override
-    public void getIngredients(IIngredients ingredients) {
+    public void getIngredients(@NotNull IIngredients ingredients) {
         List<List<ItemStack>> inputs = recipe.getItemInputs();
         if (inputs != null && !inputs.isEmpty()) {
             ingredients.setInputLists(VanillaTypes.ITEM, inputs);

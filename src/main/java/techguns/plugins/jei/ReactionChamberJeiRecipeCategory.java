@@ -27,22 +27,22 @@ public class ReactionChamberJeiRecipeCategory extends BasicRecipeCategory<Reacti
     private static final int SLOT_OUT2 = 4;
     private static final int SLOT_OUT3 = 5;
 
-    private static final int SLOT_INPUT_X = 36 - BG_U;
+    private static final int SLOT_INPUT_X = 30 - BG_U;
     private static final int SLOT_INPUT_Y = 65 - BG_V;
 
-    private static final int SLOT_FOCUS_X = 81 - BG_U;
+    private static final int SLOT_FOCUS_X = 76 - BG_U;
     private static final int SLOT_FOCUS_Y = 13 - BG_V;
 
-    private static final int SLOT_OUT0_X = 126 - BG_U;
+    private static final int SLOT_OUT0_X = 121 - BG_U;
     private static final int SLOT_OUT0_Y = 65 - BG_V;
 
-    private static final int SLOT_OUT1_X = 144 - BG_U;
+    private static final int SLOT_OUT1_X = 138 - BG_U;
     private static final int SLOT_OUT1_Y = 47 - BG_V;
 
-    private static final int SLOT_OUT2_X = 144 - BG_U;
+    private static final int SLOT_OUT2_X = 138 - BG_U;
     private static final int SLOT_OUT2_Y = 65 - BG_V;
 
-    private static final int SLOT_OUT3_X = 144 - BG_U;
+    private static final int SLOT_OUT3_X = 138 - BG_U;
     private static final int SLOT_OUT3_Y = 83 - BG_V;
 
     private final IDrawableStatic tankOverlay;
@@ -84,6 +84,6 @@ public class ReactionChamberJeiRecipeCategory extends BasicRecipeCategory<Reacti
 
     @Override
     public void drawExtras(@NotNull Minecraft minecraft) {
-        this.powerbar.draw(minecraft, 9 - BG_U, 10 - BG_V);
+        this.powerbar.draw(minecraft, 164 - BG_U, 10 - BG_V);
     }
 }

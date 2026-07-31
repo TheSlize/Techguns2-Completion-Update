@@ -42,7 +42,7 @@ public class FabricatorRecipe implements IMachineRecipe {
     private static int recId = -1;
 
     static {
-        if (TGConfig.addOreDicts) {
+        if (TGConfig.disableItems.addOreDicts) {
             copperWires = new ItemStackOreDict("wireCopper", 1);
             goldWires = new ItemStackOreDict("wireGold", 1);
             plastic = new ItemStackOreDict("sheetPlastic", 1);

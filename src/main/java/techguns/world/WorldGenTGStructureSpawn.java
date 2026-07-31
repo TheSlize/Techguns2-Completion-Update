@@ -46,9 +46,9 @@ public class WorldGenTGStructureSpawn implements IWorldGenerator {
             return;
         }
 
-        int SPAWNWEIGHT_SMALL = TGConfig.spawnWeightTGStructureSmallEnd;
-        int SPAWNWEIGHT_MEDIUM = TGConfig.spawnWeightTGStructureMediumEnd;
-        int SPAWNWEIGHT_BIG = TGConfig.spawnWeightTGStructureBigEnd;
+        int SPAWNWEIGHT_SMALL = TGConfig.worldgen.spawnWeightTGStructureSmallEnd;
+        int SPAWNWEIGHT_MEDIUM = TGConfig.worldgen.spawnWeightTGStructureMediumEnd;
+        int SPAWNWEIGHT_BIG = TGConfig.worldgen.spawnWeightTGStructureBigEnd;
 
         StructureSize size = null;
         int sizeX;
@@ -81,9 +81,9 @@ public class WorldGenTGStructureSpawn implements IWorldGenerator {
 
     private void generateNether(World world, Random random, int cx, int cz, Biome biome) {
 
-        int SPAWNWEIGHT_SMALL = TGConfig.spawnWeightTGStructureSmallNether;
-        int SPAWNWEIGHT_MEDIUM = TGConfig.spawnWeightTGStructureMediumNether;
-        int SPAWNWEIGHT_BIG = TGConfig.spawnWeightTGStructureBigNether;
+        int SPAWNWEIGHT_SMALL = TGConfig.worldgen.spawnWeightTGStructureSmallNether;
+        int SPAWNWEIGHT_MEDIUM = TGConfig.worldgen.spawnWeightTGStructureMediumNether;
+        int SPAWNWEIGHT_BIG = TGConfig.worldgen.spawnWeightTGStructureBigNether;
 
         StructureSize size = null;
         int sizeX;
@@ -130,9 +130,9 @@ public class WorldGenTGStructureSpawn implements IWorldGenerator {
 
     private void generateSurface(World world, Random random, int cx, int cz, Biome biome) {
 
-        int SPAWNWEIGHT_SMALL = TGConfig.spawnWeightTGStructureSmallOverworld;
-        int SPAWNWEIGHT_MEDIUM = TGConfig.spawnWeightTGStructureMediumOverworld;
-        int SPAWNWEIGHT_BIG = TGConfig.spawnWeightTGStructureBigOverworld;
+        int SPAWNWEIGHT_SMALL = TGConfig.worldgen.spawnWeightTGStructureSmallOverworld;
+        int SPAWNWEIGHT_MEDIUM = TGConfig.worldgen.spawnWeightTGStructureMediumOverworld;
+        int SPAWNWEIGHT_BIG = TGConfig.worldgen.spawnWeightTGStructureBigOverworld;
 
         StructureSize size = null;
         int sizeX;

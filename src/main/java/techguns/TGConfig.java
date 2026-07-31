@@ -1,372 +1,649 @@
 package techguns;
 
-import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
+@Config(modid = Tags.MOD_ID, name = "techguns")
+@Config.LangKey("config.techguns.title")
 @Mod.EventBusSubscriber(modid = Tags.MOD_ID)
 public class TGConfig {
-	public static Configuration config;
-	
-	public static boolean debug;
-	
-	public static boolean addCopperIngots;
-	public static boolean addLeadNuggets;
-	public static boolean addCopperNuggets;
-	public static boolean addBronzeIngots;
-	public static boolean addTinIngots;
-	public static boolean addLeadIngots;
-	public static boolean addSteelIngots;
-	public static boolean addSteelNuggets;
 
-	public static boolean keepLavaRecipesWhenFuelIsPresent;
-	
-	public static boolean cl_lockSpeedFov;
-	public static float cl_fixedSprintFov;
-	
-	public static boolean cl_enableDeathFX;
-	public static boolean cl_enableDeathFX_Gore;
-	
-	public static boolean disableAutofeeder;
-	public static boolean machinesNeedNoPower;
-	
-	public static boolean doOreGenCopper;
-	public static boolean doOreGenTin;
-	public static boolean doOreGenLead;
-	public static boolean doOreGenUranium;
-	public static boolean doOreGenTitanium;
-	
-	/**
-	 * RECIPES
-	 */
-	 
-	public static boolean addSteelRecipe;
-	public static boolean addOreDicts;
-	
-	/**
-	 * NPC Spawns
-	 */
-	public static int distanceSpawnLevel0;
-	public static int distanceSpawnLevel1;
-	public static int distanceSpawnLevel2;
-	
-	public static int spawnWeightZombieSoldier;
-	public static int spawnWeightZombieFarmer;
-	public static int spawnWeightZombieMiner;
-	public static int spawnWeightZombiePigmanSoldier;
-	public static int spawnWeightCyberDemon;
-	public static int spawnWeightGhastling;
-	public static int spawnWeightSuperMutantBasic;
-	public static int spawnWeightSuperMutantElite;
-	public static int spawnWeightSuperMutantHeavy;
-	public static int spawnWeightSkeletonSoldier;
-	
-	public static int spawnWeightBandit;
-	
-	public static int spawnWeightPsychoSteve;
-	
-	public static int spawnWeightTGOverworld;
-	public static int spawnWeightTGNether;
-	public static int spawnWeightTGEnd;
-	
-	public static int cl_sortPassesPerTick;
+	@Config.Name("Misc")
+	@Config.LangKey("config.techguns.misc")
+	public static General general = new General();
 
-    // Ammo HUD
-	public static boolean cl_enableLegacyHud;
-	public static float cl_ammoTextScale;
-	public static float cl_ammoIconScale;
-    public static float cl_ammoMagTextScale;
-	public static int cl_hudMarginRight;
-	public static int cl_hudMarginBottom;
-	public static int cl_iconTextGap;
-	public static int cl_textMagGap;
+	public static class General {
+		@Config.Comment("Enable debug items and unfinished stuff; disable this for regular survival.")
+		@Config.LangKey("config.techguns.misc.debug")
+		@Config.RequiresMcRestart
+		public boolean debug = false;
 
-	public static float damagePvP;
-	public static float damageTurretToPlayer;
-	public static float damageFactorNPC;
-	
-	public static int spawnWeightTGStructureSmallOverworld;
-	public static int spawnWeightTGStructureBigOverworld;
-	public static int spawnWeightTGStructureMediumOverworld;
+		@Config.Comment("Base XP value for Upgrade Bench recipes (enchants)")
+		@Config.RangeInt(min = 0, max = 10000)
+		@Config.LangKey("config.techguns.misc.upgrade_xp_cost")
+		public int upgrade_xp_cost = 20;
 
-	public static int spawnWeightTGStructureSmallNether;
-	public static int spawnWeightTGStructureBigNether;
-	public static int spawnWeightTGStructureMediumNether;
+		@Config.Comment("Limits using unsafe guns mode to opped players; the config option OVERRIDES the permission setting 'techguns.allowunsafemode'")
+		@Config.LangKey("config.techguns.misc.limitUnsafeModeToOP")
+		@Config.RequiresMcRestart
+		public boolean limitUnsafeModeToOP = false;
 
-	public static int spawnWeightTGStructureSmallEnd;
-	public static int spawnWeightTGStructureBigEnd;
-	public static int spawnWeightTGStructureMediumEnd;
+		@Config.Comment("Disable automatic feeding of Food in the Techguns inventory tab.")
+		@Config.LangKey("config.techguns.misc.disableAutofeeder")
+		public boolean disableAutofeeder = false;
 
-	//structure spawning
-	public static boolean doWorldspawn;
-	
-	public static float explosiveChargeMaxBlockHardness;
-	public static float explosiveChargeAdvancedMaxBlockHardness;
-	
-	
-	public static boolean limitUnsafeModeToOP;
-	
-	public static boolean WIP_disableRadiationSystem;
-	/**
-	 * FLUID RECIPES
-	 */
-	public static String[] fluidListOil;
-	public static String[] fluidListOilWorldspawn;
-	public static String[] fluidListFuel;
+		@Config.Comment("Disables power usage for all machines; activate this if you don't want to install additional tech mods.")
+		@Config.LangKey("config.techguns.misc.machinesNeedNoPower")
+		public boolean machinesNeedNoPower = false;
 
-	public static float oreDrillMultiplierOres;
-	public static float oreDrillMultiplierPower;
-	public static float oreDrillMultiplierFuel;
-	public static float oreDrillFuelValueFuel;
+		@Config.Comment("Keep recipes with lava instead of fuel even when fuel from any other mods is present.")
+		@Config.LangKey("config.techguns.misc.keepLavaRecipesWhenFuelIsPresent")
+		@Config.RequiresMcRestart
+		public boolean keepLavaRecipesWhenFuelIsPresent = false;
 
-	/** ore cluster values **/
-	public static boolean addDefaultClusterOres;
-	public static String[] additionalClusterOres;
-	public static int mininglevel_coal;
-	public static int mininglevel_common_metal;
-	public static int mininglevel_rare_metal;
-	public static int mininglevel_shiny_metal;
-	public static int mininglevel_uranium;
-	public static int mininglevel_common_gem;
-	public static int mininglevel_shiny_gem;
-	public static int mininglevel_nether_crystal;
-	public static int mininglevel_oil;
+		@Config.Comment("Highest blockHardness normal explosive charges can break; obsidian is 50.0")
+		@Config.LangKey("config.techguns.misc.explosiveChargeMaxBlockHardness")
+		public float explosiveChargeMaxBlockHardness = 30.0f;
 
-	public static double oremult_coal;
-	public static double oremult_common_metal;
-	public static double oremult_rare_metal;
-	public static double oremult_shiny_metal;
-	public static double oremult_uranium;
-	public static double oremult_common_gem;
-	public static double oremult_shiny_gem;
-	public static double oremult_nether_crystal;
-	public static double oremult_oil;
-	
-	public static double powermult_coal;
-	public static double powermult_common_metal;
-	public static double powermult_rare_metal;
-	public static double powermult_shiny_metal;
-	public static double powermult_uranium;
-	public static double powermult_common_gem;
-	public static double powermult_shiny_gem;
-	public static double powermult_nether_crystal;
-	public static double powermult_oil;
-	
-	public static int upgrade_xp_cost;
-	
-	public static String[] biomeBlacklist;
-	public static boolean dimensionAutoadd;
-	public static String[] dimensionWhitelistOverworld;
-	public static String[] dimensionWhitelistNether;
-	public static String[] dimensionWhitelistEnd;
+		@Config.Comment("Highest blockHardness advanced explosive charges can break; obsidian is 50.0")
+		@Config.LangKey("config.techguns.misc.explosiveChargeAdvancedMaxBlockHardness")
+		public float explosiveChargeAdvancedMaxBlockHardness = 100.0f;
 
-	public static boolean spawnOreClusterStructures;
-	
-	/**
-	 * CATEGORIES
-	 */
-	private static final String CATEGORY_ENABLING_ITEMS = "Disable Items";
-	
-	public static final String CLIENTSIDE = "Clientside";
-	public static final String AMMOHUD = "Ammo HUD";
-    private static final String WORLDGEN="World Generation";
-	private static final String DAMAGE_FACTORS="Damage Factors";
-	private static final String ORE_DRILLS = "Ore Drills";
-	
-
-	public static void init(FMLPreInitializationEvent event){
-		//Load the config file
-		config = new Configuration(event.getSuggestedConfigurationFile());
-		config.load();
-		
-		initValues();
+		@Config.Comment("Disable Radiation for players. (Radiation system is still WIP)")
+		@Config.LangKey("config.techguns.misc.WIP_disableRadiationSystem")
+		@Config.RequiresMcRestart
+		public boolean WIP_disableRadiationSystem = false;
 	}
-	
-	public static void initValues() {
-		config.addCustomCategoryComment(CLIENTSIDE, "Clientside options, can be changed when playing on a server");
-		
-		debug = config.getBoolean("debug", Configuration.CATEGORY_GENERAL, false, "Enable debug options and unfinished stuff, disable this for playing.");
-		
-		upgrade_xp_cost = config.getInt("UpgradeXPCost", Configuration.CATEGORY_GENERAL, 20, 0, 10000, "Base XP value for Upgrade Bench recipes (enchants)");
-		
-		limitUnsafeModeToOP = config.getBoolean("RestrictUnsafeModeToOP", Configuration.CATEGORY_GENERAL, false, "Only opped players can use the unsafe mode of guns, this OVERRIDES the permission setting 'techguns.allowunsafemode'");
-		
-		disableAutofeeder = config.getBoolean("disableAutofeeder", Configuration.CATEGORY_GENERAL, false, "Disable automatic feeding of Food in the Techguns tab. Disable autofeeding if you think it breaks the balance");
-		machinesNeedNoPower = config.getBoolean("machinesNeedNoPower", Configuration.CATEGORY_GENERAL, false, "Machines don't need power, activate this if you don't want to install a mod with generators and still be able to use the machines");
-		
-		keepLavaRecipesWhenFuelIsPresent = config.getBoolean("keepLavaRecipesWhenFuelIsPresent", Configuration.CATEGORY_GENERAL, false, "Keep recipes with lava instead of fuel even when fuel is present. Fuels need to be added by other mods");
-			
-		addCopperIngots = config.getBoolean("addCopperIngot", CATEGORY_ENABLING_ITEMS, true, "Add copper ingots.");
-		addCopperNuggets = config.getBoolean("addCopperNugget", CATEGORY_ENABLING_ITEMS, true, "Add copper nuggets.");
-		addTinIngots = config.getBoolean("addTinIngot", CATEGORY_ENABLING_ITEMS, true, "Add tin ingots.");
-		addBronzeIngots = config.getBoolean("addBronzeIngot", CATEGORY_ENABLING_ITEMS, true, "Add bronze ingots.");
-		
-		addLeadIngots = config.getBoolean("addLeadIngot", CATEGORY_ENABLING_ITEMS, true, "Add lead ingots.");
-		addLeadNuggets = config.getBoolean("addLeadNugget", CATEGORY_ENABLING_ITEMS, true, "Add Lead nuggets.");
-		
-		addSteelIngots = config.getBoolean("addSteelIngot", CATEGORY_ENABLING_ITEMS, true, "Add steel ingots.");
-		addSteelNuggets = config.getBoolean("addSteelNugget", CATEGORY_ENABLING_ITEMS, true, "Add steel nuggets.");
-	
-		addSteelRecipe = config.getBoolean("addSteelRecipe", CATEGORY_ENABLING_ITEMS, true, "Enables steel recipe in a TG blast furnace.");
-		
-		addOreDicts = config.getBoolean("addOreDicts", CATEGORY_ENABLING_ITEMS, true, "Registers oreDicts for carbon, titanium, circuits and other items that might be used from other mods with a cheaper recipes.");
-		
-		distanceSpawnLevel0 = config.getInt("DistanceSpawnLevel0", "NPC Spawn", 500, 0, Integer.MAX_VALUE, "Up to which distance to worldspawn only mobs with danger level up to 0 will spawn");
-		distanceSpawnLevel1 = config.getInt("DistanceSpawnLevel1", "NPC Spawn", 1000, 0, Integer.MAX_VALUE, "Up to which distance to worldspawn only mobs with danger level up to 1 will spawn");
-		distanceSpawnLevel2 = config.getInt("DistanceSpawnLevel2", "NPC Spawn", 2500, 0, Integer.MAX_VALUE, "Up to which distance to worldspawn only mobs with danger level up to 2 will spawn");
-				
-		spawnWeightTGOverworld = config.getInt("Techguns Spawnweight Overworld", "NPC Spawn", 600, 0, 10000, "Spawn weight of Techguns NPCs in the Overworld, determines how many TG NPCs spawn");
-		spawnWeightTGNether = config.getInt("Techguns Spawnweight Nether", "NPC Spawn", 300, 0, 10000, "Spawn weight of Techguns NPCs in the Nether, determines how many TG NPCs spawn");
-		spawnWeightTGEnd = config.getInt("Techguns Spawnweight End", "NPC Spawn", 5, 0, 10000, "Spawn weight of Techguns NPCs in the End, determines how many TG NPCs spawn");
-		
-		spawnWeightZombieSoldier  = config.getInt("SpawnWeightZombieSoldier", "NPC Spawn", 100, 0, 10000, "Spawn weight for spawning Zombie Soldiers, at 0 spawn will not be registered");
-		
-		spawnWeightZombieFarmer  = config.getInt("SpawnWeightZombieFarmer", "NPC Spawn", 200, 0, 10000, "Spawn weight for spawning Zombie Farmers, at 0 spawn will not be registered");
-		
-		spawnWeightZombieMiner = config.getInt("SpawnWeightZombieMiner", "NPC Spawn", 200, 0, 10000, "Spawn weight for spawning Zombie Miners, at 0 spawn will not be registered");
-		
-		spawnWeightZombiePigmanSoldier  = config.getInt("SpawnWeightZombiePigmanSoldier", "NPC Spawn", 80, 0, 10000, "Spawn weight for spawning Zombie Pigman Soldiers (Nether only), at 0 spawn will not be registered");
-		
-		spawnWeightCyberDemon = config.getInt("SpawnWeightCyberDemon", "NPC Spawn", 30, 0, 10000, "Spawn weight for spawning Cyber Demons (Nether only), at 0 spawn will not be registered");
 
-		spawnWeightGhastling = config.getInt("SpawnWeightGhastling", "NPC Spawn", 10, 0, 10000, "Spawn weight for spawning Ghastlings (Nether only), at 0 spawn will not be registered");
+	@Config.Name("Disable Items")
+	@Config.LangKey("config.techguns.disable_items")
+	public static DisableItems disableItems = new DisableItems();
 
-		spawnWeightSuperMutantBasic = config.getInt("SpawnWeightSuperMutantBasic", "NPC Spawn", 100, 0, 10000, "Spawn weight for spawning Basic Super Mutants (End only), at 0 spawn will not be registered");
+	public static class DisableItems {
+		@Config.Comment("Add copper ingots.")
+		@Config.LangKey("config.techguns.disable_items.addCopperIngots")
+		@Config.RequiresMcRestart
+		public boolean addCopperIngots = true;
 
-		spawnWeightSuperMutantElite = config.getInt("SpawnWeightSuperMutantElite", "NPC Spawn", 40, 0, 10000, "Spawn weight for spawning Elite Super Mutants (End only), at 0 spawn will not be registered");
+		@Config.Comment("Add copper nuggets.")
+		@Config.LangKey("config.techguns.disable_items.addCopperNuggets")
+		@Config.RequiresMcRestart
+		public boolean addCopperNuggets = true;
 
-		spawnWeightSuperMutantHeavy = config.getInt("SpawnWeightSuperMutantHeavy", "NPC Spawn", 10, 0, 10000, "Spawn weight for spawning Heavy Super Mutants (End only), at 0 spawn will not be registered");
-		
-		spawnWeightBandit = config.getInt("SpawnWeightBandit", "NPC Spawn", 50, 0, 10000, "Spawn weight for spawning Bandit groups, at 0 spawn will not be registered");
-		
-		spawnWeightSkeletonSoldier = config.getInt("SpawnWeightSkeletonSoldier", "NPC Spawn", 100, 0, 10000, "Spawn weight for spawning Skeleton Soldiers, at 0 spawn will not be registered");
-		
-		spawnWeightPsychoSteve = config.getInt("SpawnWeightPsychoSteve", "NPC Spawn", 3, 0, 10000, "Spawn weight for spawning Psycho Steve, early game boss, don't set to high value, at 0 spawn will not be registered");
-	
-		biomeBlacklist = config.getStringList("BiomeBlacklist", "NPC Spawn", new String[]{""}, "Biome Registry names (e.g: minecraft:mushroom_island) that are excluded from Techguns monster spawning");
-		dimensionAutoadd = config.getBoolean("DimensionsAutoAdd", "NPC Spawn", false, "Enables auto-adding dimensions for Techguns spawn lists (e.g. if the dimension has any of vanilla types, it will have corresponding spawnlist automatically)");
-		dimensionWhitelistOverworld = config.getStringList("DimensionsWhitelistOverworld", "NPC Spawn", new String[]{""}, "Dimensions (e.g: 12, 13, 14 etc.) that are included in Techguns monster spawning to use Overworld spawnlist. NOTE: ONLY WORKS IF DimensionsAutoAdd TURNED OFF!");
-		dimensionWhitelistNether = config.getStringList("DimensionsWhitelistNether", "NPC Spawn", new String[]{""}, "Dimensions (e.g: 12, 13, 14 etc.) that are included in Techguns monster spawning in the Nether spawnlist. NOTE: ONLY WORKS IF DimensionsAutoAdd TURNED OFF!");
-		dimensionWhitelistEnd = config.getStringList("DimensionsWhitelistEnd", "NPC Spawn", new String[]{""}, "Dimensions (e.g: 12, 13, 14 etc.) that are included in Techguns monster spawning in the End spawnlist. NOTE: ONLY WORKS IF DimensionsAutoAdd TURNED OFF!");
+		@Config.Comment("Add tin ingots.")
+		@Config.LangKey("config.techguns.disable_items.addTinIngots")
+		@Config.RequiresMcRestart
+		public boolean addTinIngots = true;
 
-		damagePvP = config.getFloat("DamagePvP", DAMAGE_FACTORS, 0.5f, 0.0f, 100.0f, "Damage factor Techguns weapons deal when fired from players against other players, is zero when PvP is disabled");
-		
-		damageTurretToPlayer = config.getFloat("DamageTurretToPlayer", DAMAGE_FACTORS, 0.5f, 0.0f, 100.0f, "Damage factor Techguns Turrets deal when hitting players");
-		
-		damageFactorNPC = config.getFloat("DamageFactorNPC", DAMAGE_FACTORS, 1.0f, 0.0f, 100.0f, "Damage factor for all NPCs other than turrets, they already have a difficulty dependent damage penalty, this can be used to further reduce their damage, or increase it");
+		@Config.Comment("Add bronze ingots.")
+		@Config.LangKey("config.techguns.disable_items.addBronzeIngots")
+		@Config.RequiresMcRestart
+		public boolean addBronzeIngots = true;
 
-		doOreGenCopper = config.getBoolean("doOreGenCopper", WORLDGEN, true, "Generate Copper Ore, disable if other mod does");
-		
-		doOreGenTin = config.getBoolean("doOreGenTin", WORLDGEN, true, "Generate Tin Ore, disable if other mod does");
-		
-		doOreGenLead = config.getBoolean("doOreGenLead", WORLDGEN, true, "Generate Lead Ore, disable if other mod does");
-		
-		doOreGenTitanium = config.getBoolean("doOreGenTitanium", WORLDGEN, true, "Generate Titanium, not generated by most mods mods, leave it on in most cases");
+		@Config.Comment("Add lead ingots.")
+		@Config.LangKey("config.techguns.disable_items.addLeadIngots")
+		@Config.RequiresMcRestart
+		public boolean addLeadIngots = true;
 
-		doOreGenUranium = config.getBoolean("doOreGenUranium", WORLDGEN, true, "Generate Uranium, disable if other mod already adds it and you want only 1 type. OreDictEntry:'oreUranium' ");
-		
-		doWorldspawn = config.getBoolean("SpawnStructures", WORLDGEN, true, "Should Structures (military bases) be spawned in the world?");
-		
-		spawnWeightTGStructureBigOverworld = config.getInt("StructureSpawnWeightBigOverworld", WORLDGEN, 64, 16, 100000, "Every X chunks it's tried to spawnn a Big building. This is only in overworld, ChunkX, and ChunkY modulo <this Value> must be 0");
-		spawnWeightTGStructureSmallOverworld = config.getInt("StructureSpawnWeightSmallOverworld", WORLDGEN, 16, 4, 100000, "Every X chunks it's tried to spawnn a Small building. This is only in overworld, ChunkX, and ChunkY modulo <this Value> must be 0");
-		spawnWeightTGStructureMediumOverworld = config.getInt("StructureSpawnWeightMediumOverworld", WORLDGEN, 32, 8, 100000, "Every X chunks it's tried to spawnn a Medium building. This is only in overworld, ChunkX, and ChunkY modulo <this Value> must be 0");
-		// Note: yup, nether values have to be much lower than overworld ones since the structure spawner seems to spawn structures in, like, 20% of the cases
-		spawnWeightTGStructureBigNether = config.getInt("StructureSpawnWeightBigNether", WORLDGEN, 24, 16, 100000, "Every X chunks it's tried to spawnn a Big building. This is only in the Nether, ChunkX, and ChunkY modulo <this Value> must be 0");
-		spawnWeightTGStructureSmallNether = config.getInt("StructureSpawnWeightSmallNether", WORLDGEN, 8, 4, 100000, "Every X chunks it's tried to spawnn a Small building. This is only in the Nether, ChunkX, and ChunkY modulo <this Value> must be 0");
-		spawnWeightTGStructureMediumNether = config.getInt("StructureSpawnWeightMediumNether", WORLDGEN, 10, 8, 100000, "Every X chunks it's tried to spawnn a Medium building. This is only in the Nether, ChunkX, and ChunkY modulo <this Value> must be 0");
-		spawnWeightTGStructureBigEnd = config.getInt("StructureSpawnWeightBigEnd", WORLDGEN, 64, 8, 100000, "Every X chunks it's tried to spawnn a Medium building. This is only in the End, ChunkX, and ChunkY modulo <this Value> must be 0");
-		spawnWeightTGStructureSmallEnd = config.getInt("StructureSpawnWeightSmallEnd", WORLDGEN, 16, 8, 100000, "Every X chunks it's tried to spawnn a Medium building. This is only in the End, ChunkX, and ChunkY modulo <this Value> must be 0");
-		spawnWeightTGStructureMediumEnd = config.getInt("StructureSpawnWeightMediumEnd", WORLDGEN, 42, 8, 100000, "Every X chunks it's tried to spawnn a Medium building. This is only in the End, ChunkX, and ChunkY modulo <this Value> must be 0");
+		@Config.Comment("Add Lead nuggets.")
+		@Config.LangKey("config.techguns.disable_items.addLeadNuggets")
+		@Config.RequiresMcRestart
+		public boolean addLeadNuggets = true;
 
-		
-		spawnOreClusterStructures = config.getBoolean("SpawnOreClusterStructures", WORLDGEN, true, "When worldgen is enabled, include structure spawns that contain ore clusters.");
-		
-		explosiveChargeMaxBlockHardness = config.getFloat("ExplosiveChargeMaxHardness", Configuration.CATEGORY_GENERAL, 30.0f, 0.0f, Float.MAX_VALUE, "Highest blockHardness normal explosive charges can break, obsidian is 50.0)");
-		
-		explosiveChargeAdvancedMaxBlockHardness = config.getFloat("ExplosiveChargeAdvancedMaxHardness", Configuration.CATEGORY_GENERAL, 100.0f, 0.0f, Float.MAX_VALUE, "Highest blockHardness advanced explosive charges can break, obsidian is 50.0)");
-		
-		
-		cl_enableDeathFX = config.getBoolean("EnableDeathEffects", CLIENTSIDE, true, "Enable Death Effects, pure clientside check.");
-		cl_enableDeathFX_Gore = config.getBoolean("EnableGoreDeathEffect", CLIENTSIDE, true, "Enable the gore Death Effect, requires DeathEffects to be enabled, pure clientside check.");
-	
-		
-		cl_lockSpeedFov = config.getBoolean("LockSpeedDependantFov", CLIENTSIDE, true, "Counters the speed dependant FOV change. This also stops FOV changes while sprinting. Don't activate if another mod does this too, pure clientside check.");
-		
-		cl_fixedSprintFov = config.getFloat("FixedSprintFovMultiplier", CLIENTSIDE, 1.15f, 1.0f, 10.0f, "Multiply the FOV while sprinting by this value independent from the actual speed, has no effect when LockSpeedDependantFov is false, pure clientside check.");
-		
-		cl_sortPassesPerTick = config.getInt("ParticleDepthSortPasses", CLIENTSIDE, 10, 0, 20, "How many bubble sort passes should be performed each tick on particles. 0=off. Clientside");
+		@Config.Comment("Add steel ingots.")
+		@Config.LangKey("config.techguns.disable_items.addSteelIngots")
+		@Config.RequiresMcRestart
+		public boolean addSteelIngots = true;
 
-        cl_enableLegacyHud = config.getBoolean("EnableLegacyHud", AMMOHUD, false, "Enables legacy ammo HUD while holding a gun (legacy - before 2.1 version)");
-        cl_ammoTextScale = config.getFloat("AmmoTextScale", AMMOHUD, 1.0F, 0.01F, 10.0F, "Changes the scale of the ammo text (e.g. 30/30 on AKM)");
-        cl_ammoIconScale = config.getFloat("AmmoIconScale", AMMOHUD, 1.0F, 0.01F, 10.0F, "Changes the scale of the ammo icon (e.g. rifle ammo on AKM)");
-        cl_ammoMagTextScale = config.getFloat("MagTextScale", AMMOHUD, 0.65F, 0.01F, 10.0F, "Changes the scale of the magazine count text (e.g. x19)");
-        cl_hudMarginRight = config.getInt("HudMarginRight", AMMOHUD, 40, 0, 9999, "How many pixels should the ammo counter be away from the right side of the screen?");
-        cl_hudMarginBottom = config.getInt("HudMarginBottom", AMMOHUD, 40, 0, 9999, "How many pixels should the ammo counter be away from the bottom side of the screen?");
-        cl_iconTextGap = config.getInt("HudIconTextGap", AMMOHUD, 6, 0, 999, "How many pixels should the ammo icon be away from the ammo count text? (note: it's always moved LEFT from the text)");
-        cl_textMagGap = config.getInt("HudTextMagGap", AMMOHUD, 3, 0, 999, "How many pixels should the mag count text be away from the ammo count text? (note: it's always moved LOWER from the a.c. text)");
-		
-		WIP_disableRadiationSystem = config.getBoolean("WIP_disableRadiationSystem", Configuration.CATEGORY_GENERAL, false, "Disable Radiation for players. (Radiation system is still WIP)");
+		@Config.Comment("Add steel nuggets.")
+		@Config.LangKey("config.techguns.disable_items.addSteelNuggets")
+		@Config.RequiresMcRestart
+		public boolean addSteelNuggets = true;
 
-		fluidListFuel = config.getStringList("FluidListFuel", "Fluid Recipes", new String[]{"fuel", "refined_fuel", "biofuel", "biodiesel", "diesel", "gasoline", "fluiddiesel", "fluidnitrodiesel", "fliudnitrofuel", "refined_biofuel", "fire_water", "rocket_fuel"}, "Fluids that can be used to fill up fuel tanks");
-		fluidListOil = config.getStringList("FluidListOil", "Fluid Recipes", new String[]{"oil", "tree_oil", "crude_oil", "fluidoil", "seed_oil"}, "Fluids that are treated as oil.");
-		fluidListOilWorldspawn = config.getStringList("FluidListOilWorldspawn", "Fluid Recipes", new String[]{"oil", "crude_oil"}, "Fluids that are treated as oil for worlspawn and oil ore clusters.");
+		@Config.Comment("Enables steel recipe in a TG blast furnace.")
+		@Config.LangKey("config.techguns.disable_items.addSteelRecipe")
+		@Config.RequiresMcRestart
+		public boolean addSteelRecipe = true;
 
-		
-		oreDrillMultiplierOres = config.getFloat("oreDrillMultiplierOre", ORE_DRILLS, 1.0f, 0.001f, 1000.0f, "Multiplier to default rate on how many ores an ore drill produces");
-		
-		oreDrillMultiplierPower = config.getFloat("oreDrillMultiplierPower", ORE_DRILLS, 1.0f, 0f, 1000.0f, "Multiplier to default rate on how much power an ore drill requires");
-	
-		oreDrillMultiplierFuel = config.getFloat("oreDrillFuelMultiplier", ORE_DRILLS, 1000, 1, 100000, "Multiplier to calculate value of furnace fuel burn time = RF for ore Drill. burnTime* <THIS_VALUE> = RF. Only for internal use of the ore Drill, no real RF generation.");
-		
-		oreDrillFuelValueFuel = config.getFloat("oreDrillFuelValueFuel", ORE_DRILLS, 100, 1, 100000, "Fuel value for Liquid Fuel for use in ore Drills, this is per Millibucket, not Bucket, so 1/1000 of bucket value");
-		
-		addDefaultClusterOres = config.getBoolean("addDefaultClusterOres", ORE_DRILLS, 				      true, "Enables original Techguns' list of ores to ore clusters");
-		additionalClusterOres = config.getStringList("additionalClusterOres", ORE_DRILLS, 				      new String[]{""}, "A list where you can add your own oredicts to ore clusters. Scheme is: 'oredictName;enumOreClusterType;weight;amount'. Example is: 'oreIron;URANIUM;30;2'. " +
-				"Available enumOreClusterTypes: COAL, COMMON_METAL, RARE_METAL, SHINY_METAL, URANIUM, COMMON_GEM, SHINY_GEM, NETHER_CRYSTAL, OIL");
-		mininglevel_coal = config.getInt("cluster_mininglevel_coal", ORE_DRILLS, 				      0, 0, 10, "Mining Level for coal ore clusters");
-		mininglevel_common_metal = config.getInt("cluster_mininglevel_common_metal", ORE_DRILLS, 	  0, 0, 10, "Mining Level for common metal ore clusters");
-		mininglevel_rare_metal = config.getInt("cluster_mininglevel_rare_metal", ORE_DRILLS,          1, 0, 10, "Mining Level for rare metal ore clusters");
-		mininglevel_shiny_metal = config.getInt("cluster_mininglevel_shiny_metal", ORE_DRILLS ,       2, 0, 10, "Mining Level for shiny metal ore clusters");
-		mininglevel_uranium = config.getInt("cluster_mininglevel_uranium", ORE_DRILLS,  		      3, 0, 10, "Mining Level for uranium ore clusters");
-		mininglevel_common_gem = config.getInt("cluster_mininglevel_common_gem", ORE_DRILLS,          1, 0, 10, "Mining Level for common gem ore clusters");
-		mininglevel_shiny_gem = config.getInt("cluster_mininglevel_shiny_gem", ORE_DRILLS,            3, 0, 10, "Mining Level for shiny gem ore clusters");
-		mininglevel_nether_crystal = config.getInt("cluster_mininglevel_nether_crystal", ORE_DRILLS,  2, 0, 10, "Mining Level for nether crystal ore clusters");
-		mininglevel_oil = config.getInt("cluster_mininglevel_oil", ORE_DRILLS,  					  2, 0, 10, "Mining Level for oil clusters");
-			
-		oremult_coal = config.getFloat("cluster_oremult_coal", ORE_DRILLS,  				   20f, 0.0001f, 1000f, "Ore Multiplier for coal ore clusters");
-		oremult_common_metal = config.getFloat("cluster_oremult_common_metal", ORE_DRILLS,      10f, 0.0001f, 1000f, "Ore Multiplier for common metal ore clusters");
-		oremult_rare_metal = config.getFloat("cluster_oremult_rare_metal", ORE_DRILLS,        5f, 0.0001f, 1000f, "Ore Multiplier for rare metal ore clusters");
-		oremult_shiny_metal = config.getFloat("cluster_oremult_shiny_metal", ORE_DRILLS,        2f, 0.0001f, 1000f, "Ore Multiplier for shiny metal ore clusters");
-		oremult_uranium = config.getFloat("cluster_oremult_uranium", ORE_DRILLS,              1f, 0.0001f, 1000f, "Ore Multiplier for uranium ore clusters");
-		oremult_common_gem = config.getFloat("cluster_oremult_common_gem", ORE_DRILLS,          10f, 0.0001f, 1000f, "Ore Multiplier for common gem ore clusters");
-		oremult_shiny_gem = config.getFloat("cluster_oremult_shiny_gem", ORE_DRILLS, 		  0.4f, 0.0001f, 1000f, "Ore Multiplier for shiny gem ore clusters");
-		oremult_nether_crystal = config.getFloat("cluster_oremult_nether_crystal", ORE_DRILLS,  8f, 0.0001f, 1000f, "Ore Multiplier for nether crystal ore clusters");
-		oremult_oil = config.getFloat("cluster_oremult_oil", ORE_DRILLS,  						8f, 0.0001f, 1000f, "Ore Multiplier for oil clusters");
-		
-		powermult_coal = config.getFloat("cluster_powermult_coal", ORE_DRILLS,                      0.08f, 0.0001f, 1000f, "Power Multiplier for coal ore clusters");
-		powermult_common_metal = config.getFloat("cluster_powermult_common_metal", ORE_DRILLS,      0.16f, 0.0001f, 1000f, "Power Multiplier for common metal ore clusters");
-		powermult_rare_metal = config.getFloat("cluster_powermult_rare_metal", ORE_DRILLS,          0.32f, 0.0001f, 1000f, "Power Multiplier for rare metal ore clusters");
-		powermult_shiny_metal = config.getFloat("cluster_powermult_shiny_metal", ORE_DRILLS, 		0.8f, 0.0001f, 1000f, "Power Multiplier for shiny metal ore clusters");
-		powermult_uranium = config.getFloat("cluster_powermult_uranium", ORE_DRILLS, 				0.8f, 0.0001f, 1000f, "Power Multiplier for uranium ore clusters");
-		powermult_common_gem = config.getFloat("cluster_powermult_common_gem", ORE_DRILLS,  		0.16f, 0.0001f, 1000f, "Power Multiplier for common gem ore clusters");
-		powermult_shiny_gem = config.getFloat("cluster_powermult_shiny_gem", ORE_DRILLS,            0.8f, 0.0001f, 1000f, "Power Multiplier for shiny gem ore clusters");
-		powermult_nether_crystal = config.getFloat("cluster_powermult_nether_crystal", ORE_DRILLS,  0.4f, 0.0001f, 1000f, "Power Multiplier for nether crystal ore clusters");
-		powermult_oil = config.getFloat("cluster_powermult_oil", ORE_DRILLS,  						0.8f, 0.0001f, 1000f, "Power Multiplier for oil clusters");
-		
-		
-		if(config.hasChanged()) {
-			config.save();
+		@Config.Comment("Registers oreDicts entries for carbon, titanium, circuits and other items that might be used from other mods.")
+		@Config.LangKey("config.techguns.disable_items.addOreDicts")
+		@Config.RequiresMcRestart
+		public boolean addOreDicts = true;
+	}
+
+	@Config.Name("NPC Spawn")
+	@Config.LangKey("config.techguns.npc_spawn")
+	public static NpcSpawn npcSpawn = new NpcSpawn();
+
+	public static class NpcSpawn {
+		@Config.Comment("Up to which distance to worldspawn only mobs with danger level up to 0 will spawn")
+		@Config.LangKey("config.techguns.npc_spawn.distanceSpawnLevel0")
+		@Config.RequiresMcRestart
+		public int distanceSpawnLevel0 = 500;
+
+		@Config.Comment("Up to which distance to worldspawn only mobs with danger level up to 1 will spawn")
+		@Config.LangKey("config.techguns.npc_spawn.distanceSpawnLevel1")
+		@Config.RequiresMcRestart
+		public int distanceSpawnLevel1 = 1000;
+
+		@Config.Comment("Up to which distance to worldspawn only mobs with danger level up to 2 will spawn")
+		@Config.LangKey("config.techguns.npc_spawn.distanceSpawnLevel2")
+		@Config.RequiresMcRestart
+		public int distanceSpawnLevel2 = 2500;
+
+		@Config.Comment("Spawn weight of Techguns NPCs in the Overworld; determines how many TG NPCs spawn")
+		@Config.RangeInt(min = 0, max = 10000)
+		@Config.LangKey("config.techguns.npc_spawn.spawnWeightTGOverworld")
+		@Config.RequiresMcRestart
+		public int spawnWeightTGOverworld = 600;
+
+		@Config.Comment("Spawn weight of Techguns NPCs in the Nether; determines how many TG NPCs spawn")
+		@Config.RangeInt(min = 0, max = 10000)
+		@Config.LangKey("config.techguns.npc_spawn.spawnWeightTGNether")
+		@Config.RequiresMcRestart
+		public int spawnWeightTGNether = 300;
+
+		@Config.Comment("Spawn weight of Techguns NPCs in the End; determines how many TG NPCs spawn")
+		@Config.RangeInt(min = 0, max = 10000)
+		@Config.LangKey("config.techguns.npc_spawn.spawnWeightTGEnd")
+		@Config.RequiresMcRestart
+		public int spawnWeightTGEnd = 5;
+
+		@Config.Comment("Spawn weight for spawning Zombie Soldiers; at 0 spawn will not be registered")
+		@Config.RangeInt(min = 0, max = 10000)
+		@Config.LangKey("config.techguns.npc_spawn.spawnWeightZombieSoldier")
+		@Config.RequiresMcRestart
+		public int spawnWeightZombieSoldier = 100;
+
+		@Config.Comment("Spawn weight for spawning Zombie Farmers; at 0 spawn will not be registered")
+		@Config.RangeInt(min = 0, max = 10000)
+		@Config.LangKey("config.techguns.npc_spawn.spawnWeightZombieFarmer")
+		@Config.RequiresMcRestart
+		public int spawnWeightZombieFarmer = 200;
+
+		@Config.Comment("Spawn weight for spawning Zombie Miners; at 0 spawn will not be registered")
+		@Config.RangeInt(min = 0, max = 10000)
+		@Config.LangKey("config.techguns.npc_spawn.spawnWeightZombieMiner")
+		@Config.RequiresMcRestart
+		public int spawnWeightZombieMiner = 200;
+
+		@Config.Comment("Spawn weight for spawning Zombie Pigman Soldiers (Nether only); at 0 spawn will not be registered")
+		@Config.RangeInt(min = 0, max = 10000)
+		@Config.LangKey("config.techguns.npc_spawn.spawnWeightZombiePigmanSoldier")
+		@Config.RequiresMcRestart
+		public int spawnWeightZombiePigmanSoldier = 80;
+
+		@Config.Comment("Spawn weight for spawning Cyber Demons (Nether only); at 0 spawn will not be registered")
+		@Config.RangeInt(min = 0, max = 10000)
+		@Config.LangKey("config.techguns.npc_spawn.spawnWeightCyberDemon")
+		@Config.RequiresMcRestart
+		public int spawnWeightCyberDemon = 30;
+
+		@Config.Comment("Spawn weight for spawning Ghastlings (Nether only); at 0 spawn will not be registered")
+		@Config.RangeInt(min = 0, max = 10000)
+		@Config.LangKey("config.techguns.npc_spawn.spawnWeightGhastling")
+		@Config.RequiresMcRestart
+		public int spawnWeightGhastling = 10;
+
+		@Config.Comment("Spawn weight for spawning Basic Super Mutants (End only); at 0 spawn will not be registered")
+		@Config.RangeInt(min = 0, max = 10000)
+		@Config.LangKey("config.techguns.npc_spawn.spawnWeightSuperMutantBasic")
+		@Config.RequiresMcRestart
+		public int spawnWeightSuperMutantBasic = 100;
+
+		@Config.Comment("Spawn weight for spawning Elite Super Mutants (End only); at 0 spawn will not be registered")
+		@Config.RangeInt(min = 0, max = 10000)
+		@Config.LangKey("config.techguns.npc_spawn.spawnWeightSuperMutantElite")
+		@Config.RequiresMcRestart
+		public int spawnWeightSuperMutantElite = 40;
+
+		@Config.Comment("Spawn weight for spawning Heavy Super Mutants (End only); at 0 spawn will not be registered")
+		@Config.RangeInt(min = 0, max = 10000)
+		@Config.LangKey("config.techguns.npc_spawn.spawnWeightSuperMutantHeavy")
+		@Config.RequiresMcRestart
+		public int spawnWeightSuperMutantHeavy = 10;
+
+		@Config.Comment("Spawn weight for spawning Bandit groups; at 0 spawn will not be registered")
+		@Config.RangeInt(min = 0, max = 10000)
+		@Config.LangKey("config.techguns.npc_spawn.spawnWeightBandit")
+		@Config.RequiresMcRestart
+		public int spawnWeightBandit = 50;
+
+		@Config.Comment("Spawn weight for spawning Skeleton Soldiers; at 0 spawn will not be registered")
+		@Config.RangeInt(min = 0, max = 10000)
+		@Config.LangKey("config.techguns.npc_spawn.spawnWeightSkeletonSoldier")
+		@Config.RequiresMcRestart
+		public int spawnWeightSkeletonSoldier = 100;
+
+		@Config.Comment("Spawn weight for spawning Psycho Steve, an early-game boss; at 0 spawn will not be registered")
+		@Config.RangeInt(min = 0, max = 10000)
+		@Config.LangKey("config.techguns.npc_spawn.spawnWeightPsychoSteve")
+		@Config.RequiresMcRestart
+		public int spawnWeightPsychoSteve = 3;
+
+		@Config.Comment("Biome Registry names (e.g: minecraft:mushroom_island) that are excluded from Techguns monster spawning")
+		@Config.LangKey("config.techguns.npc_spawn.biomeBlacklist")
+		@Config.RequiresMcRestart
+		public String[] biomeBlacklist = new String[]{""};
+
+		@Config.Comment("Enables auto-adding dimensions for Techguns spawn lists (e.g. if the dimension has any of vanilla types, it will have corresponding spawnlist automatically)")
+		@Config.LangKey("config.techguns.npc_spawn.dimensionAutoadd")
+		@Config.RequiresMcRestart
+		public boolean dimensionAutoadd = false;
+
+		@Config.Comment("Dimensions (e.g: 12, 13, 14 etc.) that are included in Techguns monster spawning to use Overworld spawnlist. NOTE: ONLY WORKS IF DimensionsAutoAdd TURNED OFF!")
+		@Config.LangKey("config.techguns.npc_spawn.dimensionWhitelistOverworld")
+		@Config.RequiresMcRestart
+		public String[] dimensionWhitelistOverworld = new String[]{""};
+
+		@Config.Comment("Dimensions (e.g: 12, 13, 14 etc.) that are included in Techguns monster spawning in the Nether spawnlist. NOTE: ONLY WORKS IF DimensionsAutoAdd TURNED OFF!")
+		@Config.LangKey("config.techguns.npc_spawn.dimensionWhitelistNether")
+		@Config.RequiresMcRestart
+		public String[] dimensionWhitelistNether = new String[]{""};
+
+		@Config.Comment("Dimensions (e.g: 12, 13, 14 etc.) that are included in Techguns monster spawning in the End spawnlist. NOTE: ONLY WORKS IF DimensionsAutoAdd TURNED OFF!")
+		@Config.LangKey("config.techguns.npc_spawn.dimensionWhitelistEnd")
+		@Config.RequiresMcRestart
+		public String[] dimensionWhitelistEnd = new String[]{""};
+	}
+
+	@Config.Name("Damage Factors")
+	@Config.LangKey("config.techguns.damage_factors")
+	public static DamageFactors damageFactors = new DamageFactors();
+
+	public static class DamageFactors {
+		@Config.Comment("Damage factor Techguns weapons deal when fired from players against other players; it automatically sets to zero when PvP is disabled")
+		@Config.RangeDouble(min = 0.0, max = 100.0)
+		@Config.LangKey("config.techguns.damage_factors.damagePvP")
+		public float damagePvP = 0.5f;
+
+		@Config.Comment("Damage factor Techguns Turrets deal when hitting players")
+		@Config.RangeDouble(min = 0.0, max = 100.0)
+		@Config.LangKey("config.techguns.damage_factors.damageTurretToPlayer")
+		public float damageTurretToPlayer = 0.5f;
+
+		@Config.Comment("Damage factor for all NPCs other than turrets, multiplied by default difficulty penalty (easy - 0.6, normal - 0.8, hard - 1.0)")
+		@Config.RangeDouble(min = 0.0, max = 100.0)
+		@Config.LangKey("config.techguns.damage_factors.damageFactorNPC")
+		public float damageFactorNPC = 1.0f;
+	}
+
+	@Config.Name("World Generation")
+	@Config.LangKey("config.techguns.worldgen")
+	public static WorldGeneration worldgen = new WorldGeneration();
+
+	public static class WorldGeneration {
+		@Config.Comment("Generate Copper Ore (advised to disable if other mod does)")
+		@Config.LangKey("config.techguns.worldgen.doOreGenCopper")
+		@Config.RequiresMcRestart
+		public boolean doOreGenCopper = true;
+
+		@Config.Comment("Generate Tin Ore (advised to disable if other mod does)")
+		@Config.LangKey("config.techguns.worldgen.doOreGenTin")
+		@Config.RequiresMcRestart
+		public boolean doOreGenTin = true;
+
+		@Config.Comment("Generate Lead Ore (advised to disable if other mod does)")
+		@Config.LangKey("config.techguns.worldgen.doOreGenLead")
+		@Config.RequiresMcRestart
+		public boolean doOreGenLead = true;
+
+		@Config.Comment("Generate Titanium (advised to disable if other mod does)")
+		@Config.LangKey("config.techguns.worldgen.doOreGenTitanium")
+		@Config.RequiresMcRestart
+		public boolean doOreGenTitanium = true;
+
+		@Config.Comment("Generate Uranium (advised to disable if other mod does)")
+		@Config.LangKey("config.techguns.worldgen.doOreGenUranium")
+		@Config.RequiresMcRestart
+		public boolean doOreGenUranium = true;
+
+		@Config.Comment("Should any Techguns structures spawn in the world?")
+		@Config.LangKey("config.techguns.worldgen.doWorldspawn")
+		@Config.RequiresMcRestart
+		public boolean doWorldspawn = true;
+
+		@Config.Comment("Every X chunks Techguns tries to spawn a Big building. This is only in overworld; ChunkX, and ChunkY modulo <this Value> must be 0")
+		@Config.RangeInt(min = 16, max = 100000)
+		@Config.LangKey("config.techguns.worldgen.spawnWeightTGStructureBigOverworld")
+		@Config.RequiresWorldRestart
+		public int spawnWeightTGStructureBigOverworld = 64;
+
+		@Config.Comment("Every X chunks Techguns tries to spawn a Small building. This is only in overworld; ChunkX, and ChunkY modulo <this Value> must be 0")
+		@Config.RangeInt(min = 4, max = 100000)
+		@Config.LangKey("config.techguns.worldgen.spawnWeightTGStructureSmallOverworld")
+		@Config.RequiresWorldRestart
+		public int spawnWeightTGStructureSmallOverworld = 16;
+
+		@Config.Comment("Every X chunks Techguns tries to spawn a Medium building. This is only in overworld; ChunkX, and ChunkY modulo <this Value> must be 0")
+		@Config.RangeInt(min = 8, max = 100000)
+		@Config.LangKey("config.techguns.worldgen.spawnWeightTGStructureMediumOverworld")
+		@Config.RequiresWorldRestart
+		public int spawnWeightTGStructureMediumOverworld = 32;
+
+		@Config.Comment("Every X chunks Techguns tries to spawn a Big building. This is only in the Nether; ChunkX, and ChunkY modulo <this Value> must be 0")
+		@Config.RangeInt(min = 16, max = 100000)
+		@Config.LangKey("config.techguns.worldgen.spawnWeightTGStructureBigNether")
+		@Config.RequiresWorldRestart
+		public int spawnWeightTGStructureBigNether = 24;
+
+		@Config.Comment("Every X chunks Techguns tries to spawn a Small building. This is only in the Nether; ChunkX, and ChunkY modulo <this Value> must be 0")
+		@Config.RangeInt(min = 4, max = 100000)
+		@Config.LangKey("config.techguns.worldgen.spawnWeightTGStructureSmallNether")
+		@Config.RequiresWorldRestart
+		public int spawnWeightTGStructureSmallNether = 8;
+
+		@Config.Comment("Every X chunks Techguns tries to spawn a Medium building. This is only in the Nether; ChunkX, and ChunkY modulo <this Value> must be 0")
+		@Config.RangeInt(min = 8, max = 100000)
+		@Config.LangKey("config.techguns.worldgen.spawnWeightTGStructureMediumNether")
+		@Config.RequiresWorldRestart
+		public int spawnWeightTGStructureMediumNether = 10;
+
+		@Config.Comment("Every X chunks Techguns tries to spawn a Big building. This is only in the End; ChunkX, and ChunkY modulo <this Value> must be 0")
+		@Config.RangeInt(min = 8, max = 100000)
+		@Config.LangKey("config.techguns.worldgen.spawnWeightTGStructureBigEnd")
+		@Config.RequiresWorldRestart
+		public int spawnWeightTGStructureBigEnd = 64;
+
+		@Config.Comment("Every X chunks Techguns tries to spawn a Small building. This is only in the End; ChunkX, and ChunkY modulo <this Value> must be 0")
+		@Config.RangeInt(min = 8, max = 100000)
+		@Config.LangKey("config.techguns.worldgen.spawnWeightTGStructureSmallEnd")
+		@Config.RequiresWorldRestart
+		public int spawnWeightTGStructureSmallEnd = 16;
+
+		@Config.Comment("Every X chunks Techguns tries to spawn a Medium building. This is only in the End; ChunkX, and ChunkY modulo <this Value> must be 0")
+		@Config.RangeInt(min = 8, max = 100000)
+		@Config.LangKey("config.techguns.worldgen.spawnWeightTGStructureMediumEnd")
+		@Config.RequiresWorldRestart
+		public int spawnWeightTGStructureMediumEnd = 42;
+
+		@Config.Comment("When worldgen is enabled, include structure spawns that contain ore clusters.")
+		@Config.LangKey("config.techguns.worldgen.spawnOreClusterStructures")
+		@Config.RequiresWorldRestart
+		public boolean spawnOreClusterStructures = true;
+	}
+
+	@Config.Name("Clientside")
+	@Config.Comment("Clientside options, can be changed when playing on a server")
+	@Config.LangKey("config.techguns.clientside")
+	public static Clientside clientside = new Clientside();
+
+	public static class Clientside {
+		@Config.Name("Ammo HUD")
+		@Config.LangKey("config.techguns.ammo_hud")
+		public AmmoHud ammoHud = new AmmoHud();
+
+		@Config.Comment("Enables Techguns death effects in general (biogun, lasergun and, if enabled, gore).")
+		@Config.LangKey("config.techguns.clientside.cl_enableDeathFX")
+		public boolean cl_enableDeathFX = true;
+
+		@Config.Comment("Enable the gore Death Effect; requires 'Enable Death Effects' to be enabled.")
+		@Config.LangKey("config.techguns.clientside.cl_enableDeathFX_Gore")
+		public boolean cl_enableDeathFX_Gore = true;
+
+		@Config.Comment("Counters the speed dependant FOV change. This also stops FOV changes while sprinting. Don't activate if another mod does this too.")
+		@Config.LangKey("config.techguns.clientside.cl_lockSpeedFov")
+		public boolean cl_lockSpeedFov = true;
+
+		@Config.Comment("Multiply the FOV while sprinting by this value independent from the actual speed, has no effect when LockSpeedDependantFov is false.")
+		@Config.RangeDouble(min = 1.0, max = 10.0)
+		@Config.LangKey("config.techguns.clientside.cl_fixedSprintFov")
+		public float cl_fixedSprintFov = 1.15f;
+
+		@Config.Comment("Each tick, Techguns particles are sorted via bubble sorting to determine in which order they should render. This parameter defines how many sort passes should be done in a single tick. 0 disables sorting entirely.")
+		@Config.RangeInt(min = 0, max = 20)
+		@Config.LangKey("config.techguns.clientside.cl_sortPassesPerTick")
+		public int cl_sortPassesPerTick = 10;
+	}
+
+	public static class AmmoHud {
+		@Config.Comment("Enables legacy ammo HUD while holding a gun (legacy means before 2.1 version)")
+		@Config.LangKey("config.techguns.ammo_hud.cl_enableLegacyHud")
+		public boolean cl_enableLegacyHud = false;
+
+		@Config.Comment("Changes the scale of the ammo text (e.g. 30/30 on AKM)")
+		@Config.RangeDouble(min = 0.01, max = 10.0)
+		@Config.LangKey("config.techguns.ammo_hud.cl_ammoTextScale")
+		public float cl_ammoTextScale = 1.0f;
+
+		@Config.Comment("Changes the scale of the ammo icon (e.g. rifle ammo on AKM)")
+		@Config.RangeDouble(min = 0.01, max = 10.0)
+		@Config.LangKey("config.techguns.ammo_hud.cl_ammoIconScale")
+		public float cl_ammoIconScale = 1.0f;
+
+		@Config.Comment("Changes the scale of the magazine count text (e.g. x19)")
+		@Config.RangeDouble(min = 0.01, max = 10.0)
+		@Config.LangKey("config.techguns.ammo_hud.cl_ammoMagTextScale")
+		public float cl_ammoMagTextScale = 0.65f;
+
+		@Config.Comment("How many pixels should the ammo counter be away from the right side of the screen?")
+		@Config.RangeInt(min = 0, max = 9999)
+		@Config.LangKey("config.techguns.ammo_hud.cl_hudMarginRight")
+		public int cl_hudMarginRight = 40;
+
+		@Config.Comment("How many pixels should the ammo counter be away from the bottom side of the screen?")
+		@Config.RangeInt(min = 0, max = 9999)
+		@Config.LangKey("config.techguns.ammo_hud.cl_hudMarginBottom")
+		public int cl_hudMarginBottom = 40;
+
+		@Config.Comment("How many pixels should the ammo icon be away from the ammo count text? (note: it's always moved LEFT from the text)")
+		@Config.RangeInt(min = 0, max = 999)
+		@Config.LangKey("config.techguns.ammo_hud.cl_iconTextGap")
+		public int cl_iconTextGap = 6;
+
+		@Config.Comment("How many pixels should the mag count text be away from the ammo count text? (note: it's always moved LOWER from the a.c. text)")
+		@Config.RangeInt(min = 0, max = 999)
+		@Config.LangKey("config.techguns.ammo_hud.cl_textMagGap")
+		public int cl_textMagGap = 3;
+	}
+
+	@Config.Name("Fluid Recipes")
+	@Config.LangKey("config.techguns.fluid_recipes")
+	public static FluidRecipes fluidRecipes = new FluidRecipes();
+
+	public static class FluidRecipes {
+		@Config.Comment("Fluids that can be used to fill up fuel tanks")
+		@Config.LangKey("config.techguns.fluid_recipes.fluidListFuel")
+		@Config.RequiresMcRestart
+		public String[] fluidListFuel = new String[]{"fuel", "refined_fuel", "biofuel", "biodiesel", "diesel", "gasoline", "fluiddiesel",
+				"fluidnitrodiesel", "fliudnitrofuel", "refined_biofuel", "fire_water", "rocket_fuel"};
+
+		@Config.Comment("Fluids that are treated as oil.")
+		@Config.LangKey("config.techguns.fluid_recipes.fluidListOil")
+		@Config.RequiresMcRestart
+		public String[] fluidListOil = new String[]{"oil", "tree_oil", "crude_oil", "fluidoil", "seed_oil"};
+
+		@Config.Comment("Fluids that are treated as oil for oil vein and oil ore clusters world spawn.")
+		@Config.LangKey("config.techguns.fluid_recipes.fluidListOilWorldspawn")
+		@Config.RequiresMcRestart
+		public String[] fluidListOilWorldspawn = new String[]{"oil", "crude_oil"};
+	}
+
+	@Config.Name("Ore Drills")
+	@Config.LangKey("config.techguns.ore_drills")
+	public static OreDrills oreDrills = new OreDrills();
+
+	public static class OreDrills {
+		@Config.Comment("Multiplier to default rate on how many ores an ore drill produces")
+		@Config.RangeDouble(min = 0.001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.oreDrillMultiplierOres")
+		public float oreDrillMultiplierOres = 1.0f;
+
+		@Config.Comment("Multiplier to default rate on how much power an ore drill requires")
+		@Config.RangeDouble(min = 0.0, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.oreDrillMultiplierPower")
+		public float oreDrillMultiplierPower = 1.0f;
+
+		@Config.Comment("Multiplier to calculate value of furnace fuel burn time = RF for ore Drill. burnTime * <THIS_VALUE> = RF. Only for internal use of the ore Drill, no real RF generation.")
+		@Config.RangeDouble(min = 1.0, max = 100000.0)
+		@Config.LangKey("config.techguns.ore_drills.oreDrillMultiplierFuel")
+		public float oreDrillMultiplierFuel = 1000.0f;
+
+		@Config.Comment("Fuel value for Liquid Fuel for use in ore Drills per mB")
+		@Config.RangeDouble(min = 1.0, max = 100000.0)
+		@Config.LangKey("config.techguns.ore_drills.oreDrillFuelValueFuel")
+		public float oreDrillFuelValueFuel = 100.0f;
+
+		@Config.Comment("Enables original Techguns' list of ores to ore clusters")
+		@Config.LangKey("config.techguns.ore_drills.addDefaultClusterOres")
+		public boolean addDefaultClusterOres = true;
+
+		@Config.Comment("A list where you can add your own oredicts to ore clusters. Scheme is: 'oredictName;enumOreClusterType;weight;amount'. Example is: 'oreIron;URANIUM;30;2'. Available enumOreClusterTypes: COAL, COMMON_METAL, RARE_METAL, SHINY_METAL, URANIUM, COMMON_GEM, SHINY_GEM, NETHER_CRYSTAL, OIL")
+		@Config.LangKey("config.techguns.ore_drills.additionalClusterOres")
+		public String[] additionalClusterOres = new String[]{""};
+
+		@Config.Comment("Mining Level for coal ore clusters")
+		@Config.RangeInt(min = 0, max = 10)
+		@Config.LangKey("config.techguns.ore_drills.mininglevel_coal")
+		public int mininglevel_coal = 0;
+
+		@Config.Comment("Mining Level for common metal ore clusters")
+		@Config.RangeInt(min = 0, max = 10)
+		@Config.LangKey("config.techguns.ore_drills.mininglevel_common_metal")
+		public int mininglevel_common_metal = 0;
+
+		@Config.Comment("Mining Level for rare metal ore clusters")
+		@Config.RangeInt(min = 0, max = 10)
+		@Config.LangKey("config.techguns.ore_drills.mininglevel_rare_metal")
+		public int mininglevel_rare_metal = 1;
+
+		@Config.Comment("Mining Level for shiny metal ore clusters")
+		@Config.RangeInt(min = 0, max = 10)
+		@Config.LangKey("config.techguns.ore_drills.mininglevel_shiny_metal")
+		public int mininglevel_shiny_metal = 2;
+
+		@Config.Comment("Mining Level for uranium ore clusters")
+		@Config.RangeInt(min = 0, max = 10)
+		@Config.LangKey("config.techguns.ore_drills.mininglevel_uranium")
+		public int mininglevel_uranium = 3;
+
+		@Config.Comment("Mining Level for common gem ore clusters")
+		@Config.RangeInt(min = 0, max = 10)
+		@Config.LangKey("config.techguns.ore_drills.mininglevel_common_gem")
+		public int mininglevel_common_gem = 1;
+
+		@Config.Comment("Mining Level for shiny gem ore clusters")
+		@Config.RangeInt(min = 0, max = 10)
+		@Config.LangKey("config.techguns.ore_drills.mininglevel_shiny_gem")
+		public int mininglevel_shiny_gem = 3;
+
+		@Config.Comment("Mining Level for nether crystal ore clusters")
+		@Config.RangeInt(min = 0, max = 10)
+		@Config.LangKey("config.techguns.ore_drills.mininglevel_nether_crystal")
+		public int mininglevel_nether_crystal = 2;
+
+		@Config.Comment("Mining Level for oil clusters")
+		@Config.RangeInt(min = 0, max = 10)
+		@Config.LangKey("config.techguns.ore_drills.mininglevel_oil")
+		public int mininglevel_oil = 2;
+
+		@Config.Comment("Ore Multiplier for coal ore clusters")
+		@Config.RangeDouble(min = 0.0001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.oremult_coal")
+		public float oremult_coal = 20f;
+
+		@Config.Comment("Ore Multiplier for common metal ore clusters")
+		@Config.RangeDouble(min = 0.0001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.oremult_common_metal")
+		public float oremult_common_metal = 10f;
+
+		@Config.Comment("Ore Multiplier for rare metal ore clusters")
+		@Config.RangeDouble(min = 0.0001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.oremult_rare_metal")
+		public float oremult_rare_metal = 5f;
+
+		@Config.Comment("Ore Multiplier for shiny metal ore clusters")
+		@Config.RangeDouble(min = 0.0001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.oremult_shiny_metal")
+		public float oremult_shiny_metal = 2f;
+
+		@Config.Comment("Ore Multiplier for uranium ore clusters")
+		@Config.RangeDouble(min = 0.0001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.oremult_uranium")
+		public float oremult_uranium = 1f;
+
+		@Config.Comment("Ore Multiplier for common gem ore clusters")
+		@Config.RangeDouble(min = 0.0001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.oremult_common_gem")
+		public float oremult_common_gem = 10f;
+
+		@Config.Comment("Ore Multiplier for shiny gem ore clusters")
+		@Config.RangeDouble(min = 0.0001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.oremult_shiny_gem")
+		public float oremult_shiny_gem = 0.4f;
+
+		@Config.Comment("Ore Multiplier for nether crystal ore clusters")
+		@Config.RangeDouble(min = 0.0001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.oremult_nether_crystal")
+		public float oremult_nether_crystal = 8f;
+
+		@Config.Comment("Ore Multiplier for oil clusters")
+		@Config.RangeDouble(min = 0.0001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.oremult_oil")
+		public float oremult_oil = 8f;
+
+		@Config.Comment("Power Multiplier for coal ore clusters")
+		@Config.RangeDouble(min = 0.0001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.powermult_coal")
+		public float powermult_coal = 0.08f;
+
+		@Config.Comment("Power Multiplier for common metal ore clusters")
+		@Config.RangeDouble(min = 0.0001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.powermult_common_metal")
+		public float powermult_common_metal = 0.16f;
+
+		@Config.Comment("Power Multiplier for rare metal ore clusters")
+		@Config.RangeDouble(min = 0.0001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.powermult_rare_metal")
+		public float powermult_rare_metal = 0.32f;
+
+		@Config.Comment("Power Multiplier for shiny metal ore clusters")
+		@Config.RangeDouble(min = 0.0001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.powermult_shiny_metal")
+		public float powermult_shiny_metal = 0.8f;
+
+		@Config.Comment("Power Multiplier for uranium ore clusters")
+		@Config.RangeDouble(min = 0.0001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.powermult_uranium")
+		public float powermult_uranium = 0.8f;
+
+		@Config.Comment("Power Multiplier for common gem ore clusters")
+		@Config.RangeDouble(min = 0.0001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.powermult_common_gem")
+		public float powermult_common_gem = 0.16f;
+
+		@Config.Comment("Power Multiplier for shiny gem ore clusters")
+		@Config.RangeDouble(min = 0.0001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.powermult_shiny_gem")
+		public float powermult_shiny_gem = 0.8f;
+
+		@Config.Comment("Power Multiplier for nether crystal ore clusters")
+		@Config.RangeDouble(min = 0.0001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.powermult_nether_crystal")
+		public float powermult_nether_crystal = 0.4f;
+
+		@Config.Comment("Power Multiplier for oil clusters")
+		@Config.RangeDouble(min = 0.0001, max = 1000.0)
+		@Config.LangKey("config.techguns.ore_drills.powermult_oil")
+		public float powermult_oil = 0.8f;
+	}
+
+	static {
+		try {
+			Class.forName("com.cleanroommc.configanytime.ConfigAnytime")
+					.getMethod("register", Class.class)
+					.invoke(null, TGConfig.class);
+		} catch (Exception ignored) {
 		}
 	}
-	
+
 	@SubscribeEvent
-	public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event){
-		if(event.getModID().equalsIgnoreCase(Tags.MOD_ID))
-		{
-			initValues();
+	public static void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
+		if (event.getModID().equalsIgnoreCase(Tags.MOD_ID)) {
+			ConfigManager.sync(Tags.MOD_ID, Config.Type.INSTANCE);
 		}
 	}
-
 }

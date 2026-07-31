@@ -1,6 +1,7 @@
 package techguns.tileentities;
 
 import net.minecraft.block.Block;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -187,6 +188,21 @@ public class FabricatorTileEntMaster extends MultiBlockMachineTileEntMaster impl
 
     public void markChanged() {
         this.world.markChunkDirty(this.pos, this);
+    }
+
+    @Override
+    public void unform() {
+        if (!this.world.isRemote && this.inventory != null && this.multiblockDirection != null) {
+            BlockPos dropPos = this.pos.offset(this.multiblockDirection.getOpposite());
+            for (int i = 0; i < this.inventory.getSlots(); i++) {
+                ItemStack stack = this.inventory.getStackInSlot(i);
+                if (!stack.isEmpty()) {
+                    this.world.spawnEntity(new EntityItem(this.world, dropPos.getX() + 0.5, dropPos.getY() + 0.5, dropPos.getZ() + 0.5, stack));
+                    this.inventory.setStackInSlot(i, ItemStack.EMPTY);
+                }
+            }
+        }
+        super.unform();
     }
 
 }

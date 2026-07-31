@@ -56,7 +56,7 @@ public class BlockDebugMarker extends GenericBlockMetaEnum<EnumDebugBlockType> {
 
 	@Override
 	public void getSubBlocks(@NotNull CreativeTabs tab, @NotNull NonNullList<ItemStack> items) {
-		if(TGConfig.debug) {
+		if(TGConfig.general.debug) {
 			items.add(new ItemStack(this,1,this.getMetaFromState(getDefaultState().withProperty(TYPE, EnumDebugBlockType.AIRMARKER))));
 			items.add(new ItemStack(this,1,this.getMetaFromState(getDefaultState().withProperty(TYPE, EnumDebugBlockType.ANTIAIRMARKER))));
 			items.add(new ItemStack(this,1,this.getMetaFromState(getDefaultState().withProperty(TYPE, EnumDebugBlockType.INTERIORMARKER_NORTH))));

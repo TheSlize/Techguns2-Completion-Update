@@ -26,7 +26,7 @@ public class TGPermissions implements ITGInitializer {
 	}
 	
 	public boolean canUseUnsafeMode(EntityPlayer ply) {
-        return (TGConfig.limitUnsafeModeToOP || !PermissionAPI.hasPermission(ply, TGPermissions.ALLOW_UNSAFE_MODE)) && (!TGConfig.limitUnsafeModeToOP || !isPlayerOp(ply));
+        return (TGConfig.general.limitUnsafeModeToOP || !PermissionAPI.hasPermission(ply, TGPermissions.ALLOW_UNSAFE_MODE)) && (!TGConfig.general.limitUnsafeModeToOP || !isPlayerOp(ply));
 	}
 	
 	public static boolean isPlayerOp(EntityPlayer player){
