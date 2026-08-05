@@ -1,5 +1,8 @@
 {
   "variants": {
+    "type=concrete_brown": {
+      "model": "techguns:concrete_brown"
+    },
     "type=concrete_brown_light": {
       "model": "techguns:concrete_brown_light"
     },
@@ -15,8 +18,14 @@
     "type=concrete_brown_light_scaff": {
       "model": "techguns:concrete_brown_light_scaff"
     },
-    "type=concrete_brown": {
-      "model": "techguns:concrete_brown"
+    "type=concrete_brown_light_pipes": {
+      "model": "techguns:concrete_brown_light_pipes"
+    },
+    "type=concrete_grey_pipes": {
+      "model": "techguns:concrete_grey_pipes"
+    },
+    "type=concrete_grey_dark_pipes": {
+      "model": "techguns:concrete_grey_dark_pipes"
     }
   }
 }
