@@ -3,7 +3,7 @@
 ### **English 🇺🇸** / [**Русский 🇷🇺**](README_ru.md)
 </div>
 
-<p align="center"><img src="https://cdn.modrinth.com/data/cached_images/706d4415e491f921e6d9c5e8628a81bde5adf93f.png" alt="Logo" width="800"></p>
+<p align="center"><img src="https://cdn.modrinth.com/data/cached_images/2f702564377684f86782aa3998d6d8552d15656e.png" alt="Logo" width="800"></p>
 
 <h4 align="center">
     <a href="https://www.curseforge.com/minecraft/mc-mods/techguns-ce"><img src="http://cf.way2muchnoise.eu/1417575.svg" alt="CF"></a>
