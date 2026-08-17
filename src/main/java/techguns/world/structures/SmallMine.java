@@ -8,6 +8,7 @@ import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import techguns.TGBlocks;
+import techguns.TGConfig;
 import techguns.blocks.EnumMonsterSpawnerType;
 import techguns.blocks.EnumOreClusterType;
 import techguns.blocks.EnumOreType;
@@ -53,7 +54,7 @@ public class SmallMine extends WorldgenStructure {
 		blockList.add(new MBlock(Blocks.TORCH, 4));
 		blockList.add(new MBlock(Blocks.TORCH, 2));
 		blockList.add(new MBlockOreClusterTypeOre(ores, oreWeights, new MBlock(Blocks.STONE,0),0.75f));
-		blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE,2,1,200,1).addMobType(ZombieMiner.class, 1));
+		blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsTotal, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsConcurrent, TGConfig.getSpawnerBlockIntervalTicks(), 1).addMobType(ZombieMiner.class, 1));
 		blockList.add(new MBlockOreclusterType(types, clusterWeights, 0.5f, ores));
 		blockList.add(new MBlockOreclusterType(types, clusterWeights, 0, null));
 	

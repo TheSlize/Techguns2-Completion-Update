@@ -6,6 +6,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
+import techguns.TGConfig;
 import techguns.Tags;
 import techguns.blocks.EnumMonsterSpawnerType;
 import techguns.entities.npcs.CyberDemon;
@@ -79,7 +80,7 @@ public class NetherSubmarine extends WorldgenStructure {
         blockList.add(new MBlockSkull(3, 1, "8e39ec3f-2af4-48d8-ae39-25e9b8561527", "uioz", "ewogICJ0aW1lc3RhbXAiIDogMTc2OTQyNTM2OTE1NCwKICAicHJvZmlsZUlkIiA6ICI4ZTM5ZWMzZjJhZjQ0OGQ4YWUzOTI1ZTliODU2MTUyNyIsCiAgInByb2ZpbGVOYW1lIiA6ICJ1aW96IiwKICAic2lnbmF0dXJlUmVxdWlyZWQiIDogdHJ1ZSwKICAidGV4dHVyZXMiIDogewogICAgIlNLSU4iIDogewogICAgICAidXJsIiA6ICJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlL2RiOWYwY2VjYjcxOTRkOTE0NzcwN2Q3YTU5NDM3YWM1ZWM4Nzc5MjFkNjVlOTFkZWYzZGVmYTlhNDQ2YWMwYjQiCiAgICB9CiAgfQp9"));
         blockList.add(new MBlock("minecraft:stone_slab", 0));
         blockList.add(new MBlock("techguns:stairs_metal", 10));
-        blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.SOLDIER_SPAWN, 5, 2, 120, 0).addMobType(StormTrooper.class, 15).addMobType(CyberDemon.class, 5));
+        blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.SOLDIER_SPAWN, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsTotal, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsConcurrent, TGConfig.getSpawnerBlockIntervalTicks(), 0).addMobType(StormTrooper.class, 15).addMobType(CyberDemon.class, 5));
         blockList.add(new MBlock("minecraft:lever", 2));
         blockList.add(new MBlock("minecraft:stone_button", 2));
         blockList.add(new MBlock("techguns:ladder0", 4));

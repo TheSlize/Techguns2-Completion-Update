@@ -42,7 +42,7 @@ private static final ResourceLocation CHEST_LOOT = new ResourceLocation(Tags.MOD
 		blockList.add(new MBlock("techguns:lamp0", 7));
 		blockList.add(new MBlock("minecraft:double_stone_slab", 0));
 		blockList.add(new MBlock("minecraft:stone_slab", 8));
-		blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE,3,2,200,1).addMobType(ZombieSoldier.class, 1).addMobType(ZombieFarmer.class, 1).addMobType(ZombieMiner.class, 1));
+		blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsTotal, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsConcurrent, TGConfig.getSpawnerBlockIntervalTicks(), 1).addMobType(ZombieSoldier.class, 1).addMobType(ZombieFarmer.class, 1).addMobType(ZombieMiner.class, 1));
 		blockList.add(new MBlock("minecraft:trapdoor", 10));
 		blockList.add(new MBlock("minecraft:trapdoor", 14));
 		blockList.add(new MBlock("minecraft:planks", 0));

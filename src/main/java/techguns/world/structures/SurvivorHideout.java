@@ -34,7 +34,7 @@ private static final ResourceLocation CHEST_LOOT = new ResourceLocation(Tags.MOD
 		blockList.add(new MBlock(TGBlocks.LAMP_0, 12));
 		blockList.add(new MBlockChestLoottable(Blocks.CHEST, 2, CHEST_LOOT));
 		blockList.add(new MBlock("minecraft:stonebrick", 0));
-		blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE,3,2,200,1).addMobType(Bandit.class, 1));
+		blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsTotal, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsConcurrent, TGConfig.getSpawnerBlockIntervalTicks(), 1).addMobType(Bandit.class, 1));
 		blockList.add(new MBlock("minecraft:planks", 0));
 		blockList.add(new MBlockChestLoottable(Blocks.CHEST, 4, CHEST_LOOT));
 		blockList.add(new MBlock("minecraft:oak_stairs", 0));
@@ -46,7 +46,7 @@ private static final ResourceLocation CHEST_LOOT = new ResourceLocation(Tags.MOD
 		blockList.add(new MBlock("minecraft:bed", 2));
 		blockList.add(new MBlock("minecraft:torch", 1));
 		blockList.add(new MBlock("minecraft:crafting_table", 0));
-		blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE,2,1,200,1).addMobType(Bandit.class, 1).setWeaponOverride(new ItemStack(TGuns.boltaction)));
+		blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsTotal, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsConcurrent, TGConfig.getSpawnerBlockIntervalTicks(), 1).addMobType(Bandit.class, 1).setWeaponOverride(new ItemStack(TGuns.boltaction)));
 		blockList.add(new MBlock("minecraft:furnace", 3));
 		blockList.add(new MBlock("techguns:ladder0", 0));
 		blockList.add(new MBlock("techguns:simplemachine", 9));

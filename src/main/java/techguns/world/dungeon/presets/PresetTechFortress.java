@@ -3,6 +3,7 @@ package techguns.world.dungeon.presets;
 import java.util.ArrayList;
 import java.util.Random;
 
+import techguns.TGConfig;
 import techguns.entities.npcs.StormTrooper;
 import techguns.tileentities.TGSpawnerTileEnt;
 import techguns.world.dungeon.DungeonSegment;
@@ -63,7 +64,7 @@ public class PresetTechFortress implements IDungeonPreset{
 
 	@Override
 	public void initSpawner(TGSpawnerTileEnt spawner) {
-		spawner.setParams(2, 2, 200, 2);
+		spawner.setParams(TGConfig.spawnerBlock.spawnerBlockWorldgenMobsTotal, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsConcurrent, TGConfig.getSpawnerBlockIntervalTicks(), 2);
 		spawner.addMobType(StormTrooper.class, 1);
 	}
 

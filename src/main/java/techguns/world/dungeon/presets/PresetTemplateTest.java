@@ -1,5 +1,6 @@
 package techguns.world.dungeon.presets;
 
+import techguns.TGConfig;
 import techguns.entities.npcs.ZombieSoldier;
 import techguns.tileentities.TGSpawnerTileEnt;
 import techguns.world.dungeon.DungeonSegment;
@@ -38,7 +39,7 @@ public class PresetTemplateTest implements IDungeonPreset{
 
 	@Override
 	public void initSpawner(TGSpawnerTileEnt spawner) {
-		spawner.setParams(2, 1, 200, 2);
+		spawner.setParams(TGConfig.spawnerBlock.spawnerBlockWorldgenMobsTotal, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsConcurrent, TGConfig.getSpawnerBlockIntervalTicks(), 2);
 		spawner.addMobType(ZombieSoldier.class, 1);
 	}
 

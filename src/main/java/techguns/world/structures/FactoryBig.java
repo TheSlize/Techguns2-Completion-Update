@@ -37,7 +37,7 @@ public class FactoryBig extends WorldgenStructure {
         blockList.add(new MBlock("techguns:stairs_concrete", 0));
         blockList.add(new MBlock("techguns:stairs_concrete", 3));
         blockList.add(new MBlock("techguns:stairs_concrete", 2));
-        blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE,6,2,150,2).addMobType(Bandit.class, 1).addMobType(Commando.class, 1));
+        blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsTotal, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsConcurrent, TGConfig.getSpawnerBlockIntervalTicks(), 2).addMobType(Bandit.class, 1).addMobType(Commando.class, 1));
         blockList.add(new MBlock("techguns:stairs_concrete", 4));
         blockList.add(new MBlock("techguns:metalpanel", 7));
         blockList.add(new MBlock("techguns:stairs_concrete", 6));

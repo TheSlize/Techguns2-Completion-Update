@@ -3,6 +3,7 @@ package techguns.world.structures;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import techguns.TGConfig;
 import techguns.Tags;
 import techguns.blocks.EnumMonsterSpawnerType;
 import techguns.entities.npcs.CyberDemon;
@@ -68,7 +69,7 @@ public class NetherBuilding extends WorldgenStructure {
         blockList.add(new MBlock("minecraft:iron_door", 8));
         blockList.add(new MBlock("techguns:bunkerdoor", 8));
         blockList.add(new MBlock("techguns:lamp0", 2));
-        blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.SOLDIER_SPAWN, 5, 2, 90, 0).addMobType(ZombiePigmanSoldier.class, 2).addMobType(StormTrooper.class, 1).addMobType(CyberDemon.class, 1));
+        blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.SOLDIER_SPAWN, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsTotal, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsConcurrent, TGConfig.getSpawnerBlockIntervalTicks(), 0).addMobType(ZombiePigmanSoldier.class, 2).addMobType(StormTrooper.class, 1).addMobType(CyberDemon.class, 1));
         blockList.add(new MBlock("techguns:stairs_metal", 13));
         blockList.add(new MBlockChestLoottable(Blocks.TRAPPED_CHEST, 3, CHEST_LOOT));
         blockList.add(new MBlock("techguns:ladder0", 11));

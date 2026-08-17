@@ -47,7 +47,7 @@ public class FactoryHouseSmall extends WorldgenStructure{
 		blockList.add(new MBlock(TGBlocks.LADDER_0.getDefaultState().withProperty(BlockTGLadder.FACING, EnumFacing.SOUTH)));
 		blockList.add(new MBlock(Blocks.IRON_BARS,0));//ChiselBlocks.iron_bars, 6));
 		blockList.add(new MBlock(TGBlocks.LAMP_0, EnumFacing.WEST.ordinal()));
-		blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE,5,2,150,2).addMobType(ZombieMiner.class, 1));
+		blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsTotal, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsConcurrent, TGConfig.getSpawnerBlockIntervalTicks(), 2).addMobType(ZombieMiner.class, 1));
 		
 		blocks = BlockUtils.loadStructureFromFile("factory_building_small");
 

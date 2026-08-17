@@ -6,6 +6,7 @@ import java.util.Random;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import techguns.TGBlocks;
+import techguns.TGConfig;
 import techguns.blocks.EnumMonsterSpawnerType;
 import techguns.entities.npcs.Ghastling;
 import techguns.util.BlockUtils;
@@ -27,7 +28,7 @@ public class NetherSoulPlatform extends WorldgenStructure {
 		blockList.add(new MBlock(TGBlocks.NETHER_METAL, 7));
 		blockList.add(new MBlock(Blocks.GLOWSTONE, 0));
 		blockList.add(new MBlock(Blocks.NETHER_BRICK_FENCE, 0));
-		blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE,3,2,200,1).addMobType(Ghastling.class, 1));
+		blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsTotal, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsConcurrent, TGConfig.getSpawnerBlockIntervalTicks(), 1).addMobType(Ghastling.class, 1));
 		
 		blocks = BlockUtils.loadStructureFromFile("nether_soul_platform");
 	}

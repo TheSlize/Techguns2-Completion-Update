@@ -631,6 +631,34 @@ public class TGConfig {
 		public float powermult_oil = 0.8f;
 	}
 
+	@Config.Name("Spawner Block")
+	@Config.Comment("Techguns monster spawner blocks (holes / soldier spawns) used in world structures and dungeon presets. Does not change vanilla mob spawners.")
+	@Config.LangKey("config.techguns.spawner_block")
+	public static SpawnerBlock spawnerBlock = new SpawnerBlock();
+
+	public static class SpawnerBlock {
+
+		@Config.Comment("Seconds between spawn attempts for TG spawner tile entities (default worldgen/dungeon tuning).")
+		@Config.RangeInt(min = 1, max = 3600)
+		@Config.LangKey("config.techguns.spawnerBlock.spawnerBlockIntervalSeconds")
+		public int spawnerBlockIntervalSeconds = 25;
+
+		@Config.Comment("Default maximum mobs one spawner may spawn in total before removing itself (used by structure presets and dungeon initSpawner).")
+		@Config.RangeInt(min = 1, max = 64)
+		@Config.LangKey("config.techguns.spawnerBlock.spawnerBlockWorldgenMobsTotal")
+		public int spawnerBlockWorldgenMobsTotal = 2;
+
+		@Config.Comment("Default maximum mobs alive at once per spawner. Should not exceed SpawnerWorldgenMobsTotal.")
+		@Config.RangeInt(min = 1, max = 64)
+		@Config.LangKey("config.techguns.spawnerBlock.spawnerBlockWorldgenMobsConcurrent")
+		public int spawnerBlockWorldgenMobsConcurrent = 2;
+
+		@Config.Comment("Safety cap: maximum mobs linked to one spawner tile in range (prevents pile-ups if something goes wrong).")
+		@Config.RangeInt(min = 1, max = 256)
+		@Config.LangKey("config.techguns.spawnerBlock.spawnerBlockMaxLinkedMobs")
+		public int spawnerBlockMaxLinkedMobs = 12;
+	}
+
 	static {
 		try {
 			Class.forName("com.cleanroommc.configanytime.ConfigAnytime")
@@ -638,6 +666,11 @@ public class TGConfig {
 					.invoke(null, TGConfig.class);
 		} catch (Exception ignored) {
 		}
+	}
+
+	/** Spawn interval for TG spawner blocks, in game ticks (20 ticks = 1 s). */
+	public static int getSpawnerBlockIntervalTicks() {
+		return Math.max(1, spawnerBlock.spawnerBlockIntervalSeconds) * 20;
 	}
 
 	@SubscribeEvent

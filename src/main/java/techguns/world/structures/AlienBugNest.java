@@ -10,6 +10,7 @@ import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import techguns.TGBlocks;
+import techguns.TGConfig;
 import techguns.blocks.EnumMonsterSpawnerType;
 import techguns.blocks.EnumTGSandHardTypes;
 import techguns.blocks.EnumTGSlimyType;
@@ -40,7 +41,7 @@ public class AlienBugNest {
 		wallBlock2 = new MultiMBlock(new Block[]{TGBlocks.SAND_HARD, Blocks.SANDSTONE}, new int[]{EnumTGSandHardTypes.BUGNEST_SAND.ordinal(),0}, new int[]{12,1});
 		innerBlock = new MBlock(Blocks.AIR,0);
 	    slimyBlock = new MBlockSlime(TGBlocks.SAND_HARD, EnumTGSandHardTypes.BUGNEST_SAND.ordinal());
-	    spawner = new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE, 7, 3, 150, 1).addMobType(AlienBug.class,	1);
+		spawner = new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsTotal, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsConcurrent, TGConfig.getSpawnerBlockIntervalTicks(), 1).addMobType(AlienBug.class, 1);
 	    eggsBlock = new MBlock(TGBlocks.SLIMY_BLOCK, EnumTGSlimyType.BUGNEST_EGGS.ordinal());
 		
 	}

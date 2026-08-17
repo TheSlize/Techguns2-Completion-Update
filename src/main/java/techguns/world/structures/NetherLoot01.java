@@ -30,7 +30,7 @@ public class NetherLoot01 extends WorldgenStructure {
 		blockList.add(new MBlock(Blocks.NETHERRACK, 0));
 		blockList.add(new MBlock(Blocks.SKULL, 1));
 		blockList.add(new MBlockChestLoottable(Blocks.CHEST, 5, CHEST_LOOT));
-		blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE,2,1,200,1).addMobType(ZombiePigmanSoldier.class, 1));
+		blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsTotal, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsConcurrent, TGConfig.getSpawnerBlockIntervalTicks(), 1).addMobType(ZombiePigmanSoldier.class, 1));
 		
 		blocks = BlockUtils.loadStructureFromFile("nether_loot_01");
 	}

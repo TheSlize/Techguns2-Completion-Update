@@ -8,6 +8,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import techguns.TGBlocks;
+import techguns.TGConfig;
 import techguns.TGuns;
 import techguns.blocks.EnumMonsterSpawnerType;
 import techguns.entities.npcs.ZombiePigmanSoldier;
@@ -27,7 +28,7 @@ public class NetherOreClusterCastle extends WorldgenStructure {
 		blockList.add(MBlockRegister.AIR);
 		blockList.add(new MBlock(Blocks.NETHER_BRICK_FENCE, 0));
 		blockList.add(new MBlock(TGBlocks.NETHER_METAL, 6));
-		blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE,2,1,200,0).addMobType(ZombiePigmanSoldier.class, 1).setWeaponOverride(new ItemStack(TGuns.boltaction)));
+		blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsTotal, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsConcurrent, TGConfig.getSpawnerBlockIntervalTicks(), 0).addMobType(ZombiePigmanSoldier.class, 1).setWeaponOverride(new ItemStack(TGuns.boltaction)));
 		blockList.add(new MultiMBlock(new Block[] {TGBlocks.ORE_CLUSTER, Blocks.AIR}, new int[] {7,0}, new int[] {40,60}));
 		blockList.add(new MBlock(TGBlocks.ORE_CLUSTER, 7));
 		

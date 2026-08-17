@@ -95,7 +95,7 @@ public class PresetCastle implements IDungeonPreset {
 
     @Override
     public void initSpawner(TGSpawnerTileEnt spawner) {
-        spawner.setParams(2, 2, 200, 2);
+        spawner.setParams(TGConfig.spawnerBlock.spawnerBlockWorldgenMobsTotal, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsConcurrent, TGConfig.getSpawnerBlockIntervalTicks(), 2);
         spawner.addMobType(ZombieSoldier.class, 1);
         spawner.addMobType(SkeletonSoldier.class, 1);
     }

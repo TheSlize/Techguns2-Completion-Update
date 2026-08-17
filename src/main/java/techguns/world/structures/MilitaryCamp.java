@@ -10,6 +10,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos.MutableBlockPos;
 import net.minecraft.world.World;
 import techguns.TGBlocks;
+import techguns.TGConfig;
 import techguns.blocks.EnumMonsterSpawnerType;
 import techguns.entities.npcs.ArmySoldier;
 import techguns.entities.npcs.AttackHelicopter;
@@ -219,7 +220,7 @@ public class MilitaryCamp {
         TileEntity tile = world.getTileEntity(p);
         if (tile instanceof TGSpawnerTileEnt spawner) {
             spawner.addMobType(AttackHelicopter.class, 1);
-            spawner.setParams(1, 1, 200, 0);
+            spawner.setParams(1, 1, TGConfig.getSpawnerBlockIntervalTicks(), 0);
 
             int h = Math.min(posY + 64, world.getActualHeight()) - posY;
             spawner.setSpawnHeightOffset(h);
@@ -237,7 +238,7 @@ public class MilitaryCamp {
             tile = world.getTileEntity(p);
             if (tile instanceof TGSpawnerTileEnt spawner) {
                 spawner.addMobType(ArmySoldier.class, 1);
-                spawner.setParams(3, 1, 200, 0);
+                spawner.setParams(3, 1, TGConfig.getSpawnerBlockIntervalTicks(), 0);
             }
         }
 

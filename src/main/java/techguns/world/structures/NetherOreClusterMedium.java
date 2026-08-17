@@ -3,6 +3,7 @@ package techguns.world.structures;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import techguns.TGConfig;
 import techguns.Tags;
 import techguns.blocks.EnumMonsterSpawnerType;
 import techguns.entities.npcs.CyberDemon;
@@ -34,7 +35,7 @@ public class NetherOreClusterMedium extends WorldgenStructure {
         blockList.add(new MBlock("techguns:metalpanel", 7));
         blockList.add(new MBlock("techguns:oredrill", 3));
         blockList.add(new MBlock("minecraft:glowstone", 0));
-        blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE, 4, 2, 80, 0).addMobType(CyberDemon.class, 30).addMobType(ZombiePigmanSoldier.class, 15).addMobType(StormTrooper.class, 10));
+        blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsTotal, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsConcurrent, TGConfig.getSpawnerBlockIntervalTicks(), 0).addMobType(CyberDemon.class, 30).addMobType(ZombiePigmanSoldier.class, 15).addMobType(StormTrooper.class, 10));
         blockList.add(new MBlock("techguns:orecluster", 7));
         blockList.add(new MBlock("techguns:oredrill", 2));
         blockList.add(new MBlock("techguns:concrete", 3));

@@ -6,6 +6,7 @@ import java.util.Random;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 import techguns.TGBlocks;
+import techguns.TGConfig;
 import techguns.blocks.EnumMonsterSpawnerType;
 import techguns.entities.npcs.CyberDemon;
 import techguns.util.BlockUtils;
@@ -26,7 +27,7 @@ public class NetherAltarSmall extends WorldgenStructure {
 		blockList.add(new MBlock(TGBlocks.NETHER_METAL, 7));
 		blockList.add(new MBlock(Blocks.NETHER_BRICK_STAIRS, 2));
 		blockList.add(new MBlock(Blocks.NETHER_BRICK_STAIRS, 3));
-		blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE,3,2,200,1).addMobType(CyberDemon.class, 1));
+		blockList.add(new MBlockTGSpawner(EnumMonsterSpawnerType.HOLE, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsTotal, TGConfig.spawnerBlock.spawnerBlockWorldgenMobsConcurrent, TGConfig.getSpawnerBlockIntervalTicks(), 1).addMobType(CyberDemon.class, 1));
 		blockList.add(new MBlock(Blocks.NETHER_BRICK_STAIRS, 1));
 		
 		blocks = BlockUtils.loadStructureFromFile("nether_altar_small");
