@@ -1615,6 +1615,18 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
                 this.gravity = value;
                 yield true;
             }
+            case MINING_SPEED -> {
+                this.digSpeed = value;
+                yield true;
+            }
+            case MIN_FIRE_TIME -> {
+                this.minFiretime = Math.max(0, (int) value);
+                yield true;
+            }
+            case ACCURACY -> {
+                this.accuracy = value;
+                yield true;
+            }
             case SPREAD -> {
                 this.spread = value;
                 yield true;
@@ -1624,7 +1636,8 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
                 yield true;
             }
             case CLIP_SIZE -> {
-                this.clipsize = (int) value;
+                this.clipsize = Math.max(1, (int) value);
+                this.setMaxDamage(this.clipsize);
                 yield true;
             }
             case AMMO_COUNT -> {
