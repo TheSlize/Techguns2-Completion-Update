@@ -2,6 +2,7 @@ package techguns.tileentities;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.EntityEquipmentSlot;
@@ -22,6 +23,7 @@ import techguns.capabilities.TGSpawnerNPCData;
 import techguns.entities.npcs.ITGSpawnerNPC;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TGSpawnerTileEnt extends BasicTGTileEntity implements ITickable {
     /**
@@ -176,6 +178,31 @@ public class TGSpawnerTileEnt extends BasicTGTileEntity implements ITickable {
         return this.mobtypes.size() > 0;
     }
 
+    protected int getCurrentActiveCount() {
+        if (!TGConfig.spawnerBlock.spawnerBlockUseCustomEntitySpawn) {
+            return this.activeMobs.size();
+        }
+        BlockPos pos = this.getPos();
+        AxisAlignedBB area = new AxisAlignedBB(pos).grow(SPAWNER_MOB_COUNT_RADIUS_BLOCKS);
+        Set<String> entityIds = this.mobtypes.stream()
+                .map(WeightedSpawnerEntity::getNbt)
+                .map(nbt -> nbt.getString("id"))
+                .filter(id -> !id.isEmpty())
+                .collect(Collectors.toSet());
+        if (entityIds.isEmpty()) {
+            return 0;
+        }
+        return this.world.getEntitiesWithinAABB(EntityLiving.class, area, e -> {
+            if (e instanceof ITGSpawnerNPC) {
+                TGSpawnerNPCData dat = TGSpawnerNPCData.get((ITGSpawnerNPC) e);
+                if (dat != null && pos.equals(dat.getSpawnerPos())) {
+                    return true;
+                }
+            }
+            return EntityList.getKey(e) != null && entityIds.contains(EntityList.getKey(e).toString());
+        }).size();
+    }
+
     protected boolean hasTooManyNearbySpawnerMobs() {
         BlockPos pos = this.getPos();
         AxisAlignedBB area = new AxisAlignedBB(pos).grow(SPAWNER_MOB_COUNT_RADIUS_BLOCKS);
@@ -193,7 +220,7 @@ public class TGSpawnerTileEnt extends BasicTGTileEntity implements ITickable {
     public void update() {
         if (this.world.isRemote) return;
         this.delay--;
-        if (this.delay <= 0 && activeMobs.size() < Math.min(maxActive, mobsLeft) && this.hasMobTypes() && !this.hasTooManyNearbySpawnerMobs()) {
+        if (this.delay <= 0 && this.getCurrentActiveCount() < Math.min(maxActive, mobsLeft) && this.hasMobTypes() && !this.hasTooManyNearbySpawnerMobs()) {
 
             if (this.world.getDifficulty() != EnumDifficulty.PEACEFUL) {
 
@@ -206,9 +233,13 @@ public class TGSpawnerTileEnt extends BasicTGTileEntity implements ITickable {
                 double d2 = (double) blockpos.getZ() + (rand.nextDouble() - rand.nextDouble()) * this.spawnrange + 0.5D;
                 Entity entity = AnvilChunkLoader.readWorldEntityPos(entdata.getNbt(), world, d0, d1, d2, false);
 
-                if (entity instanceof ITGSpawnerNPC && entity instanceof EntityLiving) {
-                    ITGSpawnerNPC npc = (ITGSpawnerNPC) entity;
+                if (entity instanceof EntityLiving) {
                     EntityLiving elb = (EntityLiving) entity;
+                    boolean isTgNpc = entity instanceof ITGSpawnerNPC;
+                    if (!isTgNpc && !TGConfig.spawnerBlock.spawnerBlockUseCustomEntitySpawn) {
+                        this.delay = this.spawndelay;
+                        return;
+                    }
 
                     //  if (net.minecraftforge.event.ForgeEventFactory.canEntitySpawnSpawner(npc, this.world, (float)entity.posX, (float)entity.posY, (float)entity.posZ))
                     //  {
@@ -228,10 +259,19 @@ public class TGSpawnerTileEnt extends BasicTGTileEntity implements ITickable {
 
                         elb.spawnExplosionParticle();
 
-                        this.activeMobs.add(npc);
                         this.delay = this.spawndelay;
-                        TGSpawnerNPCData dat = TGSpawnerNPCData.get(npc);
-                        dat.setSpawnerPos(blockpos);
+                        if (isTgNpc) {
+                            ITGSpawnerNPC npc = (ITGSpawnerNPC) entity;
+                            this.activeMobs.add(npc);
+                            TGSpawnerNPCData dat = TGSpawnerNPCData.get(npc);
+                            if (dat != null) {
+                                dat.setSpawnerPos(blockpos);
+                            }
+                        } else {
+                            // Non-TG mobs don't have relink/death callbacks, so consume a spawn immediately.
+                            this.mobsLeft--;
+                            this.markDirty();
+                        }
                     }
                     //}
 

@@ -657,6 +657,10 @@ public class TGConfig {
 		@Config.RangeInt(min = 1, max = 256)
 		@Config.LangKey("config.techguns.spawnerBlock.spawnerBlockMaxLinkedMobs")
 		public int spawnerBlockMaxLinkedMobs = 12;
+
+		@Config.Comment("false = default TG mode (spawns only ITGSpawnerNPC mobs from presets). true = custom mode (spawns any EntityLiving from this spawner's mobtypes NBT id; use this when editing spawner NBT to point at entities from other mods).")
+		@Config.LangKey("config.techguns.spawnerBlock.spawnerBlockUseCustomEntitySpawn")
+		public boolean spawnerBlockUseCustomEntitySpawn = false;
 	}
 
 	static {
