@@ -258,8 +258,17 @@ public class MetalPressTileEnt extends BasicMachineTileEnt {
         int required2 = matchedRecipe.input2Count;
 
         int maxMultiplier = this.getMaxMachineUpgradeMultiplier(SLOT_UPGRADE);
-        int possibleMult = Math.min(stackInput1.getCount() / required1, stackInput2.getCount() / required2);
-        int multiplier = Math.min(possibleMult, maxMultiplier);
+        int inputMultiplier = Math.min(stackInput1.getCount() / required1, stackInput2.getCount() / required2);
+        int outputMultiplier = 1;
+        ItemStack stackInOutputSlot = this.inventory.getStackInSlot(SLOT_OUTPUT);
+        if (stackInOutputSlot.isEmpty()) {
+            outputMultiplier = this.inventory.getSlotLimit(SLOT_OUTPUT) / output.getCount();
+        } else if (stackInOutputSlot.isItemEqual(output)) {
+            outputMultiplier = (stackInOutputSlot.getMaxStackSize() - stackInOutputSlot.getCount()) / output.getCount();
+        }
+
+        int ioMultiplier = Math.min(inputMultiplier, outputMultiplier);
+        int multiplier = Math.min(ioMultiplier, maxMultiplier);
 
         if (requiresSteam && matchedRecipe.steamCost > 0) {
             int availableSteam = this.steamTank.getFluidAmount();
