@@ -50,17 +50,26 @@ public class PsychoSteve extends GenericNPC implements ILivingSoldier {
 		
 		int camo = GenericArmorMultiCamo.getRandomCamoIndexFor((GenericArmorMultiCamo) TGArmors.t1_miner_Chestplate);
 			
-			this.setItemStackToSlot(EntityEquipmentSlot.HEAD, GenericArmorMultiCamo.getNewWithCamo(
-				TGArmors.t1_miner_Helmet,camo));
-			this.setItemStackToSlot(EntityEquipmentSlot.CHEST, GenericArmorMultiCamo.getNewWithCamo(
-					TGArmors.t1_miner_Chestplate,camo));
-			this.setItemStackToSlot(EntityEquipmentSlot.LEGS, GenericArmorMultiCamo.getNewWithCamo(
-					TGArmors.t1_miner_Leggings,camo));
-			this.setItemStackToSlot(EntityEquipmentSlot.FEET, GenericArmorMultiCamo.getNewWithCamo(
-					TGArmors.t1_miner_Boots,camo));
-			
-			this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(TGuns.chainsaw));
+		this.setItemStackToSlot(EntityEquipmentSlot.HEAD, GenericArmorMultiCamo.getNewWithCamo(
+			TGArmors.t1_miner_Helmet,camo));
+		this.setItemStackToSlot(EntityEquipmentSlot.CHEST, GenericArmorMultiCamo.getNewWithCamo(
+				TGArmors.t1_miner_Chestplate,camo));
+		this.setItemStackToSlot(EntityEquipmentSlot.LEGS, GenericArmorMultiCamo.getNewWithCamo(
+				TGArmors.t1_miner_Leggings,camo));
+		this.setItemStackToSlot(EntityEquipmentSlot.FEET, GenericArmorMultiCamo.getNewWithCamo(
+				TGArmors.t1_miner_Boots,camo));
 
+        if (TGConfig.general.disableArmourDrops) {
+            this.setDropChance(EntityEquipmentSlot.HEAD,  0f);
+            this.setDropChance(EntityEquipmentSlot.LEGS,  0f);
+            this.setDropChance(EntityEquipmentSlot.CHEST, 0f);
+            this.setDropChance(EntityEquipmentSlot.FEET,  0f);
+        }
+
+		this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(TGuns.chainsaw));
+
+        if (TGConfig.general.disableGunDrops)
+            this.setDropChance(EntityEquipmentSlot.MAINHAND, 0f);
 	}
 
     @Override

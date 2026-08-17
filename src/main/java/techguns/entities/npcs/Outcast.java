@@ -50,7 +50,13 @@ public class Outcast extends GenericNPCGearSpecificStats implements ILivingSoldi
 		this.setItemStackToSlot(EntityEquipmentSlot.LEGS, GenericArmorMultiCamo.getNewWithCamo(TGArmors.t3_power_Leggings,camo+1));
 		camo=r.nextInt(2);
 		this.setItemStackToSlot(EntityEquipmentSlot.FEET, GenericArmorMultiCamo.getNewWithCamo(TGArmors.t3_power_Boots,camo+1));
-		
+
+        if (TGConfig.general.disableArmourDrops) {
+            this.setDropChance(EntityEquipmentSlot.HEAD,  0f);
+            this.setDropChance(EntityEquipmentSlot.LEGS,  0f);
+            this.setDropChance(EntityEquipmentSlot.CHEST, 0f);
+            this.setDropChance(EntityEquipmentSlot.FEET,  0f);
+        }
 
 		// Weapons
 
@@ -81,7 +87,11 @@ public class Outcast extends GenericNPCGearSpecificStats implements ILivingSoldi
 			weapon = TGuns.lasergun;
 			break;
 		}
-		if (weapon != null) this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(weapon));
+		if (weapon != null) {
+            this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(weapon));
+            if (TGConfig.general.disableGunDrops)
+                this.setDropChance(EntityEquipmentSlot.MAINHAND, 0f);
+        }
 	}
 
     @Override

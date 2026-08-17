@@ -49,7 +49,14 @@ public class Bandit extends GenericNPC implements ILivingSoldier {
 		this.setItemStackToSlot(EntityEquipmentSlot.CHEST,new ItemStack(TGArmors.t1_scout_Chestplate));
 		this.setItemStackToSlot(EntityEquipmentSlot.LEGS, new ItemStack(TGArmors.t1_scout_Leggings));
 		this.setItemStackToSlot(EntityEquipmentSlot.FEET, new ItemStack(TGArmors.t1_scout_Boots));
-		
+
+        if (TGConfig.general.disableArmourDrops) {
+            this.setDropChance(EntityEquipmentSlot.HEAD,  0f);
+            this.setDropChance(EntityEquipmentSlot.LEGS,  0f);
+            this.setDropChance(EntityEquipmentSlot.CHEST, 0f);
+            this.setDropChance(EntityEquipmentSlot.FEET,  0f);
+        }
+
 		double chance = 0.5;
 		if (Math.random() <= chance) {
 			this.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(TGArmors.t1_scout_Helmet));
@@ -78,7 +85,10 @@ public class Bandit extends GenericNPC implements ILivingSoldier {
 			weapon = TGuns.boltaction;
 			break;
 		}
-		if (weapon != null) this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(weapon));
+		if (weapon != null) {
+            this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(weapon));
+            this.setDropChance(EntityEquipmentSlot.MAINHAND, 0f);
+        }
 	}
 
     @Override
