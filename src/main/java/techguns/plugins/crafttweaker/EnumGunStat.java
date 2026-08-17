@@ -34,7 +34,15 @@ public enum EnumGunStat {
 	 */
 	MINING_SPEED,
 	/**
-	 * How much shots randomly divert
+	 * Minimum time between shots in ticks
+	 */
+	MIN_FIRE_TIME,
+	/**
+	 * Random spread for regular single-projectile shots
+	 */
+	ACCURACY,
+	/**
+	 * Random spread for shotgun/burst projectiles
 	 */
 	SPREAD,
 	PENETRATION,
@@ -44,8 +52,9 @@ public enum EnumGunStat {
 	RELOAD_TIME;
 	
 	public static EnumGunStat parseFromString(String s) {
-		for(EnumGunStat e :EnumGunStat.values()) {
-			if(e.name().equalsIgnoreCase(s)) {
+		String normalized = s.replace("_", "");
+		for (EnumGunStat e : EnumGunStat.values()) {
+			if (e.name().equalsIgnoreCase(s) || e.name().replace("_", "").equalsIgnoreCase(normalized)) {
 				return e;
 			}
 		}
