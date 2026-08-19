@@ -1081,15 +1081,17 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 
             list.add(TextUtil.trans("techguns.gun.tooltip.damage")
                     + (this.shotgun ? ("(x" + (this.bulletcount + 1) + ")") : "")
-                    + ": §f"
-                    + getTooltipTextDmg(stack, true)
-                    + " §7("
+                    + " ("
                     + TextUtil.trans("techguns.gun.tooltip.damageType")
                     + ": "
-                    + this.getDamageType(stack).toString() + "§7)");
+                    + this.getDamageType(stack).toString() + "§7) §f"
+                    + getTooltipTextDmg(stack, true));
 
             list.add(TextUtil.trans("techguns.gun.tooltip.damagePerSecond") + ": §f"
-                    + String.format("%.2f", ((this.damageMin + this.damage) / 2f) * (20f / Math.max(this.minFiretime, 1))));
+                    + String.format("%.2f", ((this.damageMin + this.damage) / 2f)
+                            * (20f / Math.max(this.minFiretime, 1))
+                            * (this.shotgun ? this.ammoCount : 1))
+            );
 
             list.add(TextUtil.trans("techguns.gun.tooltip.firerate") + ": §f" + String.format("%.0f", 20f / Math.max(this.minFiretime, 1) * 60) + " " + TextUtil.trans("techguns.gun.tooltip.firerate.measurement"));
 
