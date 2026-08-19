@@ -45,6 +45,7 @@ import techguns.entities.ai.EntityAIRangedAttack;
 import techguns.entities.npcs.NPCTurret;
 import techguns.entities.projectiles.EnumBulletFirePos;
 import techguns.entities.projectiles.GenericProjectile;
+import techguns.entities.projectiles.NDRProjectile;
 import techguns.items.GenericItem;
 import techguns.items.armors.GenericArmor;
 import techguns.items.armors.ICamoChangeable;
@@ -984,6 +985,17 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
         }
     }
 
+    protected String getTooltipTextDps() {
+        float dps = ((this.damageMin + this.damage) / 2f)
+                * (20f / Math.max(this.minFiretime, 1));
+        if (this.shotgun)
+            dps *= this.ammoCount;
+        if (this.projectile_selector.getFactoryForType("default") instanceof NDRProjectile.Factory)
+            dps *= NDRProjectile.BEAM_LIFETIME;
+        return TextUtil.trans("techguns.gun.tooltip.damagePerSecond") + ": §f"
+                + String.format("%.2f", dps);
+    }
+
     protected String getTooltipTextRange(ItemStack stack) {
         DamageModifier mod = this.projectile_selector.getFactoryForType(this.getCurrentAmmoVariantKey(stack)).getDamageModifier();
 
@@ -1087,11 +1099,7 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
                     + this.getDamageType(stack).toString() + "§7) §f"
                     + getTooltipTextDmg(stack, true));
 
-            list.add(TextUtil.trans("techguns.gun.tooltip.damagePerSecond") + ": §f"
-                    + String.format("%.2f", ((this.damageMin + this.damage) / 2f)
-                            * (20f / Math.max(this.minFiretime, 1))
-                            * (this.shotgun ? this.ammoCount : 1))
-            );
+            list.add(getTooltipTextDps());
 
             list.add(TextUtil.trans("techguns.gun.tooltip.firerate") + ": §f" + String.format("%.0f", 20f / Math.max(this.minFiretime, 1) * 60) + " " + TextUtil.trans("techguns.gun.tooltip.firerate.measurement"));
 
