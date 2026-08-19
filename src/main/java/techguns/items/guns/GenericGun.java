@@ -953,8 +953,10 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
     protected String getTooltipTextDmg(ItemStack stack, boolean expanded) {
         DamageModifier mod = this.projectile_selector.getFactoryForType(this.getCurrentAmmoVariantKey(stack)).getDamageModifier();
         float dmg = mod.getDamage(this.damage);
+        String totalDmg;
+
         if (dmg == this.damage) {
-            return this.damage + (this.damageMin != this.damage ? "-" + this.damageMin : "");
+            totalDmg = this.damage + (this.damageMin != this.damage ? "-" + this.damageMin : "");
         } else {
             float dmgmin = mod.getDamage(this.damageMin);
             ChatFormatting prefix = ChatFormatting.GREEN;
@@ -981,8 +983,22 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
             String sd = String.format("%.1f", dmg);
             String sm = String.format("%.1f", dmgmin);
 
-            return prefix + sd + (dmgmin != dmg ? "-" + sm : "") + suffix;
+            totalDmg = prefix + sd + (dmgmin != dmg ? "-" + sm : "") + suffix;
         }
+
+        String dmgType = expanded ? String.format(" (%s: %s§7)",
+                TextUtil.trans("techguns.gun.tooltip.damageType"),
+                this.getDamageType(stack).toString()) : "";
+
+        int mult;
+        if (this.shotgun)
+            mult = this.bulletcount;
+        else if (this.projectile_selector.getFactoryForType("default") instanceof NDRProjectile.Factory)
+            mult = NDRProjectile.BEAM_LIFETIME;
+        else mult = 0;
+        String dmgMult = mult > 0 ? " (x" + mult + ") " : "";
+
+        return TextUtil.trans("techguns.gun.tooltip.damage") + dmgType + ": §f" + dmgMult + totalDmg;
     }
 
     protected String getTooltipTextDps() {
@@ -1091,13 +1107,7 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
 
             this.addMiningTooltip(stack, worldIn, list, flagIn, true);
 
-            list.add(TextUtil.trans("techguns.gun.tooltip.damage")
-                    + (this.shotgun ? ("(x" + (this.bulletcount + 1) + ")") : "")
-                    + " ("
-                    + TextUtil.trans("techguns.gun.tooltip.damageType")
-                    + ": "
-                    + this.getDamageType(stack).toString() + "§7) §f"
-                    + getTooltipTextDmg(stack, true));
+            list.add(getTooltipTextDmg(stack, true));
 
             list.add(getTooltipTextDps());
 
@@ -1140,7 +1150,7 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
                 list.add(TextUtil.trans("techguns.gun.tooltip.ammo") + ": " + (this.ammoCount > 1 ? this.ammoCount + "x " : "") + ChatFormatting.WHITE + TextUtil.trans(itemStack.getTranslationKey() + ".name"));
             }
             this.addMiningTooltip(stack, worldIn, list, flagIn, false);
-            list.add(TextUtil.trans("techguns.gun.tooltip.damage") + (this.shotgun ? ("(x" + (this.bulletcount + 1) + ")") : "") + ": " + getTooltipTextDmg(stack, false));
+            list.add(getTooltipTextDmg(stack, false));
             list.add(TextUtil.trans("techguns.gun.tooltip.shift1") + " " + ChatFormatting.GREEN + TextUtil.trans("techguns.gun.tooltip.shift2") + " " + ChatFormatting.GRAY + TextUtil.trans("techguns.gun.tooltip.shift3"));
         }
         //} else {
