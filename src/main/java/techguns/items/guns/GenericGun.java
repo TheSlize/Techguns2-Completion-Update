@@ -1733,4 +1733,9 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
     public void initModel() {
         ModelLoader.setCustomMeshDefinition(this, stack -> new ModelResourceLocation(getModelLocation(), "inventory"));
     }
+
+    @Override
+    public int getMetadata(@NotNull ItemStack stack) {
+        return 0;
+    }
 }
