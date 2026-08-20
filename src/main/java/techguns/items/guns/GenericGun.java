@@ -45,6 +45,7 @@ import techguns.entities.ai.EntityAIRangedAttack;
 import techguns.entities.npcs.NPCTurret;
 import techguns.entities.projectiles.EnumBulletFirePos;
 import techguns.entities.projectiles.GenericProjectile;
+import techguns.entities.projectiles.NDRProjectile;
 import techguns.items.GenericItem;
 import techguns.items.armors.GenericArmor;
 import techguns.items.armors.ICamoChangeable;
@@ -952,8 +953,10 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
     protected String getTooltipTextDmg(ItemStack stack, boolean expanded) {
         DamageModifier mod = this.projectile_selector.getFactoryForType(this.getCurrentAmmoVariantKey(stack)).getDamageModifier();
         float dmg = mod.getDamage(this.damage);
+        String totalDmg;
+
         if (dmg == this.damage) {
-            return this.damage + (this.damageMin != this.damage ? "-" + this.damageMin : "");
+            totalDmg = this.damage + (this.damageMin != this.damage ? "-" + this.damageMin : "");
         } else {
             float dmgmin = mod.getDamage(this.damageMin);
             ChatFormatting prefix = ChatFormatting.GREEN;
@@ -980,8 +983,33 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
             String sd = String.format("%.1f", dmg);
             String sm = String.format("%.1f", dmgmin);
 
-            return prefix + sd + (dmgmin != dmg ? "-" + sm : "") + suffix;
+            totalDmg = prefix + sd + (dmgmin != dmg ? "-" + sm : "") + suffix;
         }
+
+        String dmgType = expanded ? String.format(" (%s: %s§7)",
+                TextUtil.trans("techguns.gun.tooltip.damageType"),
+                this.getDamageType(stack).toString()) : "";
+
+        int mult;
+        if (this.shotgun)
+            mult = this.bulletcount;
+        else if (this.projectile_selector.getFactoryForType("default") instanceof NDRProjectile.Factory)
+            mult = NDRProjectile.BEAM_LIFETIME;
+        else mult = 0;
+        String dmgMult = mult > 0 ? " (x" + mult + ") " : "";
+
+        return TextUtil.trans("techguns.gun.tooltip.damage") + dmgType + ": §f" + dmgMult + totalDmg;
+    }
+
+    protected String getTooltipTextDps() {
+        float dps = ((this.damageMin + this.damage) / 2f)
+                * (20f / Math.max(this.minFiretime, 1));
+        if (this.shotgun)
+            dps *= this.ammoCount;
+        if (this.projectile_selector.getFactoryForType("default") instanceof NDRProjectile.Factory)
+            dps *= NDRProjectile.BEAM_LIFETIME;
+        return TextUtil.trans("techguns.gun.tooltip.damagePerSecond") + ": §f"
+                + String.format("%.2f", dps);
     }
 
     protected String getTooltipTextRange(ItemStack stack) {
@@ -1076,30 +1104,53 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
             for (ItemStack itemStack : ammo) {
                 list.add(TextUtil.trans("techguns.gun.tooltip.ammo") + ": " + (this.ammoCount > 1 ? this.ammoCount + "x " : "") + ChatFormatting.WHITE + TextUtil.trans(itemStack.getTranslationKey() + ".name"));
             }
+
             this.addMiningTooltip(stack, worldIn, list, flagIn, true);
-            list.add(TextUtil.trans("techguns.gun.tooltip.damageType") + ": " + this.getDamageType(stack).toString());
-            list.add(TextUtil.trans("techguns.gun.tooltip.damage") + (this.shotgun ? ("(x" + (this.bulletcount + 1) + ")") : "") + ": " + getTooltipTextDmg(stack, true));
-            //list.add(TextUtil.trans("techguns.gun.tooltip.range")+": "+this.damageDropStart+","+this.damageDropEnd+","+this.ticksToLive);
-            list.add(getTooltipTextRange(stack));
-            //list.add(TextUtil.trans("techguns.gun.tooltip.velocity")+": "+this.speed);
-            list.add(getTooltipTextVelocity(stack));
-            list.add(TextUtil.trans("techguns.gun.tooltip.spread") + ": " + this.accuracy + (this.zoombonus != 1.0 ? (" Z:" + this.zoombonus * this.accuracy) : ""));
-            list.add(TextUtil.trans("techguns.gun.tooltip.clipsize") + ": " + this.clipsize);
-            list.add(TextUtil.trans("techguns.gun.tooltip.reloadTime") + ": " + this.reloadtime * 0.05f + "s");
+
+            list.add(getTooltipTextDmg(stack, true));
+
+            list.add(getTooltipTextDps());
+
+            list.add(TextUtil.trans("techguns.gun.tooltip.firerate") + ": §f" + String.format("%.0f", 20f / Math.max(this.minFiretime, 1) * 60) + " " + TextUtil.trans("techguns.gun.tooltip.firerate.measurement"));
+
+            list.add(TextUtil.trans("techguns.gun.tooltip.clipsize") + ": §f" + this.clipsize);
+
+            list.add(TextUtil.trans("techguns.gun.tooltip.reloadTime") + ": §f" + this.reloadtime * 0.05f + "s");
+
+
+            list.add("§8" + getTooltipTextRange(stack));
+            list.add("§8" + TextUtil.trans("techguns.gun.tooltip.spread") + ": "
+                    + String.format("%.1f%%", this.accuracy * 100)
+                    + (this.zoombonus != 1.0
+                        ? (" ("
+                        + TextUtil.trans("techguns.gun.tooltip.spread.scoped")
+                        + ": "
+                        + String.format("%.1f%%", this.zoombonus * this.accuracy * 100)
+                        + ")")
+                    : ""));
+            list.add("§8" + getTooltipTextVelocity(stack));
+
             if (this.penetration > 0.0f) {
                 list.add(TextUtil.trans("techguns.gun.tooltip.armorPen") + ": " + String.format("%.1f", this.penetration));
             }
             if (this.canZoom) {
-                list.add(TextUtil.trans("techguns.gun.tooltip.zoom") + ":" + (this.toggleZoom ? "(" + TextUtil.trans("techguns.gun.tooltip.zoom.toogle") + ")" : "(" + TextUtil.trans("techguns.gun.tooltip.zoom.hold") + ")") + " " + TextUtil.trans("techguns.gun.tooltip.zoom.multiplier") + ":" + this.zoomMult);
+                list.add("§e" + TextUtil.trans("techguns.gun.tooltip.zoom")
+                        + ": §7"
+                        + "x" + String.format("%.4f", 1f / Math.max(this.zoomMult, 0.0001f))
+                        + (this.toggleZoom
+                            ? " (" + TextUtil.trans("techguns.gun.tooltip.zoom.toogle") + ")"
+                            : " (" + TextUtil.trans("techguns.gun.tooltip.zoom.hold") + ")")
+                );
             }
 
-        } else {
+        }
+        else {
             ItemStack[] ammo = this.ammoType.getAmmo(this.getCurrentAmmoVariant(stack));
             for (ItemStack itemStack : ammo) {
                 list.add(TextUtil.trans("techguns.gun.tooltip.ammo") + ": " + (this.ammoCount > 1 ? this.ammoCount + "x " : "") + ChatFormatting.WHITE + TextUtil.trans(itemStack.getTranslationKey() + ".name"));
             }
             this.addMiningTooltip(stack, worldIn, list, flagIn, false);
-            list.add(TextUtil.trans("techguns.gun.tooltip.damage") + (this.shotgun ? ("(x" + (this.bulletcount + 1) + ")") : "") + ": " + getTooltipTextDmg(stack, false));
+            list.add(getTooltipTextDmg(stack, false));
             list.add(TextUtil.trans("techguns.gun.tooltip.shift1") + " " + ChatFormatting.GREEN + TextUtil.trans("techguns.gun.tooltip.shift2") + " " + ChatFormatting.GRAY + TextUtil.trans("techguns.gun.tooltip.shift3"));
         }
         //} else {
@@ -1615,6 +1666,18 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
                 this.gravity = value;
                 yield true;
             }
+            case MINING_SPEED -> {
+                this.digSpeed = value;
+                yield true;
+            }
+            case MIN_FIRE_TIME -> {
+                this.minFiretime = Math.max(0, (int) value);
+                yield true;
+            }
+            case ACCURACY -> {
+                this.accuracy = value;
+                yield true;
+            }
             case SPREAD -> {
                 this.spread = value;
                 yield true;
@@ -1624,7 +1687,8 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
                 yield true;
             }
             case CLIP_SIZE -> {
-                this.clipsize = (int) value;
+                this.clipsize = Math.max(1, (int) value);
+                this.setMaxDamage(this.clipsize);
                 yield true;
             }
             case AMMO_COUNT -> {

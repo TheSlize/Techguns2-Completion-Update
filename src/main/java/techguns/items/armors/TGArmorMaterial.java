@@ -201,6 +201,37 @@ public class TGArmorMaterial {
         return toughness;
     }
 
+    public TGArmorMaterial setToughness(float toughness) {
+        this.toughness = Math.max(0.0f, toughness);
+        return this;
+    }
+
+    public TGArmorMaterial setBaseDurability(int baseDurability) {
+        this.baseDur = Math.max(1, baseDurability);
+        return this;
+    }
+
+    public TGArmorMaterial setDurabilityFactor(EntityEquipmentSlot slot, float factor) {
+        float clamped = Math.max(0.0f, factor);
+        switch (slot) {
+            case HEAD:
+                this.durHead = clamped;
+                break;
+            case CHEST:
+                this.durChest = clamped;
+                break;
+            case LEGS:
+                this.durLegs = clamped;
+                break;
+            case FEET:
+                this.durBoots = clamped;
+                break;
+            default:
+                break;
+        }
+        return this;
+    }
+
     public void setArmorValueForType(DamageType type, float value) {
         switch (type) {
             case DARK:

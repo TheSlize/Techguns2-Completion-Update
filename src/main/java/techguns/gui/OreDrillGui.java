@@ -12,6 +12,7 @@ import techguns.tileentities.OreDrillTileEntMaster;
 import techguns.util.TextUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class OreDrillGui extends PoweredTileEntGui {
@@ -28,6 +29,7 @@ public class OreDrillGui extends PoweredTileEntGui {
 
     public OreDrillGui(InventoryPlayer ply, OreDrillTileEntMaster tileent) {
         super(new OreDrillContainer(ply, tileent), tileent);
+        this.appearanceType = EnumAppearanceType.REGULAR;
         this.tex = texture;
         this.tile = tileent;
         this.showUpgradeSlot = false;
@@ -36,46 +38,20 @@ public class OreDrillGui extends PoweredTileEntGui {
     @Override
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
         super.drawGuiContainerForegroundLayer(mouseX, mouseY);
-
-        int color = 4210752; // 0xff101010;
         int mx = mouseX - (this.width - this.xSize) / 2;
         int my = mouseY - (this.height - this.ySize) / 2;
 
         if (!tile.isFormed()) {
             String s1 = TextUtil.trans("techguns.container.oredrill.broken");
-            //String s2= TextUtil.trans("techguns.container.oredrill.broken2");
             int startx = this.xSize / 2 - ((s1.length() * 6) / 2);
-            //int startx2 = this.xSize/2 - ((s2.length()*6)/2);
 
             int red = 0xFFFF2020;
 
             this.fontRenderer.drawString(s1, startx - 16 + 30, 44 - 20, red);
-            //this.fontRenderer.drawString(s2, startx2-16, 52, red);
-        } else {
-            if (tile.getDrillItemMiningLevel() < 0) {
-
-                int rad = tile.getDrillRadius();
-                String s1 = "2";
-                if (rad == 0) {
-                    s1 = "0";
-                } else if (rad == 1 || rad == 2) {
-                    s1 = "1";
-                }
-                String s2 = TextUtil.trans("techguns.container.oredrill.drillrequired." + s1);
-
-                //String s2= TextUtil.trans("techguns.container.oredrill.broken2");
-                int startx = this.xSize / 2 - ((s2.length() * 6) / 2);
-                //int startx2 = this.xSize/2 - ((s2.length()*6)/2);
-
-                int red = 0xFFFF2020;
-
-                this.fontRenderer.drawString(s2, startx - 16 + 30, 44 - 20, red);
-            }
-            //this.fontRendererObj.drawString(TextUtil.trans("techguns.MULTIBLOCK OK"), 50, 24, 4210752);
         }
 
         if (isInRect(mx, my, 74, 16, 27, 39)) {
-            List<String> tooltip = new ArrayList<String>();
+            List<String> tooltip = new ArrayList<>();
 
             tooltip.add(String.format("%.2f", (this.tile.progress * 1.0f / this.tile.totaltime * 100.0f)) + "%");
             tooltip.add(TextUtil.trans("techguns.gui.oredrill.orehour") + ": " + String.format("%.2f", 1200.0 / this.tile.totaltime * 60.0));
@@ -85,14 +61,13 @@ public class OreDrillGui extends PoweredTileEntGui {
             tooltip.add("");
             tooltip.add(TextUtil.trans("techguns.oredrill.drillsize") + ": " + (tile.getRods() + tile.getEngines()));
             tooltip.add(TextUtil.trans("techguns.oredrill.drillradius") + ": " + tile.getDrillRadius());
-            //tooltip.add(TextUtil.trans("techguns.oredrill.enginesize")+": "+tile.getEngines()+"x"+(tile.getRadius()*2+1)+"x"+(tile.getRadius()*2+1)+": "+(tile.getEngines()*(tile.getRadius()*2+1)*(tile.getRadius()*2+1)));
 
             this.drawHoveringText(tooltip, mx, my);
 
         } else if (isInRect(mx, my, INPUT_TANK_X, TANK_Y - 1, TANK_W + 1, TANK_H + 1)) {
 
             FluidTankInfo info = this.tile.inputTank.getInfo();
-            List<String> tooltip = new ArrayList<String>();
+            List<String> tooltip = new ArrayList<>();
             tooltip.add(info.fluid != null ? (info.fluid.getFluid().getLocalizedName(info.fluid)) : TextUtil.trans("techguns.gui.empty"));
             tooltip.add(tile.inputTank.getFluidAmount() + "/" + (info.capacity + "mB"));
             this.drawHoveringText(tooltip, mx, my);
@@ -100,27 +75,26 @@ public class OreDrillGui extends PoweredTileEntGui {
         } else if (isInRect(mx, my, OUTPUT_TANK_X, TANK_Y - 1, TANK_W + 1, TANK_H + 1)) {
 
             FluidTankInfo info = this.tile.outputTank.getInfo();
-            List<String> tooltip = new ArrayList<String>();
+            List<String> tooltip = new ArrayList<>();
             tooltip.add(info.fluid != null ? (info.fluid.getFluid().getLocalizedName(info.fluid)) : TextUtil.trans("techguns.gui.empty"));
             tooltip.add(tile.outputTank.getFluidAmount() + "/" + (info.capacity + "mB"));
             this.drawHoveringText(tooltip, mx, my);
 
-        } else if (isInRect(mx, my, 34, 36, 8, 14)) {
+        } else if (isInRect(mx, my, 27, 35, 15, 15)) {
             if (this.tile.getCurrentFuelBufferMax() > 0) {
                 int buf = this.tile.getCurrentFuelBufferMax();
                 int fuel = this.tile.getFuelBuffer();
 
                 int pwrtick = this.tile.getPowerPerTick();
-                float FACTOR = TGConfig.oreDrillMultiplierFuel;
+                float FACTOR = TGConfig.oreDrills.oreDrillMultiplierFuel;
 
-                int ticksLeft = 0;
+                int ticksLeft;
                 if (FACTOR <= 0 || pwrtick <= 0) {
                     ticksLeft = -1;
                 } else {
-                    ticksLeft = (int) (fuel / (pwrtick / FACTOR)); //pwrtick>0?(int)(fuel/(pwrtick/FACTOR)):-1;
+                    ticksLeft = (int) (fuel / (pwrtick / FACTOR));
                 }
-                ArrayList<String> tooltip = new ArrayList<String>(2);
-                //tooltip.add("Op:"+tile.currentOperation+" PWRTICK:"+pwrtick+" FUEL"+fuel+" Factor"+FACTOR);
+                ArrayList<String> tooltip = new ArrayList<>(2);
                 tooltip.add(TextUtil.trans("techguns.oredrill.currentfuel") + " " + fuel + "/" + buf);
                 tooltip.add(TextUtil.trans("techguns.oredrill.remaining") + ": " + ticksLeft + " " + TextUtil.trans("techguns.oredrill.ticks"));
 
@@ -128,6 +102,15 @@ public class OreDrillGui extends PoweredTileEntGui {
             } else {
                 this.drawHoveringText(TextUtil.trans("techguns.oredrill.nofuel"), mx, my);
             }
+        } else if (isInRect(mx, my, 52, 14, 6, 20) && tile.isFormed() && tile.getDrillItemMiningLevel() < 0) {
+            int rad = tile.getDrillRadius();
+            String s1 = "2";
+            if (rad == 0) {
+                s1 = "0";
+            } else if (rad == 1 || rad == 2) {
+                s1 = "1";
+            }
+            this.drawHoveringText(Arrays.asList(TextUtil.resolveKeyArray("techguns.container.oredrill.drillrequired." + s1)), mx, my);
         }
 
     }
@@ -159,6 +142,10 @@ public class OreDrillGui extends PoweredTileEntGui {
         }
 
         this.mc.getTextureManager().bindTexture(texture);
+
+        if (tile.isFormed() && tile.getDrillItemMiningLevel() < 0) {
+            this.drawTexturedModalRect(k + 52, l + 14, 203, 0, 6, 20);
+        }
 
         this.drawTexturedModalRect(k + INPUT_TANK_X, l + TANK_Y, 176, 40, TANK_W + 2, TANK_H + 2);
         this.drawTexturedModalRect(k + OUTPUT_TANK_X, l + TANK_Y, 176, 40, TANK_W + 2, TANK_H + 2);

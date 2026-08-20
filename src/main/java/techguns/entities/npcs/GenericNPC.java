@@ -168,7 +168,7 @@ public class GenericNPC extends EntityMob implements IRangedAttackMob, INPCTechg
 	@Override
 	protected void setEquipmentBasedOnDifficulty(DifficultyInstance difficulty) {
 		int d = Math.round(difficulty.getClampedAdditionalDifficulty()*3f);
-		this.addRandomArmor(d);
+		this.addRandomArmorIfEmpty(d);
 	}
 	    
 	    
@@ -192,8 +192,22 @@ public class GenericNPC extends EntityMob implements IRangedAttackMob, INPCTechg
 
 	public void onSpawnByManager(int difficulty) {
 	    this.setCanPickUpLoot(false);
-		this.addRandomArmor(difficulty);
+		this.addRandomArmorIfEmpty(difficulty);
 		this.setCombatTask();
+	}
+
+	/**
+	 * Applies random armor only if all armor slots are empty
+	 * (e.g. no preset armor provided via NBT).
+	 */
+	protected void addRandomArmorIfEmpty(int difficulty) {
+		for (EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
+			if (slot.getSlotType() == EntityEquipmentSlot.Type.ARMOR && !this.getItemStackFromSlot(slot).isEmpty()) {
+				return;
+			}
+		}
+
+		this.addRandomArmor(difficulty);
 	}
 	    
 	    

@@ -276,11 +276,11 @@ public class OreDrillTileEntMaster extends MultiBlockMachineTileEntMaster implem
 
     @Override
     protected boolean consumePower(int amount) {
-        if (TGConfig.machinesNeedNoPower) {
+        if (TGConfig.general.machinesNeedNoPower) {
             return true;
         }
 
-        float FACTOR = TGConfig.oreDrillMultiplierFuel;
+        float FACTOR = TGConfig.oreDrills.oreDrillMultiplierFuel;
 
         //check fuel buffer
         if (this.fuelBuffer * FACTOR >= amount) {
@@ -348,7 +348,7 @@ public class OreDrillTileEntMaster extends MultiBlockMachineTileEntMaster implem
 			} else if (this.inputTank.getFluid().getFluid() == TGFluids.BIOFUEL){
 				return TGConfig.oreDrillFuelValueBioFuel;
 			} */ else if (TGFluids.fuels.contains(this.inputTank.getFluid().getFluid())) {
-                return TGConfig.oreDrillFuelValueFuel;
+                return TGConfig.oreDrills.oreDrillFuelValueFuel;
             }
         }
 
@@ -356,27 +356,38 @@ public class OreDrillTileEntMaster extends MultiBlockMachineTileEntMaster implem
     }
 
     protected boolean checkDrill() {
-        if (this.world.getTotalWorldTime() % 20 == 0) {
-            //System.out.println("CheckDrill Last:"+this.lastDrill+" Current:"+this.inventory.getStackInSlot(SLOT_DRILL));
-            if (this.lastDrill.isEmpty() && this.inventory.getStackInSlot(SLOT_DRILL).isEmpty()) {
-                //this.complete=false;
+        ItemStack currentDrill = this.inventory.getStackInSlot(SLOT_DRILL);
+
+        if (currentDrill.isEmpty()) {
+            boolean needsUpdate = false;
+            if (this.hasDrill) {
                 this.hasDrill = false;
+                needsUpdate = true;
+            }
+            if (!this.lastDrill.isEmpty()) {
+                this.lastDrill = ItemStack.EMPTY;
+            }
+            if (this.currentOperation != null) {
+                this.currentOperation = null;
+                this.progress = 0;
+                this.totaltime = 0;
+                needsUpdate = true;
+            }
+            if (needsUpdate) {
+                this.needUpdate();
+            }
+            return false;
+        } else if (this.lastDrill.isEmpty()) {
+            this.lastDrill = currentDrill.copy();
+            return true;
+        } else {
+            if (!this.lastDrill.isItemEqual(currentDrill)) {
+                this.lastDrill = currentDrill.copy();
+                this.currentOperation = null;
+                this.progress = 0;
+                this.totaltime = 0;
                 this.needUpdate();
                 return false;
-            } else if (this.lastDrill.isEmpty()) {
-                this.lastDrill = this.inventory.getStackInSlot(SLOT_DRILL);
-                return true;
-            } else {
-                if (this.inventory.getStackInSlot(SLOT_DRILL).isEmpty() || !this.lastDrill.isItemEqual(this.inventory.getStackInSlot(SLOT_DRILL))) {
-                    //System.out.println("Drill no longer matches");
-                    this.lastDrill = this.inventory.getStackInSlot(SLOT_DRILL).copy();
-                    this.currentOperation = null;
-                    this.progress = 0;
-                    this.totaltime = 0;
-                    this.needUpdate();
-                    return false;
-                }
-
             }
         }
         return true;
@@ -456,7 +467,7 @@ public class OreDrillTileEntMaster extends MultiBlockMachineTileEntMaster implem
                         int clustersize = this.getClusterSize(0, targetPos, new ArrayList<>(), bs);
                         int effectiveclustersize = Math.min(clustersize, this.getTotalDrillLength());
 
-                        double orePerHour = ((effectiveclustersize * 3) + (effectiveclustersize * effectivemininglevel * 0.5)) * TGConfig.oreDrillMultiplierOres * cluster.getMultiplier_amount();
+                        double orePerHour = ((effectiveclustersize * 3) + (effectiveclustersize * effectivemininglevel * 0.5)) * TGConfig.oreDrills.oreDrillMultiplierOres * cluster.getMultiplier_amount();
 
                         this.currentOperation = cluster.getNewOperation(this.world, orePerHour, this.getDrillRadius(), cluster.getMultiplier_power());
                         this.progress = 0;

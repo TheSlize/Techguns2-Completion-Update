@@ -28,6 +28,7 @@ import java.util.*;
  * <p>
  * added some stuff
  */
+// Th3_Sl1ze: TODO obliterate this
 public class RecipeJsonConverter {
     // Replace calls to GameRegistry.addShapeless/ShapedRecipe with these methods, which will dump it to a json in your dir of choice
     // Also works with OD, replace GameRegistry.addRecipe(new ShapedOreRecipe/ShapelessOreRecipe with the same calls
@@ -58,7 +59,7 @@ public class RecipeJsonConverter {
 
     private static void setupDir() {
         if (RECIPE_DIR == null) {
-            RECIPE_DIR = TGConfig.config.getConfigFile().toPath().resolve(recipeDirPath).toFile();
+            //RECIPE_DIR = TGConfig.config.getConfigFile().toPath().resolve(recipeDirPath).toFile();
 
             File[] files = RECIPE_DIR.listFiles((dir, name) -> name.endsWith(".json"));
             Arrays.stream(files).forEach(File::delete);

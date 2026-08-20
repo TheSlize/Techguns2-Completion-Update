@@ -1,6 +1,7 @@
 package techguns.gui.player;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.item.ItemStack;
@@ -8,6 +9,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
+import org.jetbrains.annotations.NotNull;
+import techguns.TGConfig;
 import techguns.capabilities.TGExtendedPlayer;
 
 import java.util.List;
@@ -49,12 +52,23 @@ public class TGPlayerInventory implements IInventory {
     }
 
     @Override
-    public ItemStack getStackInSlot(int slotid) {
-        return slotid >= 0 && slotid < this.inventory.size() ? this.inventory.get(slotid) : ItemStack.EMPTY;
+    public @NotNull ItemStack getStackInSlot(int slotid) {
+        ItemStack stack = slotid >= 0 && slotid < this.inventory.size() ? this.inventory.get(slotid) : ItemStack.EMPTY;
+        // Th3_Sl1ze: not sure this is performant, but idk how to intercept that any other way without mixins
+        if (stack.isEmpty() && TGConfig.general.disableAutofeeder && slotid >= SLOTS_AUTOFOOD_START && slotid <= SLOTS_AUTOFOOD_END) {
+            StackTraceElement[] trace = Thread.currentThread().getStackTrace();
+            for (int i = 1; i < trace.length && i < 10; i++) {
+                if (trace[i].getClassName().startsWith("ovh.corail.tombstone")) {
+                    return new ItemStack(Items.APPLE);
+                }
+            }
+        }
+
+        return stack;
     }
 
     @Override
-    public ItemStack decrStackSize(int index, int count) {
+    public @NotNull ItemStack decrStackSize(int index, int count) {
         List<ItemStack> list = this.inventory;
 
         return list != null && !list.get(index).isEmpty() ? ItemStackHelper.getAndSplit(list, index, count) : ItemStack.EMPTY;
@@ -93,7 +107,7 @@ public class TGPlayerInventory implements IInventory {
     }
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return name;
     }
 
@@ -103,7 +117,7 @@ public class TGPlayerInventory implements IInventory {
     }
 
     @Override
-    public ITextComponent getDisplayName() {
+    public @NotNull ITextComponent getDisplayName() {
         return new TextComponentTranslation("techguns.extendedinventory");
     }
 
@@ -118,7 +132,7 @@ public class TGPlayerInventory implements IInventory {
     }
 
     @Override
-    public ItemStack removeStackFromSlot(int index) {
+    public @NotNull ItemStack removeStackFromSlot(int index) {
         NonNullList<ItemStack> nonnulllist = this.inventory;
         if (nonnulllist != null && !nonnulllist.get(index).isEmpty()) {
             ItemStack itemstack = nonnulllist.get(index);
@@ -130,11 +144,11 @@ public class TGPlayerInventory implements IInventory {
     }
 
     @Override
-    public void openInventory(EntityPlayer player) {
+    public void openInventory(@NotNull EntityPlayer player) {
     }
 
     @Override
-    public void closeInventory(EntityPlayer player) {
+    public void closeInventory(@NotNull EntityPlayer player) {
     }
 
     @Override
@@ -157,7 +171,7 @@ public class TGPlayerInventory implements IInventory {
     }
 
     @Override
-    public boolean isUsableByPlayer(EntityPlayer player) {
+    public boolean isUsableByPlayer(@NotNull EntityPlayer player) {
         if (this.player == null || this.player.isDead) {
             return false;
         } else {

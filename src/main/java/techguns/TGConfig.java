@@ -639,6 +639,18 @@ public class TGConfig {
 		public float powermult_oil = 0.8f;
 	}
 
+	@Config.Name("Spawner Block")
+	@Config.Comment("Techguns monster spawner blocks (holes / soldier spawns) used in world structures and dungeon presets. Does not change vanilla mob spawners.")
+	@Config.LangKey("config.techguns.spawner_block")
+	public static SpawnerBlock spawnerBlock = new SpawnerBlock();
+
+	public static class SpawnerBlock {
+
+		@Config.Comment("false = default TG mode (spawns only ITGSpawnerNPC mobs from presets). true = custom mode (spawns any EntityLiving from this spawner's mobtypes NBT id; use this when editing spawner NBT to point at entities from other mods).")
+		@Config.LangKey("config.techguns.spawnerBlock.spawnerBlockUseCustomEntitySpawn")
+		public boolean spawnerBlockUseCustomEntitySpawn = false;
+	}
+
 	static {
 		try {
 			Class.forName("com.cleanroommc.configanytime.ConfigAnytime")

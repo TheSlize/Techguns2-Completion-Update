@@ -31,6 +31,9 @@ public class TGItemStackRenderer extends TileEntityItemStackRenderer {
             GlStateManager.scale(-1.0F, 1.0F, 1.0F);
         }
 
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.enableLighting();
+
         renderer.renderItem(transform, stack, entity, leftHand);
 
         TGItemRendererContext.clearTransform();

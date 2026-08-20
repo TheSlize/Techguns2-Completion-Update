@@ -148,21 +148,21 @@ public class TGFluids implements ITGInitializer {
 	}
 
 	public static void recipeInit() {
-			for (String fluidName: TGConfig.fluidListFuel) {
+			for (String fluidName: TGConfig.fluidRecipes.fluidListFuel) {
 				Fluid f = FluidRegistry.getFluid(fluidName);
 				if(f!=null) {
 					fuels.add(f);
 				}
 			}
 
-			for (String fluidName: TGConfig.fluidListOil) {
+			for (String fluidName: TGConfig.fluidRecipes.fluidListOil) {
 				Fluid f = FluidRegistry.getFluid(fluidName);
 				if (f != null) {
 					oils.add(f);
 				}
 			}
 			
-			for (String fluidName: TGConfig.fluidListOilWorldspawn) {
+			for (String fluidName: TGConfig.fluidRecipes.fluidListOilWorldspawn) {
 				Fluid f = FluidRegistry.getFluid(fluidName);
 				if (f != null) {
 					worldspawn_oils.add(f);

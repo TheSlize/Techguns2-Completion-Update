@@ -19,7 +19,7 @@ import static techguns.gui.ReactionChamberGui.ru_ru;
 
 public class FabricatorGui extends PoweredTileEntGui {
 
-    public static final ResourceLocation texture = new ResourceLocation(Tags.MOD_ID, "textures/gui/fabricator_gui.png");
+    public static final ResourceLocation texture = new ResourceLocation(Tags.MOD_ID, "textures/gui/ce_fabricator_gui.png");
     public static final ResourceLocation texture_additional = new ResourceLocation(Tags.MOD_ID, "textures/gui/fabricator_gui_1.png");
 
     protected FabricatorTileEntMaster tile;
