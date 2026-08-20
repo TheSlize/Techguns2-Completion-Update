@@ -123,7 +123,11 @@ public class SuperMutantBasic extends GenericNPC {
 				weapon = TGuns.lasergun;
 				break;
 		}
-		if (weapon != null) this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(weapon));
+		if (weapon != null) {
+			this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(weapon));
+			if (TGConfig.general.disableGunDrops)
+				this.setDropChance(EntityEquipmentSlot.MAINHAND, 0f);
+		}
 	}
 
 	@Override

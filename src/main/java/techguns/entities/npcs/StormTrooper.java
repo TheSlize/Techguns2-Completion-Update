@@ -57,6 +57,14 @@ public class StormTrooper extends GenericNPCGearSpecificStats implements ILiving
 				TGArmors.t3_miner_Leggings,camo));
 		this.setItemStackToSlot(EntityEquipmentSlot.FEET, GenericArmorMultiCamo.getNewWithCamo(
 				TGArmors.t3_miner_Boots,camo));
+
+        if (TGConfig.general.disableArmourDrops) {
+            this.setDropChance(EntityEquipmentSlot.HEAD,  0f);
+            this.setDropChance(EntityEquipmentSlot.LEGS,  0f);
+            this.setDropChance(EntityEquipmentSlot.CHEST, 0f);
+            this.setDropChance(EntityEquipmentSlot.FEET,  0f);
+        }
+
 		// Weapons
 		
 		Random r = new Random();
@@ -66,7 +74,11 @@ public class StormTrooper extends GenericNPCGearSpecificStats implements ILiving
         } else {
             weapon = TGuns.lasergun;
         }
-		if (weapon != null) this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(weapon));
+		if (weapon != null) {
+            this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(weapon));
+            if (TGConfig.general.disableGunDrops)
+                this.setDropChance(EntityEquipmentSlot.MAINHAND, 0f);
+        }
 	}
 
     @Override

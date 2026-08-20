@@ -65,7 +65,14 @@ public class SkeletonSoldier extends GenericNPCUndead {
 			this.setItemStackToSlot(EntityEquipmentSlot.FEET, new ItemStack(TGArmors.t1_scout_Boots));
 		} else {
 			this.setItemStackToSlot(EntityEquipmentSlot.FEET, new ItemStack(TGArmors.t1_combat_Boots));
-		};
+		}
+
+		if (TGConfig.general.disableArmourDrops) {
+			this.setDropChance(EntityEquipmentSlot.HEAD,  0f);
+			this.setDropChance(EntityEquipmentSlot.LEGS,  0f);
+			this.setDropChance(EntityEquipmentSlot.CHEST, 0f);
+			this.setDropChance(EntityEquipmentSlot.FEET,  0f);
+		}
 		
 		// Weapons
 		Random r = new Random();
@@ -84,7 +91,11 @@ public class SkeletonSoldier extends GenericNPCUndead {
 			weapon = Items.STONE_SHOVEL;
 			break;
 		}
-		if (weapon != null) this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(weapon));
+		if (weapon != null) {
+			this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(weapon));
+			if (TGConfig.general.disableGunDrops)
+				this.setDropChance(EntityEquipmentSlot.MAINHAND, 0f);
+		}
 	}
 	
 	@Override

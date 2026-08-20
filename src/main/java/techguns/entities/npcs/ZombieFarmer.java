@@ -49,7 +49,7 @@ public class ZombieFarmer extends GenericNPCUndead {
 		
 		int camo = GenericArmorMultiCamo.getRandomCamoIndexFor((GenericArmorMultiCamo) TGArmors.t1_miner_Chestplate);
 		
-			this.setItemStackToSlot(EntityEquipmentSlot.CHEST, GenericArmorMultiCamo.getNewWithCamo(
+		this.setItemStackToSlot(EntityEquipmentSlot.CHEST, GenericArmorMultiCamo.getNewWithCamo(
 					TGArmors.t1_miner_Chestplate,camo));
 		if (Math.random() <= chance)
 			this.setItemStackToSlot(EntityEquipmentSlot.LEGS, GenericArmorMultiCamo.getNewWithCamo(
@@ -57,6 +57,13 @@ public class ZombieFarmer extends GenericNPCUndead {
 		if (Math.random() <= chance)
 			this.setItemStackToSlot(EntityEquipmentSlot.FEET, GenericArmorMultiCamo.getNewWithCamo(
 					TGArmors.t1_miner_Boots,camo));
+
+		if (TGConfig.general.disableArmourDrops) {
+			this.setDropChance(EntityEquipmentSlot.HEAD,  0f);
+			this.setDropChance(EntityEquipmentSlot.LEGS,  0f);
+			this.setDropChance(EntityEquipmentSlot.CHEST, 0f);
+			this.setDropChance(EntityEquipmentSlot.FEET,  0f);
+		}
 
 		// Weapons
 		Random r = new Random();
@@ -76,7 +83,11 @@ public class ZombieFarmer extends GenericNPCUndead {
 			weapon = TGuns.handcannon;
 			break;
 		}
-		if (weapon != null) this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(weapon));
+		if (weapon != null) {
+			this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(weapon));
+			if (TGConfig.general.disableGunDrops)
+				this.setDropChance(EntityEquipmentSlot.MAINHAND, 0f);
+		}
 	}
 	
 	@Override

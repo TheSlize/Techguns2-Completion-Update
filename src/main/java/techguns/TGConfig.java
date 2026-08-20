@@ -52,6 +52,14 @@ public class TGConfig {
 		@Config.LangKey("config.techguns.misc.explosiveChargeAdvancedMaxBlockHardness")
 		public float explosiveChargeAdvancedMaxBlockHardness = 100.0f;
 
+		@Config.Comment("Disable gun drops from mobs / NPCs")
+		@Config.LangKey("config.techguns.misc.disableGunDrops")
+		public boolean disableGunDrops = false;
+
+		@Config.Comment("Disable armour drops from mobs / NPCs")
+		@Config.LangKey("config.techguns.misc.disableArmourDrops")
+		public boolean disableArmourDrops = false;
+
 		@Config.Comment("Disable Radiation for players. (Radiation system is still WIP)")
 		@Config.LangKey("config.techguns.misc.WIP_disableRadiationSystem")
 		@Config.RequiresMcRestart

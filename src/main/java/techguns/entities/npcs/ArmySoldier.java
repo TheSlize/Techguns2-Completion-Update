@@ -70,6 +70,13 @@ public class ArmySoldier extends GenericNPC implements ILivingSoldier {
 		if (Math.random() <= chance)
 			this.setItemStackToSlot(EntityEquipmentSlot.FEET, new ItemStack(TGArmors.t2_combat_Boots));
 
+        if (TGConfig.general.disableArmourDrops) {
+            this.setDropChance(EntityEquipmentSlot.HEAD,  0f);
+            this.setDropChance(EntityEquipmentSlot.LEGS,  0f);
+            this.setDropChance(EntityEquipmentSlot.CHEST, 0f);
+            this.setDropChance(EntityEquipmentSlot.FEET,  0f);
+        }
+
 		// Weapons
 		Random r = new Random();
 		Item weapon;
@@ -84,7 +91,11 @@ public class ArmySoldier extends GenericNPC implements ILivingSoldier {
 			weapon = TGuns.boltaction;
 			break;
 		}
-		if (weapon != null) this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(weapon));
+		if (weapon != null) {
+            this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(weapon));
+            if (TGConfig.general.disableGunDrops)
+                this.setDropChance(EntityEquipmentSlot.MAINHAND, 0f);
+        }
 	}
 	
 	@Override
