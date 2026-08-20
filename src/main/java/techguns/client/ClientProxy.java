@@ -1162,7 +1162,11 @@ public class ClientProxy extends CommonProxy {
 		return Minecraft.getMinecraft().player;
 	}
 
-	
+	@Override
+	public void openWorldGenTestToolGui() {
+		Minecraft.getMinecraft().displayGuiScreen(new WorldGenTestToolGui());
+	}
+
 	@Override
 	public void setGunTextures(GenericGun gun, String path, int variations) {
 		gun.textures = new ArrayList<>();

@@ -134,7 +134,9 @@ public abstract class CommonProxy implements ITGInitializer {
 	public EntityPlayer getPlayerClient() {
 		return null;
 	}
-	
+
+	public void openWorldGenTestToolGui() {}
+
 	public void setGunTextures(GenericGun gun, String path, int variations){
 		
 	}

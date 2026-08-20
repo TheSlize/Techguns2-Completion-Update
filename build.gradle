@@ -356,8 +356,15 @@ tasks.register('prioritizeCoremods') {
 	dependsOn 'prepareObfModsFolder'
 	doLast {
 		fileTree('run/obfuscated').forEach {
-			if (it.isFile() && it.name =~ '(mixinbooter|configanytime)(-)([0-9])+\\.+([0-9])+(.jar)') {
-				it.renameTo(new File(it.parentFile, "!${it.name}"))
+			if (it.isFile() && it.name =~ '^!*(mixinbooter|configanytime).+\\.jar$') {
+				def cleanName = it.name.replaceFirst('^!+', '')
+				def target = new File(it.parentFile, "!${cleanName}")
+				if (it != target) {
+					if (target.exists()) {
+						target.delete()
+					}
+					it.renameTo(target)
+				}
 			}
 		}
 	}

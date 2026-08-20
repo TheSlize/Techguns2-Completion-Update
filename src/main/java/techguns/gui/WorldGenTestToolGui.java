@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SideOnly(Side.CLIENT)
-public class StructureSpawnerGui extends GuiScreen {
+public class WorldGenTestToolGui extends GuiScreen {
 
     private GuiTextField textField;
     private List<String> hints = new ArrayList<>();

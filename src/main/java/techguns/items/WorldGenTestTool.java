@@ -2,7 +2,6 @@ package techguns.items;
 
 import java.util.Random;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,7 +14,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import org.jetbrains.annotations.NotNull;
-import techguns.gui.StructureSpawnerGui;
+import techguns.Techguns;
 import techguns.world.StructureRegistry;
 import techguns.world.structures.WorldgenStructure;
 
@@ -40,10 +39,7 @@ public class WorldGenTestTool extends GenericItem {
         String structureName = item.getTagCompound().getString("structure");
 
         if (player.isSneaking() || structureName.isEmpty()) {
-            // Open GUI to select structure
-            if (world.isRemote) {
-                Minecraft.getMinecraft().displayGuiScreen(new StructureSpawnerGui());
-            }
+            Techguns.proxy.openWorldGenTestToolGui();
             return new ActionResult<>(EnumActionResult.SUCCESS, item);
         }
 
