@@ -87,7 +87,7 @@ public class ModelNDR extends ModelMultipart {
         this.textureWidth = 128;
         this.textureHeight = 64;
 
-        shape14 = new ModelRenderer(this, 54, 15);
+        shape14 = new ModelRenderer(this, 76, 39);
         shape14.setRotationPoint(-5.0F, 2.0F, -2.0F);
         shape14.addBox(0.0F, 0.0F, 0.0F, 1, 1, 4, 0.0F);
 
@@ -107,17 +107,17 @@ public class ModelNDR extends ModelMultipart {
         setRotation(cube_r2, 0.6545F, 0.0F, 0.0F);
         cube_r2.addBox(-16.0F, -1.0F, -1.0F, 17, 2, 1, 0.0F);
 
-        shape14_1 = new ModelRenderer(this, 54, 15);
+        shape14_1 = new ModelRenderer(this, 76, 39);
         shape14_1.setRotationPoint(3.0F, -3.0F, -2.0F);
         shape14_1.addBox(10.0F, 0.0F, 0.0F, 1, 1, 4, 0.0F);
 
-        shape14_2 = new ModelRenderer(this, 54, 15);
+        shape14_2 = new ModelRenderer(this, 76, 39);
         shape14_2.setRotationPoint(3.0F, 2.0F, -2.0F);
         shape14_2.addBox(10.0F, 0.0F, 0.0F, 1, 1, 4, 0.0F);
 
         GLOW = new ModelRenderer(this, 65, 12);
         GLOW.setRotationPoint(-4.0F, -2.0F, -2.0F);
-        GLOW.addBox(0.0F, 0.0F, -1.0F, 17, 5, 6, 0.0F);
+        GLOW.addBox(0.0F, 0.0F, -1.0F, 17, 4, 6, 0.0F);
 
         shape14_3 = new ModelRenderer(this, 74, 37);
         shape14_3.setRotationPoint(3.0F, -2.0F, -3.0F);
@@ -182,21 +182,20 @@ public class ModelNDR extends ModelMultipart {
         shape14_7.setRotationPoint(-16.0F, -6.0F, -1.5F);
         shape14_7.addBox(0.0F, 0.0F, 0.0F, 10, 1, 3, 0.0F);
 
-        shape14_8 = new ModelRenderer(this, 54, 15);
+        shape14_8 = new ModelRenderer(this, 76, 39);
         shape14_8.setRotationPoint(-5.0F, -3.0F, -2.0F);
         shape14_8.addBox(0.0F, 0.0F, 0.0F, 1, 1, 4, 0.0F);
 
         shape2 = new ModelRenderer(this, 67, 31);
         shape2.setRotationPoint(0.0F, 24.0F, 0.0F);
-        shape2.addBox(-4.0F, -27.0F, -2.0F, 17, 2, 4, 0.0F);
+        shape2.addBox(-4.0F, -27.0F, -2.0F, 17, 6, 4, 0.0F);
 
-        // Используем имя glowA1 для совместимости с логикой анимации Techguns
         glowA1 = new ModelRenderer(this, 71, 5);
         glowA1.setRotationPoint(0.0F, 0.0F, 0.2F);
         setRotation(glowA1, 0.4363F, 0.0F, 0.0F);
         glowA1.addBox(-2.0F, -6.0F, -0.5F, 14, 5, 1, 0.0F);
 
-        shape14_10 = new ModelRenderer(this, 74, 37);
+        shape14_10 = new ModelRenderer(this, 74, 42);
         shape14_10.setRotationPoint(-5.0F, -2.0F, -3.0F);
         shape14_10.addBox(0.0F, 0.0F, 0.0F, 1, 4, 6, 0.0F);
 
@@ -361,7 +360,7 @@ public class ModelNDR extends ModelMultipart {
         setRotation(shape48, -1.0472F, 0.0F, 0.0F);
         shape48.addBox(0.0F, -4.0F, -4.0F, 8, 6, 4, 0.0F);
 
-        shape48_2 = new ModelRenderer(this, 34, 45);
+        shape48_2 = new ModelRenderer(this, 0, 50);
         shape48_2.setRotationPoint(0.0F, 7.79F, -1.5F);
         shape45_.addChild(shape48_2);
         shape48_2.addBox(0.0F, -5.0F, -1.0F, 8, 6, 8, 0.0F);
@@ -421,13 +420,11 @@ public class ModelNDR extends ModelMultipart {
         shape83.addBox(-0.5F, 6.0F, -0.5F, 1, 1, 1, 0.0F);
         shape83.addBox(-1.0F, 0.0F, -1.0F, 2, 6, 2, 0.0F);
 
-        // Бывший shape3, теперь shape82
         shape82 = new ModelRenderer(this, 23, 14);
         shape82.setRotationPoint(10.5F, 9.4904F, 0.0981F);
         setRotation(shape82, 0.0F, 0.0F, -3.1416F);
-        // Множественные боксы для shape82
-        shape82.addBox(-0.5F, 6.0F, -0.5F, 5, 1, 1, 0.0F);
-        shape82.addBox(-1.0F, 4.0F, -1.0F, 6, 2, 2, 0.0F);
+        shape82.addBox(-0.5F, 5.5096F, -0.5F, 5, 1, 1, 0.0F);
+        shape82.addBox(-1.0F, 3.5096F, -1.0F, 6, 2, 2, 0.0F);
     }
 
     @Override
@@ -477,20 +474,13 @@ public class ModelNDR extends ModelMultipart {
         shape58.render(scale);
         shape58_1.render(scale);
         shape58_2.render(scale);
-        shape82.render(scale); // Рендерим shape82 (бывший shape3)
-
-        //
-        //System.out.println("FireProgress= "+fireProgress);
+        shape82.render(scale);
 
         TGRenderHelper.enableBlendMode(RenderType.ALPHA);
         GLOW.render(scale);
-        if (fireProgress > 0) {
 
-            //GL11.glDisable(GL11.GL_CULL_FACE);
+        if (fireProgress > 0) {
             GlStateManager.disableCull();
-            //System.out.println("FireProgress= "+fireProgress);
-            //      TGRenderHelper.enableAlphaBlend();
-            //this.glowA1.offsetY = (float) (-6.0f + Math.sin(fireProgress*2.0*Math.PI));
 
             GL11.glPushMatrix();
             double s = 0.90 + Math.sin(fireProgress*2.0*Math.PI)*0.1;
@@ -514,14 +504,8 @@ public class ModelNDR extends ModelMultipart {
             glowA1.rotateAngleX = 25.0f*((float)MathUtil.D2R);
 
             GL11.glPopMatrix();
-
-            //       TGRenderHelper.disableAlphaBlend();
-
-            //GL11.glEnable(GL11.GL_CULL_FACE);
             GlStateManager.enableCull();
         }
-
         TGRenderHelper.disableBlendMode(RenderType.ALPHA);
-        //
     }
 }
