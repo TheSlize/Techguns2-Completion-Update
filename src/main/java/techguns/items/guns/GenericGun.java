@@ -1009,8 +1009,13 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
             baseDps *= NDRProjectile.BEAM_LIFETIME;
         float maxDps = baseDps * this.damage;
         float minDps = baseDps * this.damageMin;
-        return TextUtil.trans("techguns.gun.tooltip.damagePerSecond") + ": §f"
-                + String.format("%.1f-%.1f", maxDps, minDps);
+        String dps;
+        if (minDps != maxDps)
+            dps = String.format("%.1f-%.1f", maxDps, minDps);
+        else
+            dps = String.format("%.1f", maxDps);
+
+        return TextUtil.trans("techguns.gun.tooltip.damagePerSecond") + ": §f" + dps;
     }
 
     protected String getTooltipTextRange(ItemStack stack) {
