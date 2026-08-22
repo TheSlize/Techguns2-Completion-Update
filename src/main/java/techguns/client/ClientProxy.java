@@ -200,7 +200,7 @@ public class ClientProxy extends CommonProxy {
 
 		IScreenEffect.preloadAll();
 
-		if(TGConfig.general.debug) {
+		if(TGConfig.misc.debug) {
 			Keybinds.init();
 		}
 		TGKeybinds.init();

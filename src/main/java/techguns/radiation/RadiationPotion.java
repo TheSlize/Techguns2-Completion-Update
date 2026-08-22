@@ -59,6 +59,9 @@ public class RadiationPotion extends Potion {
 		int res = (int) elb.getEntityAttribute(TGRadiation.RADIATION_RESISTANCE).getAttributeValue();
 		
 		int amount = techguns.util.MathUtil.clamp(amplifier+1-res, 0, 1000);
+
+		if (amplifier >= 4)
+			amount = amount / 2 + 1; //because the damage will be given 2 times per second
 		
 		//System.out.println("Radiate:"+ amount + "|RES:"+res);
 		
@@ -102,7 +105,10 @@ public class RadiationPotion extends Potion {
 
 	@Override
 	public boolean isReady(int duration, int amplifier) {
-		return duration % 20 == 0;
+		if (amplifier >= 4)
+			return duration % 10 == 0;
+		else
+			return duration % 20 == 0;
 	}
 
 	

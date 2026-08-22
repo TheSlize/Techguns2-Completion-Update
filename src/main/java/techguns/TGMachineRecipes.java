@@ -65,7 +65,7 @@ public class TGMachineRecipes {
         MetalPressRecipes.addRecipe("ingotLead", "ingotLead", new ItemStack(TGItems.PLATE_LEAD.getItem(), 2, TGItems.PLATE_LEAD.getItemDamage()), true);
         MetalPressRecipes.addRecipe("plateIron", new ItemStack(Items.FLINT, 1), new ItemStack(TGItems.MECHANICAL_PARTS_IRON.getItem(), 1, TGItems.MECHANICAL_PARTS_IRON.getItemDamage()), true);
         MetalPressRecipes.addRecipe("plateObsidianSteel", "gemQuartz", new ItemStack(TGItems.MECHANICAL_PARTS_OBSIDIAN_STEEL.getItem(), 1, TGItems.MECHANICAL_PARTS_OBSIDIAN_STEEL.getItemDamage()), true);
-        if (TGConfig.disableItems.addOreDicts) {
+        if (TGConfig.misc.addOreDicts) {
             MetalPressRecipes.addRecipe("plateCarbon", new ItemStack(Items.BLAZE_ROD), new ItemStack(TGItems.MECHANICAL_PARTS_CARBON.getItem(), 2, TGItems.MECHANICAL_PARTS_CARBON.getItemDamage()), true);
             MetalPressRecipes.addRecipe("fiberCarbon", "fiberCarbon", new ItemStack(TGItems.PLATE_CARBON.getItem(), 2, TGItems.PLATE_CARBON.getItemDamage()), true);
             MetalPressRecipes.addRecipe("ingotTitanium", "ingotTitanium", new ItemStack(TGItems.PLATE_TITANIUM.getItem(), 2, TGItems.PLATE_TITANIUM.getItemDamage()), true);
@@ -170,7 +170,7 @@ public class TGMachineRecipes {
 		/*
 		  FABRICATOR
 		 */
-        if (TGConfig.disableItems.addOreDicts) {
+        if (TGConfig.misc.addOreDicts) {
             FabricatorRecipe.addRecipe(new ItemStackOreDict("ingotTitanium"), 2, FabricatorRecipe.circuit_basic, 4, FabricatorRecipe.mechanicalPartsT3, 1, FabricatorRecipe.carbonPlate, 4, TGItems.POWER_ARMOR_PLATING, 2);
         } else {
             FabricatorRecipe.addRecipe(new ItemStackOreDict("ingotTitaniumTG"), 2, FabricatorRecipe.circuit_basic, 4, FabricatorRecipe.mechanicalPartsT3, 1, FabricatorRecipe.carbonPlate, 4, TGItems.POWER_ARMOR_PLATING, 2);
@@ -207,7 +207,7 @@ public class TGMachineRecipes {
 		/*
 		  Blast Furnace
 		 */
-        if (TGConfig.disableItems.addSteelRecipe) {
+        if (TGConfig.misc.addSteelRecipe) {
             BlastFurnaceRecipes.addRecipe(new ItemStack(Items.IRON_INGOT, 4), new ItemStack(Items.COAL, 1), new ItemStack(TGItems.INGOT_STEEL.getItem(), 4, TGItems.INGOT_STEEL.getItemDamage()), 10, 800);
             BlastFurnaceRecipes.addRecipe(new ItemStack(Items.IRON_INGOT, 4), new ItemStack(Items.COAL, 1, 1), new ItemStack(TGItems.INGOT_STEEL.getItem(), 4, TGItems.INGOT_STEEL.getItemDamage()), 10, 800);
         }

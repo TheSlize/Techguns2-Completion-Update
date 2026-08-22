@@ -54,7 +54,7 @@ public class DictatorDave extends GenericNPC implements ILivingSoldier {
 		this.setItemStackToSlot(EntityEquipmentSlot.LEGS, new ItemStack(TGArmors.t1_scout_Leggings));
 		this.setItemStackToSlot(EntityEquipmentSlot.FEET, new ItemStack(TGArmors.t1_combat_Boots));
 
-        if (TGConfig.general.disableArmourDrops) {
+        if (TGConfig.misc.disableArmorDrops) {
             this.setDropChance(EntityEquipmentSlot.HEAD,  0f);
             this.setDropChance(EntityEquipmentSlot.LEGS,  0f);
             this.setDropChance(EntityEquipmentSlot.CHEST, 0f);
@@ -66,7 +66,7 @@ public class DictatorDave extends GenericNPC implements ILivingSoldier {
 				
 		if (weapon != null) {
             this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(weapon));
-            if (TGConfig.general.disableGunDrops)
+            if (TGConfig.misc.disableGunDrops)
                 this.setDropChance(EntityEquipmentSlot.MAINHAND, 0f);
         }
 	}

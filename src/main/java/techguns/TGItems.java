@@ -573,7 +573,7 @@ public class TGItems implements ITGInitializer {
         CYBERNETIC_WIRING = SHARED_ITEM.addsharedVariant("cybernetic_wiring");
 
 
-		if(TGConfig.general.debug) {
+		if(TGConfig.misc.debug) {
 			WORLDGEN_TEST_TOOL = new WorldGenTestTool("worldgentesttool");
 			BUIDLING_SCAN_TOOL = new BuildingScanTool("buildingscantool");
 		}
@@ -663,7 +663,7 @@ public class TGItems implements ITGInitializer {
 
 	public static void registerItemsToOreDict() {
 		
-		if(TGConfig.disableItems.addOreDicts) {
+		if(TGConfig.misc.addOreDicts) {
 			registerIfEnabled("plateCarbon", PLATE_CARBON);
 		    registerIfEnabled("fiberCarbon", CARBON_FIBERS);
 			registerIfEnabled("circuitBasic", CIRCUIT_BOARD_BASIC);

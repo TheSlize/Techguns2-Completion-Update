@@ -156,7 +156,7 @@ public class ExplosiveChargeTileEnt extends BasicOwnedTileEnt implements ITickab
     }
 
     protected boolean canBreakBlockHardness(float hardness) {
-        return hardness >= 0 && hardness < TGConfig.general.explosiveChargeMaxBlockHardness;
+        return hardness >= 0 && hardness < TGConfig.misc.explosiveChargeMaxBlockHardness;
     }
 
     @Override
