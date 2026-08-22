@@ -56,7 +56,7 @@ public class TGConfig {
 		@Config.LangKey("config.techguns.misc.disableGunDrops")
 		public boolean disableGunDrops = false;
 
-		@Config.Comment("Disable armour drops from mobs / NPCs")
+		@Config.Comment("Disable armor drops from mobs / NPCs")
 		@Config.LangKey("config.techguns.misc.disableArmourDrops")
 		public boolean disableArmourDrops = false;
 
@@ -647,7 +647,7 @@ public class TGConfig {
 	public static class SpawnerBlock {
 
 		@Config.Comment("false = default TG mode (spawns only ITGSpawnerNPC mobs from presets). true = custom mode (spawns any EntityLiving from this spawner's mobtypes NBT id; use this when editing spawner NBT to point at entities from other mods).")
-		@Config.LangKey("config.techguns.spawnerBlock.spawnerBlockUseCustomEntitySpawn")
+		@Config.LangKey("config.techguns.spawner_block.spawnerBlockUseCustomEntitySpawn")
 		public boolean spawnerBlockUseCustomEntitySpawn = false;
 	}
 
@@ -656,10 +656,12 @@ public class TGConfig {
 
 		@Config.Comment("Increase the Nuclear Death Ray's damage to make it the only weapon against the parasites. false = default NDR damage")
 		@Config.LangKey("config.techguns.srpIntegration.rebalance_nucleardeathray")
+		@Config.RequiresMcRestart
 		public boolean rebalance_nucleardeathray = false;
 
 		@Config.Comment("Increase the BFG-10K's damage to make it more deadly for parasites. false = default BFG damage")
 		@Config.LangKey("config.techguns.srpIntegration.rebalance_tfg")
+		@Config.RequiresMcRestart
 		public boolean rebalance_tfg = false;
 	}
 
