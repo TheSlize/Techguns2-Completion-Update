@@ -13,7 +13,7 @@ public class OreDictIngredientPlateCarbon implements IIngredientFactory {
 
 	@Override
 	public Ingredient parse(JsonContext context, JsonObject json) {
-		if(OreDictionary.doesOreNameExist("plateCarbon") && TGConfig.disableItems.addOreDicts) {
+		if(OreDictionary.doesOreNameExist("plateCarbon") && TGConfig.misc.addOreDicts) {
 			return new OreIngredient("plateCarbon");
 		}
 		return new OreIngredient("plateCarbonTG");

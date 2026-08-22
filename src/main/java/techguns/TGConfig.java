@@ -11,38 +11,44 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 @Mod.EventBusSubscriber(modid = Tags.MOD_ID)
 public class TGConfig {
 
-	@Config.Name("Misc")
-	@Config.LangKey("config.techguns.misc")
+	@Config.Name("General")
+	@Config.LangKey("config.techguns.general")
 	public static General general = new General();
 
 	public static class General {
-		@Config.Comment("Enable debug items and unfinished stuff; disable this for regular survival.")
-		@Config.LangKey("config.techguns.misc.debug")
-		@Config.RequiresMcRestart
-		public boolean debug = false;
-
-		@Config.Comment("Base XP value for Upgrade Bench recipes (enchants)")
-		@Config.RangeInt(min = 0, max = 10000)
-		@Config.LangKey("config.techguns.misc.upgrade_xp_cost")
-		public int upgrade_xp_cost = 20;
-
 		@Config.Comment("Limits using unsafe guns mode to opped players; the config option OVERRIDES the permission setting 'techguns.allowunsafemode'")
-		@Config.LangKey("config.techguns.misc.limitUnsafeModeToOP")
+		@Config.LangKey("config.techguns.general.limitUnsafeModeToOP")
 		@Config.RequiresMcRestart
 		public boolean limitUnsafeModeToOP = false;
 
 		@Config.Comment("Disable automatic feeding of Food in the Techguns inventory tab.")
-		@Config.LangKey("config.techguns.misc.disableAutofeeder")
+		@Config.LangKey("config.techguns.general.disableAutofeeder")
 		public boolean disableAutofeeder = false;
 
 		@Config.Comment("Disables power usage for all machines; activate this if you don't want to install additional tech mods.")
-		@Config.LangKey("config.techguns.misc.machinesNeedNoPower")
+		@Config.LangKey("config.techguns.general.machinesNeedNoPower")
 		public boolean machinesNeedNoPower = false;
 
 		@Config.Comment("Keep recipes with lava instead of fuel even when fuel from any other mods is present.")
-		@Config.LangKey("config.techguns.misc.keepLavaRecipesWhenFuelIsPresent")
+		@Config.LangKey("config.techguns.general.keepLavaRecipesWhenFuelIsPresent")
 		@Config.RequiresMcRestart
 		public boolean keepLavaRecipesWhenFuelIsPresent = false;
+
+		@Config.Comment("Disable Radiation for players. (Radiation system is still WIP)")
+		@Config.LangKey("config.techguns.general.WIP_disableRadiationSystem")
+		@Config.RequiresMcRestart
+		public boolean WIP_disableRadiationSystem = false;
+	}
+
+	@Config.Name("Misc")
+	@Config.LangKey("config.techguns.misc")
+	public static Misc misc = new Misc();
+
+	public static class Misc {
+		@Config.Comment("Enable debug items and unfinished stuff; disable this for regular survival.")
+		@Config.LangKey("config.techguns.misc.debug")
+		@Config.RequiresMcRestart
+		public boolean debug = false;
 
 		@Config.Comment("Highest blockHardness normal explosive charges can break; obsidian is 50.0")
 		@Config.LangKey("config.techguns.misc.explosiveChargeMaxBlockHardness")
@@ -57,13 +63,44 @@ public class TGConfig {
 		public boolean disableGunDrops = false;
 
 		@Config.Comment("Disable armor drops from mobs / NPCs")
-		@Config.LangKey("config.techguns.misc.disableArmourDrops")
-		public boolean disableArmourDrops = false;
+		@Config.LangKey("config.techguns.misc.disableArmorDrops")
+		public boolean disableArmorDrops = false;
 
-		@Config.Comment("Disable Radiation for players. (Radiation system is still WIP)")
-		@Config.LangKey("config.techguns.misc.WIP_disableRadiationSystem")
+		@Config.Comment("Base XP value for Upgrade Bench recipes (enchants)")
+		@Config.RangeInt(min = 0, max = 10000)
+		@Config.LangKey("config.techguns.misc.upgrade_xp_cost")
+		public int upgrade_xp_cost = 20;
+
+		@Config.Comment("Enables steel recipe in a TG blast furnace.")
+		@Config.LangKey("config.techguns.misc.addSteelRecipe")
 		@Config.RequiresMcRestart
-		public boolean WIP_disableRadiationSystem = false;
+		public boolean addSteelRecipe = true;
+
+		@Config.Comment("Registers oreDicts entries for carbon, titanium, circuits and other items that might be used from other mods.")
+		@Config.LangKey("config.techguns.misc.addOreDicts")
+		@Config.RequiresMcRestart
+		public boolean addOreDicts = true;
+
+		@Config.Comment("false = default TG mode (spawns only ITGSpawnerNPC mobs from presets). true = custom mode (spawns any EntityLiving from this spawner's mobtypes NBT id; use this when editing spawner NBT to point at entities from other mods).")
+		@Config.LangKey("config.techguns.misc.spawnerBlockUseCustomEntitySpawn")
+		public boolean spawnerBlockUseCustomEntitySpawn = false;
+	}
+
+	@Config.Name("SRParasites Integration")
+	@Config.Comment("Options for those using Techguns with the Scape & Run: Parasites mod (or other mods with hard monsters)")
+	@Config.LangKey("config.techguns.srpIntegration")
+	public static SRPIntegration srpIntegration = new SRPIntegration();
+
+	public static class SRPIntegration {
+		@Config.Comment("Increase the Nuclear Death Ray's damage to make it the only weapon against the parasites. false = default NDR damage")
+		@Config.LangKey("config.techguns.srpIntegration.rebalance_nucleardeathray")
+		@Config.RequiresMcRestart
+		public boolean rebalance_nucleardeathray = false;
+
+		@Config.Comment("Increase the BFG-10K's damage to make it more deadly for parasites. false = default BFG damage")
+		@Config.LangKey("config.techguns.srpIntegration.rebalance_tfg")
+		@Config.RequiresMcRestart
+		public boolean rebalance_tfg = false;
 	}
 
 	@Config.Name("Disable Items")
@@ -110,16 +147,6 @@ public class TGConfig {
 		@Config.LangKey("config.techguns.disable_items.addSteelNuggets")
 		@Config.RequiresMcRestart
 		public boolean addSteelNuggets = true;
-
-		@Config.Comment("Enables steel recipe in a TG blast furnace.")
-		@Config.LangKey("config.techguns.disable_items.addSteelRecipe")
-		@Config.RequiresMcRestart
-		public boolean addSteelRecipe = true;
-
-		@Config.Comment("Registers oreDicts entries for carbon, titanium, circuits and other items that might be used from other mods.")
-		@Config.LangKey("config.techguns.disable_items.addOreDicts")
-		@Config.RequiresMcRestart
-		public boolean addOreDicts = true;
 	}
 
 	@Config.Name("NPC Spawn")
@@ -448,11 +475,11 @@ public class TGConfig {
 		public int cl_textMagGap = 3;
 	}
 
-	@Config.Name("Fluid Recipes")
+	@Config.Name("Fluid Settings")
 	@Config.LangKey("config.techguns.fluid_recipes")
-	public static FluidRecipes fluidRecipes = new FluidRecipes();
+	public static FluidSettings fluidSettings = new FluidSettings();
 
-	public static class FluidRecipes {
+	public static class FluidSettings {
 		@Config.Comment("Fluids that can be used to fill up fuel tanks")
 		@Config.LangKey("config.techguns.fluid_recipes.fluidListFuel")
 		@Config.RequiresMcRestart
@@ -638,37 +665,6 @@ public class TGConfig {
 		@Config.LangKey("config.techguns.ore_drills.powermult_oil")
 		public float powermult_oil = 0.8f;
 	}
-
-	@Config.Name("Spawner Block")
-	@Config.Comment("Techguns monster spawner blocks (holes / soldier spawns) used in world structures and dungeon presets. Does not change vanilla mob spawners.")
-	@Config.LangKey("config.techguns.spawner_block")
-	public static SpawnerBlock spawnerBlock = new SpawnerBlock();
-
-	public static class SpawnerBlock {
-
-		@Config.Comment("false = default TG mode (spawns only ITGSpawnerNPC mobs from presets). true = custom mode (spawns any EntityLiving from this spawner's mobtypes NBT id; use this when editing spawner NBT to point at entities from other mods).")
-		@Config.LangKey("config.techguns.spawner_block.spawnerBlockUseCustomEntitySpawn")
-		public boolean spawnerBlockUseCustomEntitySpawn = false;
-	}
-
-
-	public static class SRPIntegration {
-
-		@Config.Comment("Increase the Nuclear Death Ray's damage to make it the only weapon against the parasites. false = default NDR damage")
-		@Config.LangKey("config.techguns.srpIntegration.rebalance_nucleardeathray")
-		@Config.RequiresMcRestart
-		public boolean rebalance_nucleardeathray = false;
-
-		@Config.Comment("Increase the BFG-10K's damage to make it more deadly for parasites. false = default BFG damage")
-		@Config.LangKey("config.techguns.srpIntegration.rebalance_tfg")
-		@Config.RequiresMcRestart
-		public boolean rebalance_tfg = false;
-	}
-
-	@Config.Name("SRParasites Integration")
-	@Config.Comment("Options for those using Techguns with the Scape & Run: Parasites mod (or other mods with hard monsters)")
-	@Config.LangKey("config.techguns.srpIntegration")
-	public static SRPIntegration srpIntegration = new SRPIntegration();
 
 	static {
 		try {

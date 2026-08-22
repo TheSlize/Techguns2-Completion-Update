@@ -5,7 +5,6 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -56,7 +55,7 @@ public class ZombiePoliceman extends GenericNPCUndead {
 		if (Math.random() <= chance)
 			this.setItemStackToSlot(EntityEquipmentSlot.FEET, GenericArmorMultiCamo.getNewWithCamo(TGArmors.t2_combat_Boots, camo));
 
-		if (TGConfig.general.disableArmourDrops) {
+		if (TGConfig.misc.disableArmorDrops) {
 			this.setDropChance(EntityEquipmentSlot.HEAD,  0f);
 			this.setDropChance(EntityEquipmentSlot.LEGS,  0f);
 			this.setDropChance(EntityEquipmentSlot.CHEST, 0f);
@@ -79,7 +78,7 @@ public class ZombiePoliceman extends GenericNPCUndead {
 		}
 		if (weapon != null) {
 			this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(weapon));
-			if (TGConfig.general.disableGunDrops)
+			if (TGConfig.misc.disableGunDrops)
 				this.setDropChance(EntityEquipmentSlot.MAINHAND, 0f);
 		}
 	}

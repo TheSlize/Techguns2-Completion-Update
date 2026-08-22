@@ -49,7 +49,7 @@ public class CyberDemon extends GenericNPCUndead {
 		
 		if (weapon != null) {
 			this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(weapon));
-			if (TGConfig.general.disableGunDrops)
+			if (TGConfig.misc.disableGunDrops)
 				this.setDropChance(EntityEquipmentSlot.MAINHAND, 0f);
 		}
 	}

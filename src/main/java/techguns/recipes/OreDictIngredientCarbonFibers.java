@@ -13,7 +13,7 @@ public class OreDictIngredientCarbonFibers implements IIngredientFactory {
 
 	@Override
 	public Ingredient parse(JsonContext context, JsonObject json) {
-		if(OreDictionary.doesOreNameExist("fiberCarbon") && TGConfig.disableItems.addOreDicts) {
+		if(OreDictionary.doesOreNameExist("fiberCarbon") && TGConfig.misc.addOreDicts) {
 			return new OreIngredient("fiberCarbon");
 		}
 		return new OreIngredient("fiberCarbonTG");

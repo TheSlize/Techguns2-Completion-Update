@@ -170,7 +170,7 @@ public class TGSpawnerTileEnt extends BasicTGTileEntity implements ITickable {
     }
 
     protected int getCurrentActiveCount() {
-        if (!TGConfig.spawnerBlock.spawnerBlockUseCustomEntitySpawn) {
+        if (!TGConfig.misc.spawnerBlockUseCustomEntitySpawn) {
             return this.activeMobs.size();
         }
         BlockPos pos = this.getPos();
@@ -214,7 +214,7 @@ public class TGSpawnerTileEnt extends BasicTGTileEntity implements ITickable {
                 if (entity instanceof EntityLiving) {
                     EntityLiving elb = (EntityLiving) entity;
                     boolean isTgNpc = entity instanceof ITGSpawnerNPC;
-                    if (!isTgNpc && !TGConfig.spawnerBlock.spawnerBlockUseCustomEntitySpawn) {
+                    if (!isTgNpc && !TGConfig.misc.spawnerBlockUseCustomEntitySpawn) {
                         this.delay = this.spawndelay;
                         return;
                     }

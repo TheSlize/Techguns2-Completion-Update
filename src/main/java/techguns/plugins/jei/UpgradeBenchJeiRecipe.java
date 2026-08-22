@@ -49,7 +49,7 @@ public class UpgradeBenchJeiRecipe extends BasicRecipeWrapper {
     @Override
     public void drawInfo(Minecraft minecraft, int recipeWidth, int recipeHeight, int mouseX, int mouseY) {
 
-        int xp = this.recipe.getLevel() * TGConfig.general.upgrade_xp_cost;
+        int xp = this.recipe.getLevel() * TGConfig.misc.upgrade_xp_cost;
         drawXPText(minecraft.fontRenderer, TextUtil.transTG("gui.xpcost") + ": " + xp, 95 + BasicRecipeCategory.JEI_OFFSET_X, 17 + BasicRecipeCategory.JEI_OFFSET_Y, 8453920);
 
     }

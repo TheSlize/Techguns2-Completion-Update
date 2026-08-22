@@ -37,7 +37,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import org.jetbrains.annotations.NotNull;
 import techguns.TGArmors;
 import techguns.TGConfig;
-import techguns.TGItems;
 import techguns.TGuns;
 import techguns.api.npc.INPCTechgunsShooter;
 import techguns.api.npc.INpcTGDamageSystem;
@@ -174,7 +173,7 @@ public class GenericNPC extends EntityMob implements IRangedAttackMob, INPCTechg
 	    
 	protected void addRandomArmor(int difficulty){
 	    this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(this.pickRandomGun(difficulty)));
-		if (TGConfig.general.disableGunDrops)
+		if (TGConfig.misc.disableGunDrops)
 			this.setDropChance(EntityEquipmentSlot.MAINHAND, 0f);
 	    	
 		this.setItemStackToSlot(EntityEquipmentSlot.HEAD, new ItemStack(TGArmors.t1_combat_Helmet));
@@ -182,7 +181,7 @@ public class GenericNPC extends EntityMob implements IRangedAttackMob, INPCTechg
 	    this.setItemStackToSlot(EntityEquipmentSlot.LEGS, new ItemStack(TGArmors.t1_combat_Leggings));
 	    this.setItemStackToSlot(EntityEquipmentSlot.FEET, new ItemStack(TGArmors.t1_combat_Boots));
 
-		if (TGConfig.general.disableArmourDrops) {
+		if (TGConfig.misc.disableArmorDrops) {
 			this.setDropChance(EntityEquipmentSlot.HEAD,  0f);
 			this.setDropChance(EntityEquipmentSlot.LEGS,  0f);
 			this.setDropChance(EntityEquipmentSlot.CHEST, 0f);

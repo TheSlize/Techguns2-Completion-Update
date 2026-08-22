@@ -13,7 +13,7 @@ public class OreDictIngredientCircuitBoard implements IIngredientFactory {
 
 	@Override
 	public Ingredient parse(JsonContext context, JsonObject json) {
-		if(OreDictionary.doesOreNameExist("circuitBasic") && TGConfig.disableItems.addOreDicts) {
+		if(OreDictionary.doesOreNameExist("circuitBasic") && TGConfig.misc.addOreDicts) {
 			return new OreIngredient("circuitBasic");
 		}
 		return new OreIngredient("circuitBasicTG");

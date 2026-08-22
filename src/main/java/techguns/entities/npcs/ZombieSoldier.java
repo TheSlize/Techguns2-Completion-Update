@@ -54,7 +54,7 @@ public class ZombieSoldier extends GenericNPCUndead {
 		if (Math.random() <= chance)
 			this.setItemStackToSlot(EntityEquipmentSlot.FEET, new ItemStack(TGArmors.t1_combat_Boots));
 
-		if (TGConfig.general.disableArmourDrops) {
+		if (TGConfig.misc.disableArmorDrops) {
 			this.setDropChance(EntityEquipmentSlot.HEAD,  0f);
 			this.setDropChance(EntityEquipmentSlot.LEGS,  0f);
 			this.setDropChance(EntityEquipmentSlot.CHEST, 0f);
@@ -81,7 +81,7 @@ public class ZombieSoldier extends GenericNPCUndead {
 		}
 		if (weapon != null) {
 			this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(weapon));
-			if (TGConfig.general.disableGunDrops)
+			if (TGConfig.misc.disableGunDrops)
 				this.setDropChance(EntityEquipmentSlot.MAINHAND, 0f);
 		}
 	}

@@ -197,7 +197,7 @@ public class TGBlocks implements ITGInitializer{
 		
 		ORE_DRILL_BLOCK = new BlockOreDrill("oredrill");
 		
-		//if (TGConfig.general.debug) {
+		//if (TGConfig.misc.debug) {
 		DEBUG_BLOCK = new BlockDebugMarker("debugblock", Material.GROUND);
 		//}
 		

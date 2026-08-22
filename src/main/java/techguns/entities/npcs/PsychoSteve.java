@@ -59,7 +59,7 @@ public class PsychoSteve extends GenericNPC implements ILivingSoldier {
 		this.setItemStackToSlot(EntityEquipmentSlot.FEET, GenericArmorMultiCamo.getNewWithCamo(
 				TGArmors.t1_miner_Boots,camo));
 
-        if (TGConfig.general.disableArmourDrops) {
+        if (TGConfig.misc.disableArmorDrops) {
             this.setDropChance(EntityEquipmentSlot.HEAD,  0f);
             this.setDropChance(EntityEquipmentSlot.LEGS,  0f);
             this.setDropChance(EntityEquipmentSlot.CHEST, 0f);
@@ -68,7 +68,7 @@ public class PsychoSteve extends GenericNPC implements ILivingSoldier {
 
 		this.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(TGuns.chainsaw));
 
-        if (TGConfig.general.disableGunDrops)
+        if (TGConfig.misc.disableGunDrops)
             this.setDropChance(EntityEquipmentSlot.MAINHAND, 0f);
 	}
 
