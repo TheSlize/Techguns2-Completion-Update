@@ -721,7 +721,6 @@ public class GenericGun extends GenericItem implements IGenericGun, IItemTGRende
             stack.setTagCompound(tags);
 
             int dmg = stack.getItemDamage();
-            tags.setByte("camo", (byte) 0);
             tags.setString("ammovariant", AmmoTypes.TYPE_DEFAULT);
             tags.setShort("ammo", dmg == 0 ? (short) this.clipsize : (short) (this.clipsize - dmg));
             stack.setItemDamage(0);
