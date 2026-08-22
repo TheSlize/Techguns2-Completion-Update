@@ -651,6 +651,23 @@ public class TGConfig {
 		public boolean spawnerBlockUseCustomEntitySpawn = false;
 	}
 
+
+	public static class SRPIntegration {
+
+		@Config.Comment("Increase the Nuclear Death Ray's damage to make it the only weapon against the parasites. false = default NDR damage")
+		@Config.LangKey("config.techguns.srpIntegration.rebalance_nucleardeathray")
+		public boolean rebalance_nucleardeathray = false;
+
+		@Config.Comment("Increase the BFG-10K's damage to make it more deadly for parasites. false = default BFG damage")
+		@Config.LangKey("config.techguns.srpIntegration.rebalance_tfg")
+		public boolean rebalance_tfg = false;
+	}
+
+	@Config.Name("SRParasites Integration")
+	@Config.Comment("Options for those using Techguns with the Scape & Run: Parasites mod (or other mods with hard monsters)")
+	@Config.LangKey("config.techguns.srpIntegration")
+	public static SRPIntegration srpIntegration = new SRPIntegration();
+
 	static {
 		try {
 			Class.forName("com.cleanroommc.configanytime.ConfigAnytime")
